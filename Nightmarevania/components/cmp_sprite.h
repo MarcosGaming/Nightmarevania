@@ -13,8 +13,8 @@ public:
   SpriteComponent() = delete;
 
   explicit SpriteComponent(Entity* p);
-  void update(double dt) override;
-  void render() override;
+  virtual void update(double dt) override;
+  virtual void render() override;
 
   sf::Sprite& getSprite() const;
 

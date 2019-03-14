@@ -112,6 +112,10 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 			{
 				window.close();
 			}
+			if ((event.type == Event::KeyReleased) && (event.key.code == Keyboard::Space))
+			{
+				Physics::setCanDoubleJump(true);
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{

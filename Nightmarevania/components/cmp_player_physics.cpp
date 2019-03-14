@@ -1,5 +1,6 @@
 #include "cmp_player_physics.h"
 #include "system_physics.h"
+#include <engine.h>
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
 
@@ -44,10 +45,10 @@ void PlayerPhysicsComponent::update(double dt)
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
   }
 
-  if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::Right)) 
+  if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::D)) 
   {
     // Moving Either Left or Right
-    if (Keyboard::isKeyPressed(Keyboard::Right)) 
+    if (Keyboard::isKeyPressed(Keyboard::D)) 
 	{
       if (getVelocity().x < _maxVelocity.x)
         impulse({(float)(dt * _groundspeed), 0});
@@ -65,17 +66,23 @@ void PlayerPhysicsComponent::update(double dt)
   }
 
   // Handle Jump
-  if (Keyboard::isKeyPressed(Keyboard::Up)) 
+ if (Keyboard::isKeyPressed(Keyboard::Space)) 
   {
-    _grounded = isGrounded();
+	 _grounded = isGrounded();
     if (_grounded) 
 	{
       setVelocity(Vector2f(getVelocity().x, 0.f));
       teleport(Vector2f(pos.x, pos.y - 2.0f));
-      impulse(Vector2f(0, -6.f));
+      impulse(Vector2f(0, -6.8f));
+	  _firstJump = true;
     }
+	// Only double jump once after releasing space
+	else if (Physics::getCanDoubleJump() && !_secondJump)
+	{
+		impulse(Vector2f(0,-6.8f + _body->GetLinearVelocity().y));
+		_secondJump = true;
+	}
   }
-
   //Are we in air?
   if (!_grounded) 
   {
@@ -83,10 +90,21 @@ void PlayerPhysicsComponent::update(double dt)
     _grounded = isGrounded();
     // disable friction while jumping
     setFriction(0.f);
+	// disable restitution while in air
+	//setRestitution(0.0f);
+	/*if (!_firstJump)
+	{
+		Physics::playerCanDoubleJump = true;
+		_firstJump = true;
+	}*/
   } 
   else 
   {
     setFriction(0.1f);
+	//setRestitution(0.2f);
+	Physics::setCanDoubleJump(false);
+	_firstJump = false;
+	_secondJump = false;
   }
 
   // Clamp velocity.
@@ -103,6 +121,8 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) 
   _maxVelocity = Vector2f(200.f, 400.f);
   _groundspeed = 30.f;
   _grounded = false;
+  _firstJump = false;
+  _secondJump = false;
   _body->SetSleepingAllowed(false);
   _body->SetFixedRotation(true);
   //Bullet items have higher-res collision detection
