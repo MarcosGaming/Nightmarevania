@@ -40,3 +40,27 @@ public:
 	DoubleJumpAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
+
+// General death animation
+class DeathAnimation : public Animation
+{
+public:
+	DeathAnimation() = default;
+	void runFrames(Entity* owner, float waitTime) override;
+};
+
+// Death fall animation
+class DeathAnimationFall : public DeathAnimation
+{
+public:
+	DeathAnimationFall() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Death ground animation
+class DeathAnimationGround : public DeathAnimation
+{
+public:
+	DeathAnimationGround() = default;
+	void execute(Entity*, double) noexcept override;
+};

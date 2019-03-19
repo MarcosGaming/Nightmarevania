@@ -47,9 +47,10 @@ protected:
 	std::vector<std::shared_ptr<Component>> _components;
 	sf::Vector2f _position;
 	float _rotation;
-	bool _alive;       // should be updated
-	bool _visible;     // should be rendered
-	bool _fordeletion; // should be deleted
+	bool _death;		// death before stop the updates
+	bool _alive;		// should be updated
+	bool _visible;		// should be rendered
+	bool _fordeletion;	// should be deleted
 	std::set<std::string> _tags;
 
 public:
@@ -67,6 +68,9 @@ public:
 	const sf::Vector2f& getPosition() const;
 
 	void setPosition(const sf::Vector2f& _position);
+
+	bool isDead() const;
+	void setDeath(bool _death);
 
 	bool is_fordeletion() const;
 	void setForDelete();

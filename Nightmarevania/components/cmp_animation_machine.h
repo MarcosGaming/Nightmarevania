@@ -11,11 +11,11 @@ protected:
 	std::vector<sf::IntRect> frames;
 	std::size_t current_frame = 0;
 	sf::Clock clock;
-	bool facingRight = true;
+	static bool facingRight;
 
-	void runFrames(Entity*, float);
+	virtual void runFrames(Entity*, float);
 public:
-	Animation() = default;
+	Animation();
 	virtual ~Animation() = default;
 
 	void addFrame(sf::IntRect);

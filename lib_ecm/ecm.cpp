@@ -4,7 +4,7 @@ using namespace std;
 
 // ENTITY
 
-Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _alive(true), _visible(true), scene(s), _fordeletion(false) {}
+Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _death(false), _alive(true), _visible(true), scene(s), _fordeletion(false) {}
 
 void Entity::update(double dt) 
 {
@@ -43,6 +43,9 @@ void Entity::setPosition(const sf::Vector2f& _position) { Entity::_position = _p
 
 float Entity::getRotation() const { return _rotation; }
 void Entity::setRotation(float _rotation) { Entity::_rotation = _rotation; }
+
+bool Entity::isDead() const { return _death; }
+void Entity::setDeath(bool _death) { Entity::_death = _death; }
 
 bool Entity::isAlive() const { return _alive; }
 void Entity::setAlive(bool _alive) { Entity::_alive = _alive; }

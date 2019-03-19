@@ -39,10 +39,12 @@ void PlayerPhysicsComponent::update(double dt)
 
   const auto pos = _parent->getPosition();
 
-  //Teleport to start if we fall off map.
-  if (pos.y > ls::getHeight() * ls::getTileSize()) 
+  //Teleport to start if we fall off map or if is not alive
+  if (pos.y > ls::getHeight() * ls::getTileSize() || !_parent->isAlive()) 
   {
     teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
+	_parent->setAlive(true);
+	_parent->setDeath(false);
   }
 
   if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::D)) 
@@ -65,6 +67,7 @@ void PlayerPhysicsComponent::update(double dt)
     dampen({0.9f, 1.0f});
   }
 
+ static bool impulseDown = false;
   // Handle Jump
  if (Keyboard::isKeyPressed(Keyboard::Space)) 
   {
@@ -74,37 +77,42 @@ void PlayerPhysicsComponent::update(double dt)
       setVelocity(Vector2f(getVelocity().x, 0.f));
       teleport(Vector2f(pos.x, pos.y - 2.0f));
       impulse(Vector2f(0, -6.8f));
-	  _firstJump = true;
+	  impulseDown = false;
     }
 	// Only double jump once after releasing space
 	else if (Physics::getCanDoubleJump() && !_secondJump)
 	{
 		impulse(Vector2f(0,-6.8f + _body->GetLinearVelocity().y));
 		_secondJump = true;
+		impulseDown = false;
 	}
   }
+ // Make the player fall faster
+ if (getVelocity().y < -1.0f && !impulseDown)
+ {
+	 impulse(Vector2f(0, 2.0f));
+	 impulseDown = true;
+ }
   //Are we in air?
   if (!_grounded) 
   {
+	 cout << "AIR" << endl;
     // Check to see if we have landed yet
     _grounded = isGrounded();
     // disable friction while jumping
     setFriction(0.f);
-	// disable restitution while in air
-	//setRestitution(0.0f);
-	/*if (!_firstJump)
-	{
-		Physics::playerCanDoubleJump = true;
-		_firstJump = true;
-	}*/
   } 
   else 
   {
     setFriction(0.1f);
-	//setRestitution(0.2f);
 	Physics::setCanDoubleJump(false);
-	_firstJump = false;
 	_secondJump = false;
+  }
+
+  // Death testing
+  if (Keyboard::isKeyPressed(Keyboard::U))
+  {
+	  _parent->setDeath(true);
   }
 
   // Clamp velocity.
@@ -112,6 +120,16 @@ void PlayerPhysicsComponent::update(double dt)
   v.x = copysign(min(abs(v.x), _maxVelocity.x), v.x);
   v.y = copysign(min(abs(v.y), _maxVelocity.y), v.y);
   setVelocity(v);
+
+  // If the player is dead velocity is 0 on x and 0 on y if not in the air
+  if (_parent->isDead() && isGrounded())
+  {
+	  setVelocity(Vector2f(0.0f, 0.0f));
+  }
+  else if (_parent->isDead() && !isGrounded())
+  {
+	  setVelocity(Vector2f(0.0f, getVelocity().y));
+  }
 
   PhysicsComponent::update(dt);
 }
@@ -121,10 +139,14 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) 
   _maxVelocity = Vector2f(200.f, 400.f);
   _groundspeed = 30.f;
   _grounded = false;
-  _firstJump = false;
   _secondJump = false;
   _body->SetSleepingAllowed(false);
   _body->SetFixedRotation(true);
   //Bullet items have higher-res collision detection
   _body->SetBullet(true);
+}
+
+bool PlayerPhysicsComponent::canSecondJump() const
+{
+	return _secondJump;
 }
