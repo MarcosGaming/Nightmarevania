@@ -5,13 +5,18 @@
 using namespace sf;
 using namespace std;
 
-PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p) {}
+PlayerCombatComponent::PlayerCombatComponent(Entity* p) : _attacking(false), Component(p) {}
 
 void PlayerCombatComponent::update(double dt) 
 {
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
+		Engine::setAttackButtonReleased(false);
 		_attacking = true;
+	}
+	else if (Engine::isAttackButtonReleased())
+	{
+		_attacking = false;
 	}
 	else if (Mouse::isButtonPressed(Mouse::Right))
 	{

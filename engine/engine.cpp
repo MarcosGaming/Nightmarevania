@@ -22,6 +22,8 @@ static RenderWindow* _window;
 float frametimes[256] = {};
 uint8_t ftc = 0;
 
+static bool attackButtonReleased = false;
+
 // LOADING SCREEN
 
 void Loading_update(float dt, const Scene* const scn) 
@@ -116,6 +118,10 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 			{
 				Physics::setCanDoubleJump(true);
 			}
+			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Left))
+			{
+				attackButtonReleased = true;
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
@@ -205,6 +211,9 @@ void Engine::ChangeScene(Scene* s)
 sf::Vector2u Engine::getWindowSize() { return _window->getSize(); }
 
 sf::RenderWindow& Engine::GetWindow() { return *_window; }
+
+bool Engine::isAttackButtonReleased() { return attackButtonReleased; }
+void Engine::setAttackButtonReleased(bool status) { attackButtonReleased = status; }
 
 // TIMING
 

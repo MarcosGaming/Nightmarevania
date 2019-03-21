@@ -40,6 +40,9 @@ public:
 	static sf::Vector2u getWindowSize();
 	static void setVsync(bool b);
 
+	static bool isAttackButtonReleased();
+	static void setAttackButtonReleased(bool);
+
 private:
 	static Scene* _activeScene;
 	static std::string _gameName;

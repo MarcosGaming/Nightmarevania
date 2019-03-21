@@ -1,14 +1,16 @@
 #include "animation_states.h"
 #include "components\cmp_player_physics.h"
+#include "components/cmp_player_combat.h"
 #include "maths.h"
 #include <SFML\Graphics.hpp>
 
 void IddleAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.3f);
-	// Animation changes based on the character movement
+	// Animation changes based on the character movement and on the combat component
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto combat = owner->get_components<PlayerCombatComponent>();
 	if (movement->getVelocity().y > 0.1f)
 	{
 		animation->changeAnimation("Jump");
@@ -21,6 +23,10 @@ void IddleAnimation::execute(Entity* owner, double dt) noexcept
 	{
 		animation->changeAnimation("Run");
 	}
+	if (!combat.empty() && combat[0]->isAttacking())
+	{
+		animation->changeAnimation("StaticAttack");
+	}
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
@@ -30,9 +36,10 @@ void IddleAnimation::execute(Entity* owner, double dt) noexcept
 void RunAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.1f);
-	// Animation changes based on the character movement
+	// Animation changes based on the character movement and on the combat component
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto combat = owner->get_components<PlayerCombatComponent>();
 	if (std::abs(movement->getVelocity().x) < 0.1f)
 	{
 		animation->changeAnimation("Iddle");
@@ -45,6 +52,10 @@ void RunAnimation::execute(Entity* owner, double dt) noexcept
 	{
 		animation->changeAnimation("Fall");
 		current_frame = 0;
+	}
+	if (!combat.empty() && combat[0]->isAttacking())
+	{
+		animation->changeAnimation("RunAttack");
 	}
 	if (owner->isDead())
 	{
@@ -105,6 +116,45 @@ void FallAnimation::execute(Entity* owner, double dt) noexcept
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
+	}
+}
+
+void StaticAttackAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.08f);
+	// Animation chnnges when it finsihes
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto combat = owner->get_components<PlayerCombatComponent>()[0];
+	if (!combat->isAttacking())
+	{
+		animation->changeAnimation("Iddle");
+		current_frame = 0;
+	}
+}
+
+void RunAttackAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
+	// Animation chnnges when it finsihes
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto combat = owner->get_components<PlayerCombatComponent>()[0];
+	if (!combat->isAttacking())
+	{
+		animation->changeAnimation("Iddle");
+		current_frame = 0;
+	}
+}
+
+void JumpAttackAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.08f);
+	// Animation chnnges when it finsihes
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto combat = owner->get_components<PlayerCombatComponent>()[0];
+	if (!combat->isAttacking())
+	{
+		animation->changeAnimation("Iddle");
+		current_frame = 0;
 	}
 }
 

@@ -3,6 +3,7 @@
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
 #include "../animation_states.h"
+#include "../components/cmp_player_combat.h"
 #include <iostream>
 #include <LevelSystem.h>
 
@@ -97,6 +98,8 @@ void TestingScene::Load()
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		// Combat component
+		player->addComponent<PlayerCombatComponent>();
 		// Animations, each frame has a size of 50x37
 		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
 		for (int i = 0; i < 4; i++)
@@ -134,6 +137,33 @@ void TestingScene::Load()
 		{
 			deathGround->addFrame(IntRect(50 * i, 37 * 16, 50, 37));
 		}
+		shared_ptr<StaticAttackAnimation> staticAttack = make_shared<StaticAttackAnimation>();
+		for (int i = 1; i < 7; i++)
+		{
+			staticAttack->addFrame(IntRect(50 * i, 37 * 6, 50, 37));
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			staticAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
+		}
+		shared_ptr<RunAttackAnimation> runAttack = make_shared<RunAttackAnimation>();
+		for (int i = 4; i < 7; i++)
+		{
+			runAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			runAttack->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
+		}
+		shared_ptr<JumpAttackAnimation> jumpAttack = make_shared<JumpAttackAnimation>();
+		for (int i = 4; i < 7; i++)
+		{
+			jumpAttack->addFrame(IntRect(50 * i, 37 * 13, 50, 37));
+		}
+		for (int i = 0; i < 2; i++)
+		{
+			jumpAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
+		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
 		anim->addAnimation("Iddle", iddle);
@@ -143,6 +173,9 @@ void TestingScene::Load()
 		anim->addAnimation("DoubleJump", doubleJump);
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
+		anim->addAnimation("StaticAttack", staticAttack);
+		anim->addAnimation("RunAttack", runAttack);
+		anim->addAnimation("JumpAttack", jumpAttack);
 		anim->changeAnimation("Iddle");
 
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));

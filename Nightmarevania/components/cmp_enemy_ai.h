@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "cmp_actor_movement.h"
 
@@ -13,4 +13,4 @@ public:
   explicit EnemyAIComponent(Entity* p);
 
   EnemyAIComponent() = delete;
-};
+};*/
