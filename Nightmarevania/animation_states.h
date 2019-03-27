@@ -41,27 +41,59 @@ public:
 	void execute(Entity*, double) noexcept override;
 };
 
-// Static attack animation
-class StaticAttackAnimation : public Animation
+// Ground attack animation
+class GroundAttackAnimation : public Animation
 {
 public:
-	StaticAttackAnimation() = default;
+	GroundAttackAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 
-// Run attack animation
-class RunAttackAnimation : public Animation
+// Circular attack animation
+class CircularAttackAnimation : public Animation
 {
 public:
-	RunAttackAnimation() = default;
+	CircularAttackAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 
-// Jump attack animation
-class JumpAttackAnimation : public Animation
+// Air attack animation
+class AirAttackAnimation : public Animation
 {
 public:
-	JumpAttackAnimation() = default;
+	AirAttackAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// UP attack animation
+class UpAttackAnimation : public Animation
+{
+public:
+	UpAttackAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Down attack animation 
+class DownAttackAnimation : public Animation
+{
+public:
+	DownAttackAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Smasher after down attack animation
+class SmasherDownAttackAnimation : public Animation
+{
+public:
+	SmasherDownAttackAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Defendin animation
+class DefendingAnimation : public Animation
+{
+public:
+	DefendingAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 

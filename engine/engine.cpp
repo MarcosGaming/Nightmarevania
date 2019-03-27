@@ -23,7 +23,7 @@ float frametimes[256] = {};
 uint8_t ftc = 0;
 
 static bool attackButtonReleased = false;
-
+static bool defendButtonReleased = false;
 // LOADING SCREEN
 
 void Loading_update(float dt, const Scene* const scn) 
@@ -122,6 +122,10 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 			{
 				attackButtonReleased = true;
 			}
+			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Right))
+			{
+				defendButtonReleased = true;
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
@@ -214,6 +218,9 @@ sf::RenderWindow& Engine::GetWindow() { return *_window; }
 
 bool Engine::isAttackButtonReleased() { return attackButtonReleased; }
 void Engine::setAttackButtonReleased(bool status) { attackButtonReleased = status; }
+
+bool Engine::isDefendButtonReleased() { return defendButtonReleased; }
+void Engine::setDefendButtonReleased(bool status) { defendButtonReleased = status; }
 
 // TIMING
 

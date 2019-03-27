@@ -11,8 +11,6 @@ protected:
   float _groundspeed;
   bool _secondJump;
 
-  bool isGrounded() const;
-
 public:
   void update(double dt) override;
 
@@ -21,4 +19,6 @@ public:
   PlayerPhysicsComponent() = delete;
 
   bool canSecondJump() const;
+
+  bool isGrounded() const;
 };

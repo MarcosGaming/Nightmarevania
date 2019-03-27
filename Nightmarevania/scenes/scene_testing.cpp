@@ -11,7 +11,8 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
-shared_ptr<Texture> spriteSheet;
+shared_ptr<Texture> playerAnimations;
+shared_ptr<Texture> combatIcons;
 
 void TestingScene::Load()
 {
@@ -21,9 +22,9 @@ void TestingScene::Load()
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer texture
-	spriteSheet = make_shared<Texture>();
+	playerAnimations = make_shared<Texture>();
 	//spriteSheet->loadFromFile("res/img/adventurer.png");
-	spriteSheet->loadFromFile("res/img/adventurer_sword.png");
+	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	
 	// Player for levels 1 and 2
 	/*{
@@ -94,7 +95,7 @@ void TestingScene::Load()
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -137,32 +138,52 @@ void TestingScene::Load()
 		{
 			deathGround->addFrame(IntRect(50 * i, 37 * 16, 50, 37));
 		}
-		shared_ptr<StaticAttackAnimation> staticAttack = make_shared<StaticAttackAnimation>();
+		shared_ptr<GroundAttackAnimation> groundAttack = make_shared<GroundAttackAnimation>();
 		for (int i = 1; i < 7; i++)
 		{
-			staticAttack->addFrame(IntRect(50 * i, 37 * 6, 50, 37));
+			groundAttack->addFrame(IntRect(50 * i, 37 * 6, 50, 37));
 		}
 		for (int i = 0; i < 4; i++)
 		{
-			staticAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
+			groundAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
 		}
-		shared_ptr<RunAttackAnimation> runAttack = make_shared<RunAttackAnimation>();
+		shared_ptr<CircularAttackAnimation> circularAttack = make_shared<CircularAttackAnimation>();
 		for (int i = 4; i < 7; i++)
 		{
-			runAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
+			circularAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
 		}
 		for (int i = 0; i < 3; i++)
 		{
-			runAttack->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
+			circularAttack->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
 		}
-		shared_ptr<JumpAttackAnimation> jumpAttack = make_shared<JumpAttackAnimation>();
+		shared_ptr<AirAttackAnimation> airAttack = make_shared<AirAttackAnimation>();
 		for (int i = 4; i < 7; i++)
 		{
-			jumpAttack->addFrame(IntRect(50 * i, 37 * 13, 50, 37));
+			airAttack->addFrame(IntRect(50 * i, 37 * 13, 50, 37));
 		}
 		for (int i = 0; i < 2; i++)
 		{
-			jumpAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
+			airAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
+		}
+		shared_ptr<UpAttackAnimation> upAttack = make_shared<UpAttackAnimation>();
+		for (int i = 1; i < 5; i++)
+		{
+			upAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
+		}
+		shared_ptr<DownAttackAnimation> downAttack = make_shared<DownAttackAnimation>();
+		for (int i = 5; i < 7; i++)
+		{
+			downAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
+		}
+		shared_ptr<SmasherDownAttackAnimation> smasherDownAttack = make_shared<SmasherDownAttackAnimation>();
+		for (int i = 0; i < 4; i++)
+		{
+			smasherDownAttack->addFrame(IntRect(50 * i, 37 * 15, 50, 37));
+		}
+		shared_ptr<DefendingAnimation> defending = make_shared<DefendingAnimation>();
+		for (int i = 3; i < 7; i++)
+		{
+			defending->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
 		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
@@ -173,11 +194,15 @@ void TestingScene::Load()
 		anim->addAnimation("DoubleJump", doubleJump);
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
-		anim->addAnimation("StaticAttack", staticAttack);
-		anim->addAnimation("RunAttack", runAttack);
-		anim->addAnimation("JumpAttack", jumpAttack);
+		anim->addAnimation("GroundAttack", groundAttack);
+		anim->addAnimation("CircularAttack", circularAttack);
+		anim->addAnimation("AirAttack", airAttack);
+		anim->addAnimation("UpAttack", upAttack);
+		anim->addAnimation("DownAttack", downAttack);
+		anim->addAnimation("SmasherDownAttack", smasherDownAttack);
+		anim->addAnimation("Defending", defending);
 		anim->changeAnimation("Iddle");
-
+		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}
 
