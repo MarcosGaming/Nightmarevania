@@ -21,10 +21,12 @@ void TestingScene::Load()
 	// Tiles offset
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
-	// Adventurer texture
+	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
+	combatIcons = make_shared<Texture>();
 	//spriteSheet->loadFromFile("res/img/adventurer.png");
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
+	combatIcons->loadFromFile("res/img/combat_icons.png");
 	
 	// Player for levels 1 and 2
 	/*{
@@ -100,7 +102,16 @@ void TestingScene::Load()
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
 		// Combat component
-		player->addComponent<PlayerCombatComponent>();
+		auto combat = player->addComponent<PlayerCombatComponent>();
+		combat->setTexture(combatIcons);
+		combat->getHealthBarSprite().setTextureRect((IntRect(0, 0, 100, 37)));
+		combat->getHealthBarSprite().scale(Vector2f(5.0f, 5.0f));
+		combat->getHealthBarSprite().setOrigin(Vector2f(50.0f, 18.0f));
+		combat->getHealthBarSprite().setPosition(Vector2f(400.0f, 100.0f));
+		for (int i = 0; i < 11; i++)
+		{
+			combat->addHealthBarIcon(IntRect(100 * i, 0, 100, 37));
+		}
 		// Animations, each frame has a size of 50x37
 		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
 		for (int i = 0; i < 4; i++)

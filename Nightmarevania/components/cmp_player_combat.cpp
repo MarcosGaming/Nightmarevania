@@ -1,5 +1,6 @@
 #include "cmp_player_combat.h"
 #include "cmp_player_physics.h"
+#include "system_renderer.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
@@ -24,6 +25,8 @@ PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p)
 	_upAttackCooldown = 0.0f;
 	_downAttackCooldown = 0.0f;
 	_hurtCooldown = 0.0f;
+
+	_healthBarSprite = make_shared<Sprite>();
 }
 
 void PlayerCombatComponent::update(double dt) 
@@ -120,7 +123,51 @@ void PlayerCombatComponent::update(double dt)
 
 void PlayerCombatComponent::render()
 {
-
+	if (_health == 100)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[0]);
+	}
+	else if (_health == 90)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[1]);
+	}
+	else if (_health == 80)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[2]);
+	}
+	else if (_health == 70)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[3]);
+	}
+	else if (_health == 60)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[4]);
+	}
+	else if (_health == 50)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[5]);
+	}
+	else if (_health == 40)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[6]);
+	}
+	else if (_health == 30)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[7]);
+	}
+	else if (_health == 20)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[8]);
+	}
+	else if (_health == 10)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[9]);
+	}
+	else if (_health == 0)
+	{
+		_healthBarSprite->setTextureRect(_healthBarIcons[10]);
+	}
+	Renderer::queue(_healthBarSprite.get());
 }
 
 bool PlayerCombatComponent::isAttacking() const
@@ -172,10 +219,10 @@ void PlayerCombatComponent::setTexture(std::shared_ptr<sf::Texture> tex)
 {
 	_combatIconsTexture = tex;
 	_healthBarSprite->setTexture(*_combatIconsTexture);
-	_upAttackSprite->setTexture(*_combatIconsTexture);
+	/*_upAttackSprite->setTexture(*_combatIconsTexture);
 	_circularAttackSprite->setTexture(*_combatIconsTexture);
 	_downAttackSprite->setTexture(*_combatIconsTexture);
-	_defendSprite->setTexture(*_combatIconsTexture);
+	_defendSprite->setTexture(*_combatIconsTexture);*/
 }
 
 void PlayerCombatComponent::addHealthBarIcon(sf::IntRect icon) { _healthBarIcons.push_back(icon); }
@@ -187,3 +234,5 @@ void PlayerCombatComponent::addDownAttackIcon(sf::IntRect icon) { _downAttackIco
 void PlayerCombatComponent::addCircularAttackIcon(sf::IntRect icon) { _circularAttackIcons.push_back(icon); }
 
 void PlayerCombatComponent::addDefendIcon(sf::IntRect icon) { _defendIcons.push_back(icon); }
+
+sf::Sprite& PlayerCombatComponent::getHealthBarSprite() const { return *_healthBarSprite; }

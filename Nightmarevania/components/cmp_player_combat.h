@@ -65,6 +65,8 @@ public:
 
 	void setTexture(std::shared_ptr<sf::Texture> tex);
 
+	sf::Sprite& getHealthBarSprite() const;
+
 	void addHealthBarIcon(sf::IntRect);
 
 	void addUpAttackIcon(sf::IntRect);
