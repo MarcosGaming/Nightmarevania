@@ -26,16 +26,20 @@ void PlayerPhysicsComponent::update(double dt)
 {
 	const auto pos = _parent->getPosition();
 
+	auto combat = _parent->get_components<PlayerCombatComponent>();
+
 	//Teleport to start if we fall off map or if is not alive
 	if (pos.y > ls::getHeight() * ls::getTileSize() || !_parent->isAlive())
 	{
 		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 		_parent->setAlive(true);
 		_parent->setDeath(false);
+		if (!combat.empty())
+		{
+			combat[0]->resetHealth();
+		}
 	}
-
 	// When the player is attacking the physics behave differently
-	auto combat = _parent->get_components<PlayerCombatComponent>();
 	if (!combat.empty() && combat[0]->isAttacking())
 	{
 		if (isGrounded())
@@ -73,6 +77,10 @@ void PlayerPhysicsComponent::update(double dt)
 	else if (!combat.empty() && combat[0]->isDefending())
 	{
 		setVelocity(Vector2f(0.0f, 0.0f));
+	}
+	else if (!combat.empty() && combat[0]->isHurt())
+	{
+		
 	}
 	else
 	{
@@ -147,7 +155,7 @@ void PlayerPhysicsComponent::update(double dt)
 	// Death testing
 	if (Keyboard::isKeyPressed(Keyboard::U) && !combat[0]->isDefending())
 	{
-		combat[0]->hurtPlayer(10);
+		combat[0]->hurtPlayer(50);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air
 	if (_parent->isDead() && isGrounded())

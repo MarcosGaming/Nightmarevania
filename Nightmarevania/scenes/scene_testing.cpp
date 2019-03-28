@@ -104,13 +104,46 @@ void TestingScene::Load()
 		// Combat component
 		auto combat = player->addComponent<PlayerCombatComponent>();
 		combat->setTexture(combatIcons);
+		// Health bar sprite
 		combat->getHealthBarSprite().setTextureRect((IntRect(0, 0, 100, 37)));
 		combat->getHealthBarSprite().scale(Vector2f(5.0f, 5.0f));
 		combat->getHealthBarSprite().setOrigin(Vector2f(50.0f, 18.0f));
-		combat->getHealthBarSprite().setPosition(Vector2f(400.0f, 100.0f));
+		combat->getHealthBarSprite().setPosition(Vector2f(350.0f, 100.0f));
 		for (int i = 0; i < 11; i++)
 		{
 			combat->addHealthBarIcon(IntRect(100 * i, 0, 100, 37));
+		}
+		// Circular attack sprite
+		combat->getCircularAttackSprite().setTextureRect((IntRect(50 * 2, 37, 50, 37)));
+		combat->getCircularAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
+		combat->getCircularAttackSprite().setPosition(Vector2f(240.0f, 160.0f));
+		for (int i = 2; i < 4; i++)
+		{
+			combat->addCircularAttackIcon(IntRect(50 * i, 37, 50, 37));
+		}
+		// Up attack sprite
+		combat->getUpAttackSprite().setTextureRect((IntRect(0, 37, 50, 37)));
+		combat->getUpAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
+		combat->getUpAttackSprite().setPosition(Vector2f(300.0f, 160.0f));
+		for (int i = 0; i < 2; i++)
+		{
+			combat->addUpAttackIcon(IntRect(50 * i, 37, 50, 37));
+		}
+		// Down attack sprite
+		combat->getDownAttackSprite().setTextureRect((IntRect(50 * 4, 37, 50, 37)));
+		combat->getDownAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
+		combat->getDownAttackSprite().setPosition(Vector2f(360.0f, 160.0f));
+		for (int i = 4; i < 6; i++)
+		{
+			combat->addDownAttackIcon(IntRect(50 * i, 37, 50, 37));
+		}
+		// Defend sprite
+		combat->getDefendSprite().setTextureRect((IntRect(50 * 8, 37, 50, 37)));
+		combat->getDefendSprite().setOrigin(Vector2f(25.0f, 18.0f));
+		combat->getDefendSprite().setPosition(Vector2f(420.0f, 160.0f));
+		for (int i = 8; i < 10; i++)
+		{
+			combat->addDefendIcon(IntRect(50 * i, 37, 50, 37));
 		}
 		// Animations, each frame has a size of 50x37
 		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();

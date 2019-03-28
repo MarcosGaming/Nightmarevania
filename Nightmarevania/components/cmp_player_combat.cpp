@@ -9,7 +9,8 @@ using namespace std;
 
 PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p) 
 {
-	_health = 100;
+	_healthTaken = 0;
+	_hurt = false;
 
 	_attacking = false;
 	_defending = false;
@@ -27,6 +28,10 @@ PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p)
 	_hurtCooldown = 0.0f;
 
 	_healthBarSprite = make_shared<Sprite>();
+	_upAttackSprite = make_shared<Sprite>();
+	_circularAttackSprite = make_shared<Sprite>();
+	_downAttackSprite = make_shared<Sprite>();
+	_defendSprite = make_shared<Sprite>();
 }
 
 void PlayerCombatComponent::update(double dt) 
@@ -38,7 +43,7 @@ void PlayerCombatComponent::update(double dt)
 	_upAttackCooldown -= dt;
 	_downAttackCooldown -= dt;
 	// Attacking behaviour
-	if ((Mouse::isButtonPressed(Mouse::Left)) && !_defending)
+	if ((Mouse::isButtonPressed(Mouse::Left)) && !_defending &&!_hurt)
 	{
 		Engine::setAttackButtonReleased(false);
 		_attacking = true;
@@ -47,14 +52,14 @@ void PlayerCombatComponent::update(double dt)
 		_circularAttackLeft = false;
 		_upAttack = false;
 		_downAttack = false;
-		// Some attacks can only be done while the player is on the ground or on the air
+		// Possible special ground attacks
 		if (_parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded())
 		{
 			if ((Keyboard::isKeyPressed(Keyboard::W)) && _upAttackCooldown <= 0.0f)
 			{
 				_basicAttack = false;
 				_upAttack = true;
-				_upAttackCooldown = 1.0f;
+				_upAttackCooldown = 3.0f;
 			}
 			if ((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::A)) && _circularAttackCooldown <= 0.0f)
 			{
@@ -67,16 +72,17 @@ void PlayerCombatComponent::update(double dt)
 				{
 					_circularAttackLeft = true;
 				}
-				_circularAttackCooldown = 1.0f;
+				_circularAttackCooldown = 2.0f;
 			}
 		}
+		// Possible special air attack
 		else
 		{
 			if ((Keyboard::isKeyPressed(Keyboard::S)) && _downAttackCooldown <= 0.0f)
 			{
 				_basicAttack = false;
 				_downAttack = true;
-				_downAttackCooldown = 1.0f;
+				_downAttackCooldown = 5.0f;
 			}
 		}
 
@@ -91,7 +97,7 @@ void PlayerCombatComponent::update(double dt)
 		_downAttack = false;
 	}
 	// Defending behaviour
-	if ((Mouse::isButtonPressed(Mouse::Right)) && !_attacking && _parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded() && _defendingCooldown <= 0.0f)
+	if ((Mouse::isButtonPressed(Mouse::Right)) && !_attacking && !_hurt && _parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded() && _defendingCooldown <= 0.0f)
 	{
 		std::cout << "here" << endl;
 		Engine::setDefendButtonReleased(false);
@@ -114,60 +120,64 @@ void PlayerCombatComponent::update(double dt)
 		_defending = false;
 	}
 	// Player dies if health is <= 0
-	if (_health <= 0)
+	if (_healthTaken >= 10)
 	{
 		_parent->setDeath(true);
-		_health = 100;
 	}
 }
 
 void PlayerCombatComponent::render()
 {
-	if (_health == 100)
+	// Health bar icon
+	if (_healthTaken < 10)
 	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[0]);
+		_healthBarSprite->setTextureRect(_healthBarIcons[_healthTaken]);
 	}
-	else if (_health == 90)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[1]);
-	}
-	else if (_health == 80)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[2]);
-	}
-	else if (_health == 70)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[3]);
-	}
-	else if (_health == 60)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[4]);
-	}
-	else if (_health == 50)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[5]);
-	}
-	else if (_health == 40)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[6]);
-	}
-	else if (_health == 30)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[7]);
-	}
-	else if (_health == 20)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[8]);
-	}
-	else if (_health == 10)
-	{
-		_healthBarSprite->setTextureRect(_healthBarIcons[9]);
-	}
-	else if (_health == 0)
+	else
 	{
 		_healthBarSprite->setTextureRect(_healthBarIcons[10]);
 	}
 	Renderer::queue(_healthBarSprite.get());
+	// Up attack icon
+	if (_upAttackCooldown <= 0)
+	{
+		_upAttackSprite->setTextureRect(_upAttackIcons[0]);
+	}
+	else
+	{
+		_upAttackSprite->setTextureRect(_upAttackIcons[1]);
+	}
+	Renderer::queue(_upAttackSprite.get());
+	// Circular attack icon
+	if (_circularAttackCooldown <= 0)
+	{
+		_circularAttackSprite->setTextureRect(_circularAttackIcons[0]);
+	}
+	else
+	{
+		_circularAttackSprite->setTextureRect(_circularAttackIcons[1]);
+	}
+	Renderer::queue(_circularAttackSprite.get());
+	// Down attack icon
+	if (_downAttackCooldown <= 0)
+	{
+		_downAttackSprite->setTextureRect(_downAttackIcons[0]);
+	}
+	else
+	{
+		_downAttackSprite->setTextureRect(_downAttackIcons[1]);
+	}
+	Renderer::queue(_downAttackSprite.get());
+	// Defend icon
+	if (_defendingCooldown <= 0)
+	{
+		_defendSprite->setTextureRect(_defendIcons[0]);
+	}
+	else
+	{
+		_defendSprite->setTextureRect(_defendIcons[1]);
+	}
+	Renderer::queue(_defendSprite.get());
 }
 
 bool PlayerCombatComponent::isAttacking() const
@@ -209,9 +219,25 @@ void PlayerCombatComponent::hurtPlayer(int damage)
 {
 	if (_hurtCooldown <= 0.0f)
 	{
-		_health -= damage;
+		_hurt = true;
+		_healthTaken += damage;
 		_hurtCooldown = 1.0f;
 	}
+}
+
+bool PlayerCombatComponent::isHurt() const
+{
+	return _hurt;
+}
+
+void PlayerCombatComponent::resetHurt()
+{
+	_hurt = false;
+}
+
+void PlayerCombatComponent::resetHealth()
+{
+	_healthTaken = 0;
 }
 
 
@@ -219,11 +245,21 @@ void PlayerCombatComponent::setTexture(std::shared_ptr<sf::Texture> tex)
 {
 	_combatIconsTexture = tex;
 	_healthBarSprite->setTexture(*_combatIconsTexture);
-	/*_upAttackSprite->setTexture(*_combatIconsTexture);
+	_upAttackSprite->setTexture(*_combatIconsTexture);
 	_circularAttackSprite->setTexture(*_combatIconsTexture);
 	_downAttackSprite->setTexture(*_combatIconsTexture);
-	_defendSprite->setTexture(*_combatIconsTexture);*/
+	_defendSprite->setTexture(*_combatIconsTexture);
 }
+
+sf::Sprite& PlayerCombatComponent::getHealthBarSprite() const { return *_healthBarSprite; }
+
+sf::Sprite& PlayerCombatComponent::getUpAttackSprite() const { return *_upAttackSprite; }
+
+sf::Sprite& PlayerCombatComponent::getCircularAttackSprite() const { return *_circularAttackSprite; }
+
+sf::Sprite& PlayerCombatComponent::getDownAttackSprite() const { return *_downAttackSprite; }
+
+sf::Sprite& PlayerCombatComponent::getDefendSprite() const { return *_defendSprite; }
 
 void PlayerCombatComponent::addHealthBarIcon(sf::IntRect icon) { _healthBarIcons.push_back(icon); }
 
@@ -234,5 +270,3 @@ void PlayerCombatComponent::addDownAttackIcon(sf::IntRect icon) { _downAttackIco
 void PlayerCombatComponent::addCircularAttackIcon(sf::IntRect icon) { _circularAttackIcons.push_back(icon); }
 
 void PlayerCombatComponent::addDefendIcon(sf::IntRect icon) { _defendIcons.push_back(icon); }
-
-sf::Sprite& PlayerCombatComponent::getHealthBarSprite() const { return *_healthBarSprite; }

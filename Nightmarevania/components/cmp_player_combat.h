@@ -23,8 +23,9 @@ protected:
 	bool _downAttack;
 	float _downAttackCooldown;
 
-	int _health;
+	int _healthTaken;
 	float _hurtCooldown;
+	bool _hurt;
 
 	std::shared_ptr<sf::Texture> _combatIconsTexture;
 
@@ -61,11 +62,25 @@ public:
 
 	bool isDownAttack() const;
 
+	bool isHurt() const;
+
+	void resetHurt();
+
 	void hurtPlayer(int);
+
+	void resetHealth();
 
 	void setTexture(std::shared_ptr<sf::Texture> tex);
 
 	sf::Sprite& getHealthBarSprite() const;
+
+	sf::Sprite& getUpAttackSprite() const;
+
+	sf::Sprite& getCircularAttackSprite() const;
+
+	sf::Sprite& getDownAttackSprite() const;
+
+	sf::Sprite& getDefendSprite() const;
 
 	void addHealthBarIcon(sf::IntRect);
 
