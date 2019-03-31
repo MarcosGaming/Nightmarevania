@@ -9,6 +9,7 @@ protected:
   sf::Vector2f _maxVelocity;
   bool _grounded;
   float _groundspeed;
+
   bool _secondJump;
 
 public:
@@ -18,7 +19,7 @@ public:
 
   PlayerPhysicsComponent() = delete;
 
-  bool canSecondJump() const;
+  bool isSecondJump() const;
 
   bool isGrounded() const;
 };

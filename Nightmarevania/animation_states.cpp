@@ -24,22 +24,28 @@ void IddleAnimation::execute(Entity* owner, double dt) noexcept
 		animation->changeAnimation("Run");
 	}
 	// Animation changes based on the combat
-	if (!combat.empty() && combat[0]->isBasicAttack())
+	if (!combat.empty())
 	{
-		animation->changeAnimation("GroundAttack");
-	}
-	else if (!combat.empty() && (combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft()))
-	{
-		animation->changeAnimation("CircularAttack");
-	}
-	else if (!combat.empty() && combat[0]->isUpAttack())
-	{
-		animation->changeAnimation("UpAttack");
-	}
-	else if (!combat.empty() && combat[0]->isDefending())
-	{
-		animation->changeAnimation("Defending");
-		current_frame = 0;
+		if (combat[0]->isBasicAttack())
+		{
+			animation->changeAnimation("GroundAttack");
+		}
+		else if (combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft())
+		{
+			animation->changeAnimation("CircularAttack");
+		}
+		else if (combat[0]->isUpAttack())
+		{
+			animation->changeAnimation("UpAttack");
+		}
+		else if (combat[0]->isDefending())
+		{
+			animation->changeAnimation("Defending");
+		}
+		else if (combat[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+		}
 	}
 	// Animation changes based on entity state
 	if (owner->isDead())
@@ -66,28 +72,33 @@ void RunAnimation::execute(Entity* owner, double dt) noexcept
 	else if (movement->getVelocity().y < -0.1f)
 	{
 		animation->changeAnimation("Fall");
-		current_frame = 0;
 	}
 	// Animation changes based on the combat component
-	if (!combat.empty() && combat[0]->isBasicAttack())
+	if (!combat.empty())
 	{
-		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
-		animation->changeAnimation("GroundAttack");
-	}
-	else if (!combat.empty() && (combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft()))
-	{
-		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
-		animation->changeAnimation("CircularAttack");
-	}
-	else if (!combat.empty() && combat[0]->isUpAttack())
-	{
-		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
-		animation->changeAnimation("UpAttack");
-	}
-	else if (!combat.empty() && combat[0]->isDefending())
-	{
-		animation->changeAnimation("Defending");
-		current_frame = 0;
+		if (combat[0]->isBasicAttack())
+		{
+			movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
+			animation->changeAnimation("GroundAttack");
+		}
+		else if(combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft())
+		{
+			movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
+			animation->changeAnimation("CircularAttack");
+		}
+		else if (combat[0]->isUpAttack())
+		{
+			movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
+			animation->changeAnimation("UpAttack");
+		}
+		else if (combat[0]->isDefending())
+		{
+			animation->changeAnimation("Defending");
+		}
+		else if (combat[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+		}
 	}
 	// Aniamtion changes based on entity state
 	if (owner->isDead())
@@ -103,31 +114,40 @@ void JumpAnimation::execute(Entity* owner, double dt) noexcept
 	auto combat = owner->get_components<PlayerCombatComponent>();
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// Animation changes based on the character movement
-	if (movement->canSecondJump())
+	if (movement->isSecondJump())
 	{
 		animation->changeAnimation("DoubleJump");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 	if (movement->getVelocity().y < -0.1f)
 	{
 		animation->changeAnimation("Fall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 	// Animation changes based on the combat component
-	if (!combat.empty() && combat[0]->isBasicAttack())
+	if (!combat.empty())
 	{
-		animation->changeAnimation("AirAttack");
-		current_frame = 0;
-	}
-	if (!combat.empty() && combat[0]->isDownAttack())
-	{
-		animation->changeAnimation("DownAttack");
-		current_frame = 0;
+		if (combat[0]->isBasicAttack())
+		{
+			animation->changeAnimation("AirAttack");
+			_current_frame = 0;
+		}
+		else if (combat[0]->isDownAttack())
+		{
+			animation->changeAnimation("DownAttack");
+			_current_frame = 0;
+		}
+		else if (combat[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+			_current_frame = 0;
+		}
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
+		_current_frame = 0;
 	}
 }
 
@@ -141,23 +161,32 @@ void DoubleJumpAnimation::execute(Entity* owner, double dt) noexcept
 	if (movement->getVelocity().y < -0.1f)
 	{
 		animation->changeAnimation("Fall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 	// Animation changes based on the combat component
-	if (!combat.empty() && combat[0]->isBasicAttack())
+	if (!combat.empty())
 	{
-		animation->changeAnimation("AirAttack");
-		current_frame = 0;
-	}
-	if (!combat.empty() && combat[0]->isDownAttack())
-	{
-		animation->changeAnimation("DownAttack");
-		current_frame = 0;
+		if (combat[0]->isBasicAttack())
+		{
+			animation->changeAnimation("AirAttack");
+			_current_frame = 0;
+		}
+		else if (combat[0]->isDownAttack())
+		{
+			animation->changeAnimation("DownAttack");
+			_current_frame = 0;
+		}
+		else if (combat[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+			_current_frame = 0;
+		}
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
+		_current_frame = 0;
 	}
 }
 
@@ -171,20 +200,26 @@ void FallAnimation::execute(Entity* owner, double dt) noexcept
 	if (movement->getVelocity().y > -0.1f)
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
 	}
 	// Animation changes based on the combat component
-	if (!combat.empty() && combat[0]->isBasicAttack())
+	if (!combat.empty())
 	{
-		animation->changeAnimation("AirAttack");
-	}
-	if (!combat.empty() && (combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft()))
-	{
-		animation->changeAnimation("CircularAttack");
-	}
-	if (!combat.empty() && combat[0]->isDownAttack())
-	{
-		animation->changeAnimation("DownAttack");
+		if (combat[0]->isBasicAttack())
+		{
+			animation->changeAnimation("AirAttack");
+		}
+		else if (combat[0]->isCircularAttackRight() || combat[0]->isCircularAttackLeft())
+		{
+			animation->changeAnimation("CircularAttack");
+		}
+		else if (combat[0]->isDownAttack())
+		{
+			animation->changeAnimation("DownAttack");
+		}
+		else if (combat[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+		}
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
@@ -202,23 +237,28 @@ void GroundAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isCircularAttackRight() || combat->isCircularAttackLeft())
+	else if (combat->isCircularAttackRight() || combat->isCircularAttackLeft())
 	{
 		animation->changeAnimation("CircularAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isUpAttack())
+	else if (combat->isUpAttack())
 	{
 		animation->changeAnimation("UpAttack");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }
 
@@ -233,9 +273,9 @@ void CircularAttackAnimation::execute(Entity* owner, double dt) noexcept
 	{
 		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isBasicAttack() && current_frame == 0)
+	if (combat->isBasicAttack() && _current_frame == 0)
 	{
 		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
 		animation->changeAnimation("GroundAttack");
@@ -243,13 +283,18 @@ void CircularAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (combat->isUpAttack())
 	{
 		animation->changeAnimation("UpAttack");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }
 
@@ -263,27 +308,33 @@ void AirAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (movement->isGrounded() && combat->isAttacking())
+	else if (movement->isGrounded() && combat->isAttacking())
 	{
 		animation->changeAnimation("GroundAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (movement->isGrounded() && (combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
+	else if (movement->isGrounded() && (combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
 	{
 		animation->changeAnimation("CircularAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isDownAttack())
+	else if (combat->isDownAttack())
 	{
 		animation->changeAnimation("DownAttack");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
+		_current_frame = 0;
 	}
 }
 
@@ -296,23 +347,28 @@ void UpAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isBasicAttack() && current_frame == 0)
+	else if (combat->isBasicAttack() && _current_frame == 0)
 	{
 		animation->changeAnimation("AirAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isDownAttack())
+	else if (combat->isDownAttack())
 	{
 		animation->changeAnimation("DownAttack");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }
 
@@ -326,17 +382,23 @@ void DownAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	if (movement->isGrounded())
 	{
 		animation->changeAnimation("SmasherDownAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
+		_current_frame = 0;
 	}
 }
 void SmasherDownAttackAnimation::execute(Entity* owner, double dt) noexcept
@@ -348,23 +410,28 @@ void SmasherDownAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if (combat->isBasicAttack() && current_frame == 0)
+	else if (combat->isBasicAttack() && _current_frame == 0)
 	{
 		animation->changeAnimation("GroundAttack");
-		current_frame = 0;
+		_current_frame = 0;
 	}
-	if ((combat->isCircularAttackLeft() || combat->isCircularAttackRight()) && current_frame == 0)
+	else if ((combat->isCircularAttackLeft() || combat->isCircularAttackRight()) && _current_frame == 0)
 	{
 		animation->changeAnimation("CircularAttack");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+	else if (combat->isHurt())
+	{
+		animation->changeAnimation("Hurt");
+		_current_frame = 0;
 	}
 	// Animation changes based on the entity state
 	if (owner->isDead())
 	{
 		animation->changeAnimation("DeathFall");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }
 
@@ -377,7 +444,28 @@ void DefendingAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isDefending())
 	{
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
+	}
+}
+
+void HurtAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.2f);
+	auto combat = owner->get_components<PlayerCombatComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
+	// Animation changes when it finishes and depends on the movement
+	if (_current_frame == 0)
+	{
+		combat->resetHurt();
+		if (movement->isGrounded())
+		{
+			animation->changeAnimation("Iddle");
+		}
+		else
+		{
+			animation->changeAnimation("Fall");
+		}
 	}
 }
 
@@ -385,20 +473,20 @@ void DefendingAnimation::execute(Entity* owner, double dt) noexcept
 void DeathAnimation::runFrames(Entity* owner, float waitTime)
 {
 	// If the death animation has finished return
-	if (current_frame >= frames.size())
+	if (_current_frame >= _frames.size())
 	{
 		return;
 	}
 	auto sprite = owner->get_components<SpriteComponent>()[0];
 	// Set the frame
-	sprite->getSprite().setTextureRect(frames[current_frame]);
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
 	// Set in which direction the sprite should be facing
 	setFacing(owner);
 	// Change frame
-	if (clock.getElapsedTime().asSeconds() > waitTime)
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
 	{
-		current_frame++;
-		clock.restart();
+		_current_frame++;
+		_clock.restart();
 	}
 }
 void DeathAnimationFall::execute(Entity* owner, double dt) noexcept
@@ -407,21 +495,21 @@ void DeathAnimationFall::execute(Entity* owner, double dt) noexcept
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// Animation changes when character is on the ground and the animation has finished
-	if (movement->getVelocity().y == 0 && current_frame >= frames.size())
+	if (movement->getVelocity().y == 0 && _current_frame >= _frames.size())
 	{
 		animation->changeAnimation("DeathGround");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }
 void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.2f);
 	// Animation changes when it finishes
-	if (current_frame >= frames.size())
+	if (_current_frame >= _frames.size())
 	{
 		owner->setAlive(false);
 		auto animation = owner->get_components<AnimationMachineComponent>()[0];
 		animation->changeAnimation("Iddle");
-		current_frame = 0;
+		_current_frame = 0;
 	}
 }

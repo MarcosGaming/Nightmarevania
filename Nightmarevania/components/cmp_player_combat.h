@@ -7,6 +7,8 @@ class PlayerCombatComponent : public Component
 protected:
 	bool _attacking;
 
+	int _attackDamage;
+
 	bool _defending;
 	float _defendingTime;
 	float _defendingCooldown;
@@ -24,8 +26,10 @@ protected:
 	float _downAttackCooldown;
 
 	int _healthTaken;
-	float _hurtCooldown;
+	int _maxHealth;
+
 	bool _hurt;
+	float _hurtCooldown;
 
 	std::shared_ptr<sf::Texture> _combatIconsTexture;
 
@@ -69,6 +73,8 @@ public:
 	void hurtPlayer(int);
 
 	void resetHealth();
+
+	int getAttackDamage() const;
 
 	void setTexture(std::shared_ptr<sf::Texture> tex);
 

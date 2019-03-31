@@ -80,7 +80,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else if (!combat.empty() && combat[0]->isHurt())
 	{
-		
+		setVelocity(Vector2f(0.0f, getVelocity().y));
 	}
 	else
 	{
@@ -155,7 +155,7 @@ void PlayerPhysicsComponent::update(double dt)
 	// Death testing
 	if (Keyboard::isKeyPressed(Keyboard::U) && !combat[0]->isDefending())
 	{
-		combat[0]->hurtPlayer(50);
+		combat[0]->hurtPlayer(1);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air
 	if (_parent->isDead() && isGrounded())
@@ -196,7 +196,7 @@ bool PlayerPhysicsComponent::isGrounded() const
 	return false;
 }
 
-bool PlayerPhysicsComponent::canSecondJump() const
+bool PlayerPhysicsComponent::isSecondJump() const
 {
 	return _secondJump;
 }

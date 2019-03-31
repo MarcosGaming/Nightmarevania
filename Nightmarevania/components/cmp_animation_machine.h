@@ -8,10 +8,10 @@
 class Animation
 {
 protected:
-	std::vector<sf::IntRect> frames;
-	std::size_t current_frame = 0;
-	sf::Clock clock;
-	static bool facingRight;
+	std::vector<sf::IntRect> _frames;
+	int _current_frame;
+
+	sf::Clock _clock;
 
 	virtual void runFrames(Entity*, float);
 public:
@@ -19,6 +19,7 @@ public:
 	virtual ~Animation() = default;
 
 	void addFrame(sf::IntRect);
+
 	void setFacing(Entity*);
 
 	virtual void execute(Entity*, double) noexcept = 0;

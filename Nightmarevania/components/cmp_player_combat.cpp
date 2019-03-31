@@ -1,16 +1,19 @@
 #include "cmp_player_combat.h"
 #include "cmp_player_physics.h"
 #include "system_renderer.h"
-#include <LevelSystem.h>
 #include <engine.h>
-#include <iostream>
+
 using namespace sf;
 using namespace std;
 
 PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p) 
 {
 	_healthTaken = 0;
+	_maxHealth = 10;
+
 	_hurt = false;
+
+	_attackDamage = 1;
 
 	_attacking = false;
 	_defending = false;
@@ -46,6 +49,7 @@ void PlayerCombatComponent::update(double dt)
 	if ((Mouse::isButtonPressed(Mouse::Left)) && !_defending &&!_hurt)
 	{
 		Engine::setAttackButtonReleased(false);
+		_attackDamage = 1;
 		_attacking = true;
 		_basicAttack = true;
 		_circularAttackRight = false;
@@ -57,12 +61,14 @@ void PlayerCombatComponent::update(double dt)
 		{
 			if ((Keyboard::isKeyPressed(Keyboard::W)) && _upAttackCooldown <= 0.0f)
 			{
+				_attackDamage = 2;
 				_basicAttack = false;
 				_upAttack = true;
 				_upAttackCooldown = 3.0f;
 			}
 			if ((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::A)) && _circularAttackCooldown <= 0.0f)
 			{
+				_attackDamage = 3;
 				_basicAttack = false;
 				if (Keyboard::isKeyPressed(Keyboard::D))
 				{
@@ -80,6 +86,7 @@ void PlayerCombatComponent::update(double dt)
 		{
 			if ((Keyboard::isKeyPressed(Keyboard::S)) && _downAttackCooldown <= 0.0f)
 			{
+				_attackDamage = 5;
 				_basicAttack = false;
 				_downAttack = true;
 				_downAttackCooldown = 5.0f;
@@ -87,8 +94,9 @@ void PlayerCombatComponent::update(double dt)
 		}
 
 	}
-	else if (Engine::isAttackButtonReleased())
+	else if (Engine::isAttackButtonReleased() || _hurt)
 	{
+		_attackDamage = 1;
 		_attacking = false;
 		_basicAttack = false;
 		_circularAttackRight = false;
@@ -99,7 +107,6 @@ void PlayerCombatComponent::update(double dt)
 	// Defending behaviour
 	if ((Mouse::isButtonPressed(Mouse::Right)) && !_attacking && !_hurt && _parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded() && _defendingCooldown <= 0.0f)
 	{
-		std::cout << "here" << endl;
 		Engine::setDefendButtonReleased(false);
 		_defending = true;
 		_defendingTime -= dt;
@@ -110,7 +117,7 @@ void PlayerCombatComponent::update(double dt)
 			_defending = false;
 		}
 	}
-	else if(Engine::isDefendButtonReleased())
+	else if(Engine::isDefendButtonReleased() || _hurt)
 	{
 		if (_defendingTime != 3.0f)
 		{
@@ -119,9 +126,10 @@ void PlayerCombatComponent::update(double dt)
 		}
 		_defending = false;
 	}
-	// Player dies if health is <= 0
-	if (_healthTaken >= 10)
+	// Player death
+	if (_healthTaken >= _maxHealth)
 	{
+		_hurt = false;
 		_parent->setDeath(true);
 	}
 }
@@ -129,7 +137,7 @@ void PlayerCombatComponent::update(double dt)
 void PlayerCombatComponent::render()
 {
 	// Health bar icon
-	if (_healthTaken < 10)
+	if (_healthTaken < _maxHealth)
 	{
 		_healthBarSprite->setTextureRect(_healthBarIcons[_healthTaken]);
 	}
@@ -180,41 +188,20 @@ void PlayerCombatComponent::render()
 	Renderer::queue(_defendSprite.get());
 }
 
-bool PlayerCombatComponent::isAttacking() const
-{
-	return _attacking;
-}
+bool PlayerCombatComponent::isAttacking() const { return _attacking; }
+bool PlayerCombatComponent::isDefending() const { return _defending; }
+bool PlayerCombatComponent::isBasicAttack() const{ return _basicAttack; }
+bool PlayerCombatComponent::isCircularAttackRight() const { return _circularAttackRight; }
+bool PlayerCombatComponent::isCircularAttackLeft() const { return _circularAttackLeft; }
+bool PlayerCombatComponent::isUpAttack() const { return _upAttack; }
+bool PlayerCombatComponent::isDownAttack() const { return _downAttack; }
 
-bool PlayerCombatComponent::isDefending() const
-{
-	return _defending;
-}
+void PlayerCombatComponent::resetHealth() { _healthTaken = 0; }
 
-bool PlayerCombatComponent::isBasicAttack() const
-{
-	return _basicAttack;
-}
+int PlayerCombatComponent::getAttackDamage() const { return _attackDamage; }
 
-bool PlayerCombatComponent::isCircularAttackRight() const
-{
-	return _circularAttackRight;
-}
-
-bool PlayerCombatComponent::isCircularAttackLeft() const
-{
-	return _circularAttackLeft;
-}
-
-bool PlayerCombatComponent::isUpAttack() const
-{
-	return _upAttack;;
-}
-
-bool PlayerCombatComponent::isDownAttack() const
-{
-	return _downAttack;
-}
-
+bool PlayerCombatComponent::isHurt() const { return _hurt; }
+void PlayerCombatComponent::resetHurt() { _hurt = false; }
 void PlayerCombatComponent::hurtPlayer(int damage)
 {
 	if (_hurtCooldown <= 0.0f)
@@ -224,22 +211,6 @@ void PlayerCombatComponent::hurtPlayer(int damage)
 		_hurtCooldown = 1.0f;
 	}
 }
-
-bool PlayerCombatComponent::isHurt() const
-{
-	return _hurt;
-}
-
-void PlayerCombatComponent::resetHurt()
-{
-	_hurt = false;
-}
-
-void PlayerCombatComponent::resetHealth()
-{
-	_healthTaken = 0;
-}
-
 
 void PlayerCombatComponent::setTexture(std::shared_ptr<sf::Texture> tex)
 {
@@ -252,21 +223,13 @@ void PlayerCombatComponent::setTexture(std::shared_ptr<sf::Texture> tex)
 }
 
 sf::Sprite& PlayerCombatComponent::getHealthBarSprite() const { return *_healthBarSprite; }
-
 sf::Sprite& PlayerCombatComponent::getUpAttackSprite() const { return *_upAttackSprite; }
-
 sf::Sprite& PlayerCombatComponent::getCircularAttackSprite() const { return *_circularAttackSprite; }
-
 sf::Sprite& PlayerCombatComponent::getDownAttackSprite() const { return *_downAttackSprite; }
-
 sf::Sprite& PlayerCombatComponent::getDefendSprite() const { return *_defendSprite; }
 
 void PlayerCombatComponent::addHealthBarIcon(sf::IntRect icon) { _healthBarIcons.push_back(icon); }
-
 void PlayerCombatComponent::addUpAttackIcon(sf::IntRect icon) { _upAttackIcons.push_back(icon); }
-
 void PlayerCombatComponent::addDownAttackIcon(sf::IntRect icon) { _downAttackIcons.push_back(icon); }
-
 void PlayerCombatComponent::addCircularAttackIcon(sf::IntRect icon) { _circularAttackIcons.push_back(icon); }
-
 void PlayerCombatComponent::addDefendIcon(sf::IntRect icon) { _defendIcons.push_back(icon); }

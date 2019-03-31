@@ -47,10 +47,11 @@ protected:
 	std::vector<std::shared_ptr<Component>> _components;
 	sf::Vector2f _position;
 	float _rotation;
-	bool _death;		// death before stop the updates
+	bool _death;		// death without stopping the updates
 	bool _alive;		// should be updated
 	bool _visible;		// should be rendered
 	bool _fordeletion;	// should be deleted
+	bool _facingRight;	// whether the entity is facing right or not
 	std::set<std::string> _tags;
 
 public:
@@ -83,6 +84,9 @@ public:
 
 	bool isVisible() const;
 	void setVisible(bool _visible);
+
+	bool isFacingRight() const;
+	void setFacingRight(bool _facingRight);
 
   template <typename T, typename... Targs>
   std::shared_ptr<T> addComponent(Targs... params) 

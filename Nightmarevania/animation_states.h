@@ -89,7 +89,7 @@ public:
 	void execute(Entity*, double) noexcept override;
 };
 
-// Defendin animation
+// Defending animation
 class DefendingAnimation : public Animation
 {
 public:
@@ -97,6 +97,13 @@ public:
 	void execute(Entity*, double) noexcept override;
 };
 
+// Hurt animation
+class HurtAnimation : public Animation
+{
+public:
+	HurtAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
 
 // General death animation
 class DeathAnimation : public Animation

@@ -4,7 +4,7 @@ using namespace std;
 
 // ENTITY
 
-Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _death(false), _alive(true), _visible(true), scene(s), _fordeletion(false) {}
+Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _death(false), _alive(true), _visible(true), scene(s), _fordeletion(false), _facingRight(true) {}
 
 void Entity::update(double dt) 
 {
@@ -60,6 +60,9 @@ void Entity::setForDelete()
 
 bool Entity::isVisible() const { return _visible; }
 void Entity::setVisible(bool _visible) { Entity::_visible = _visible; }
+
+bool Entity::isFacingRight() const { return _facingRight; }
+void Entity::setFacingRight(bool _facingRight) { Entity::_facingRight = _facingRight; }
 
 
 Entity::~Entity() 

@@ -229,6 +229,11 @@ void TestingScene::Load()
 		{
 			defending->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
 		}
+		shared_ptr<HurtAnimation> hurt = make_shared<HurtAnimation>();
+		for (int i = 0; i < 2; i++)
+		{
+			hurt->addFrame(IntRect(50 * i, 37 * 17, 50, 37));
+		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
 		anim->addAnimation("Iddle", iddle);
@@ -245,6 +250,7 @@ void TestingScene::Load()
 		anim->addAnimation("DownAttack", downAttack);
 		anim->addAnimation("SmasherDownAttack", smasherDownAttack);
 		anim->addAnimation("Defending", defending);
+		anim->addAnimation("Hurt", hurt);
 		anim->changeAnimation("Iddle");
 		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
