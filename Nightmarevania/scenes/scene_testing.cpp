@@ -14,8 +14,17 @@ static shared_ptr<Entity> player;
 shared_ptr<Texture> playerAnimations;
 shared_ptr<Texture> combatIcons;
 
+sf::View followPlayer;
+//std::vector<sf::Sprite> GUI; //For rendering GUI separately
+
 void TestingScene::Load()
 {
+
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 0.6f, 1.0f));
+
+
+
+
 	// Level file
 	//ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	ls::loadLevelFile("res/levels/level_three.txt", 60.0f);
@@ -280,6 +289,17 @@ void TestingScene::Load()
 		}
 	}
 
+
+	//TESTING FOR RENDERING GUI SEPARATELY
+	/*sf::Sprite healthBar;
+	healthBar.setTexture(*combatIcons);
+	healthBar.setTextureRect((IntRect(0, 0, 100, 37)));
+	healthBar.scale(Vector2f(5.0f, 5.0f));
+	healthBar.setOrigin(Vector2f(50.0f, 18.0f));
+	healthBar.setPosition(Vector2f(350.0f, 100.0f));
+	GUI.push_back(healthBar);*/
+
+
 	setLoaded(true);
 }
 
@@ -292,6 +312,11 @@ void TestingScene::UnLoad()
 
 void TestingScene::Update(const double& dt)
 {
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 0.6f, 1.0f)); //TODO - it's making the view a much smaller window?
+	//followPlayer.setCenter(sf::Vector2f(player->getPosition().x, 0.0f)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
+	followPlayer.setCenter(player->getPosition()); //LEVEL2 - Follows player in all directions
+	Engine::GetWindow().setView(followPlayer); //For LEVEL3, do not set view to followPlayer. L3 will just be one visible room with no camera movement
+
 	Scene::Update(dt);
 }
 
@@ -299,4 +324,12 @@ void TestingScene::Render()
 {
 	ls::render(Engine::GetWindow());
 	Scene::Render();
+
+	//Rendering GUI separately
+	/*Engine::GetWindow().setView(Engine::GetWindow().getDefaultView());
+	for(auto s : GUI) {
+		Engine::GetWindow().draw(s);
+	}*/
+
+
 }
