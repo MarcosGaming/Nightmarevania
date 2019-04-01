@@ -66,9 +66,14 @@ void Scene::UnLoad()
 	setLoaded(false);
 }
 
-void Scene::Update(const double& dt) { ents.update(dt); }
+void Scene::Update(const double& dt) { 
+	ents.update(dt); 
+}
 
-void Scene::Render() { ents.render(); }
+void Scene::Render() { 
+	ents.render(); 
+}
+
 // QUESTION: WHAT DOES THIS DO?
 bool Scene::isLoaded() const
 {

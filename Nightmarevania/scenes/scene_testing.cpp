@@ -28,7 +28,7 @@ void TestingScene::Load()
 	//spriteSheet->loadFromFile("res/img/adventurer.png");
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	combatIcons->loadFromFile("res/img/combat_icons.png");
-	
+
 	// Player for levels 1 and 2
 	/*{
 		player = makeEntity();
@@ -87,7 +87,7 @@ void TestingScene::Load()
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Iddle");
-		
+
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}*/
 

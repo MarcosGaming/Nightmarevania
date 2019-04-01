@@ -24,14 +24,24 @@ sf::Texture foreground;
 std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	//{WALL, Color::White}, 
 
-	{BG1, sf::IntRect((0 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-	{BG2, sf::IntRect((1 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-	{BG3, sf::IntRect((2 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-	{BG4, sf::IntRect((3 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-	{BG5, sf::IntRect((0 * spriteSize), (6 * spriteSize), spriteSize, spriteSize)},
-	{BG6, sf::IntRect((1 * spriteSize), (6 * spriteSize), spriteSize, spriteSize)},
-	{BG7, sf::IntRect((2 * spriteSize), (6 * spriteSize), spriteSize, spriteSize)},
-	{BG8, sf::IntRect((3 * spriteSize), (6 * spriteSize), spriteSize, spriteSize)},
+	{BG1, sf::IntRect((4 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG2, sf::IntRect((4 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG3, sf::IntRect((4 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
+	{BG4, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG5, sf::IntRect((5 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG6, sf::IntRect((5 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
+	{BG7, sf::IntRect((6 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG8, sf::IntRect((6 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG9, sf::IntRect((6 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
+	{BG10, sf::IntRect((7 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG11, sf::IntRect((7 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG12, sf::IntRect((7 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
+	{BG13, sf::IntRect((8 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG14, sf::IntRect((8 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG15, sf::IntRect((8 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
+	{BG16, sf::IntRect((9 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{BG17, sf::IntRect((9 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{BG18, sf::IntRect((9 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
 
 	{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR2, sf::IntRect((3 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
@@ -57,19 +67,19 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{TORCHb, sf::IntRect((8 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
 	{TORCHc, sf::IntRect((8 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 
-	{COLUMN1a, sf::IntRect((9 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN1b, sf::IntRect((9 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN1c, sf::IntRect((9 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN1a, sf::IntRect((6 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN1b, sf::IntRect((6 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN1c, sf::IntRect((6 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 
-	{COLUMN2a, sf::IntRect((9 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN2b, sf::IntRect((9 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN2c, sf::IntRect((9 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN2a, sf::IntRect((7 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN2b, sf::IntRect((7 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
+	{COLUMN2c, sf::IntRect((7 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 
 	{END, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{START,  sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{EMPTY,  sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{WALL,  sf::IntRect((2 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{FLOOR,  sf::IntRect((1 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)}
+	{START, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{EMPTY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{WALL, sf::IntRect((2 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{FLOOR, sf::IntRect((1 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)}
 };
 
 /*sf::Color LevelSystem::getColor(LevelSystem::Tile t)
