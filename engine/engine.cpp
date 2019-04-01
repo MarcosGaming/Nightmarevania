@@ -131,7 +131,8 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 		{
 			window.close();
 		}
-		window.clear();
+		//window.clear();
+		window.clear(sf::Color(7,7,7)); //slightly adjust the background to match the background of the tiles
 		Update();
 		Render(window);
 		window.display();

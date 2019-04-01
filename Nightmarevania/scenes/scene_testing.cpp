@@ -17,7 +17,8 @@ shared_ptr<Texture> combatIcons;
 void TestingScene::Load()
 {
 	// Level file
-	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
+	//ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
+	ls::loadLevelFile("res/levels/level_three.txt", 60.0f);
 	// Tiles offset
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
@@ -262,6 +263,16 @@ void TestingScene::Load()
 		for (auto w : walls)
 		{
 			auto pos = ls::getTilePosition(w);
+			pos += Vector2f(30.0f, 30.0f); //offset to center
+			auto e = makeEntity();
+			e->setPosition(pos);
+			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+		}
+
+		auto floor = ls::findTiles(ls::FLOOR);
+		for (auto f : floor)
+		{
+			auto pos = ls::getTilePosition(f);
 			pos += Vector2f(30.0f, 30.0f); //offset to center
 			auto e = makeEntity();
 			e->setPosition(pos);
