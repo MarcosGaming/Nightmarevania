@@ -1,14 +1,13 @@
 #include "engine.h"
 #include "game.h"
 
-using namespace std;
-
 // Scenes
 TestingScene testing;
+MainMenuScene main_menu;
+SettingsScene settings;
 
 int main() 
 {
-	// Previous 1280x720
-	Engine::Start(1920, 1080, "Nightmarevania",&testing);
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
 	return 0;
 }
