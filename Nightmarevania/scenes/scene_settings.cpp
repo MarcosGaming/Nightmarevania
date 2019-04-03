@@ -8,28 +8,47 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> settings_background;
-/*shared_ptr<Entity> title;
-shared_ptr<Entity> start_btn;
-shared_ptr<Entity> settings_btn;
-shared_ptr<Entity> credits_btn;
-shared_ptr<Entity> exit_btn;*/
+shared_ptr<Entity> music_on;
+shared_ptr<Entity> music_off;
+shared_ptr<Entity> effects_on;
+shared_ptr<Entity> effects_off;
+shared_ptr<Entity> resolution1;
+shared_ptr<Entity> resolution2;
+shared_ptr<Entity> resolution3;
+shared_ptr<Entity> resolution4;
+shared_ptr<Entity> fullscreen;
+shared_ptr<Entity> fullscreen_on;
+shared_ptr<Entity> fullscreen_off;
+shared_ptr<Entity> borderless;
+shared_ptr<Entity> borderless_on;
+shared_ptr<Entity> borderless_off;
+
 
 shared_ptr<Texture> settings_background_tex;
-/*shared_ptr<Texture> title_tex;
-shared_ptr<Texture> start_tex;
-shared_ptr<Texture> settings_tex;
-shared_ptr<Texture> credits_tex;
-shared_ptr<Texture> exit_tex;*/
+shared_ptr<Texture> on_tex;
+shared_ptr<Texture> off_tex;
+shared_ptr<Texture> resolution1_tex;
+shared_ptr<Texture> resolution2_tex;
+shared_ptr<Texture> resolution3_tex;
+shared_ptr<Texture> resolution4_tex;
+shared_ptr<Texture> fullscreen_tex;
+shared_ptr<Texture> borderless_tex;
+
+shared_ptr<MediatorResolutionButtons> mediator_resolution;
 
 void SettingsScene::Load()
 {
+	// On and Off textures
+	on_tex = make_shared<Texture>();
+	on_tex->loadFromFile("res/menus/on.png");
+	off_tex = make_shared<Texture>();
+	off_tex->loadFromFile("res/menus/off.png");
 	// Background
 	settings_background_tex = make_shared<Texture>();
 	settings_background_tex->loadFromFile("res/menus/settings_background.png");
 	{
 		settings_background = makeEntity();
 		settings_background->setPosition(Vector2f(GAMEX / 2.0f,  GAMEY / 2.0f));
-		settings_background->addTag("Background");
 		// Sprite
 		auto sprite = settings_background->addComponent<SpriteComponent>();
 		sprite->setTexure(settings_background_tex);
@@ -39,132 +58,208 @@ void SettingsScene::Load()
 		float scaleY = (float) GAMEY / (sprite->getSprite().getTextureRect().height);
 		sprite->getSprite().scale(scaleX, scaleY);
 	}
-	// Music On 40 x 15
-
-	// Music Off 40 x 15
-
-	// Effects On 40 x 15
-
-	// Effects Off 40 x 15
-	/*title_tex = make_shared<Texture>();
-	title_tex->loadFromFile("res/menus/nightmarevania_title.png");
+	// Music On
 	{
-		title = makeEntity();
-		title->setPosition(Vector2f((GAMEX / 2.0f) - (title_tex->getSize().x / 2.0f), 0.5 * (GAMEY / 2.0f)));
+		music_on = makeEntity();
+		music_on->setPosition(Vector2f(240.0f, 114.0f));
+		// sprite
+		auto sprite = music_on->addComponent<SpriteComponent>();
+		sprite->setTexure(on_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Music Off
+	{
+		music_off = makeEntity();
+		music_off->setPosition(Vector2f(390.0f, 110.0f));
+		// sprite
+		auto sprite = music_off->addComponent<SpriteComponent>();
+		sprite->setTexure(off_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Effects On 
+	{
+		effects_on = makeEntity();
+		effects_on->setPosition(Vector2f(240.0f, 188.0f));
+		// sprite
+		auto sprite = effects_on->addComponent<SpriteComponent>();
+		sprite->setTexure(on_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Effects Off
+	{
+		effects_off = makeEntity();
+		effects_off->setPosition(Vector2f(390.0f, 184.0f));
+		// sprite
+		auto sprite = effects_off->addComponent<SpriteComponent>();
+		sprite->setTexure(off_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Mediator for resolution buttons
+	mediator_resolution = make_shared<MediatorResolutionButtons>();
+	// Resolution 1920x1080
+	resolution1_tex = make_shared<Texture>();
+	resolution1_tex->loadFromFile("res/menus/1920x1080.png");
+	{
+		resolution1 = makeEntity();
+		resolution1->setPosition(Vector2f(5.0f, 370.0f));
 		// Sprite
-		auto sprite = title->addComponent<SpriteComponent>();
-		sprite->setTexure(title_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 37 * 4, 235, 37));
-		sprite->getSprite().scale(Vector2f(2.0f, 2.0f));
-		title->setPosition(Vector2f(title->getPosition().x / 1.35f, title->getPosition().y));
+		auto sprite = resolution1->addComponent<SpriteComponent>();
+		sprite->setTexure(resolution1_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 87, 22));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// Active button component
+		auto resolutionButton = resolution1->addComponent<SpecificResolutionButtonComponent>();
+		resolutionButton->setNormal(IntRect(0, 0, 87, 22));
+		resolutionButton->setHovered(IntRect(0, 22, 87, 22));
+		resolutionButton->setPressed(IntRect(0, 22*2, 87, 22));
+		resolutionButton->setResolution(1920, 1080);
+		resolutionButton->setMediator(mediator_resolution);
+		mediator_resolution->addResolutionButton(resolutionButton);
 	}
-	// Start button
-	start_tex = make_shared<Texture>();
-	start_tex->loadFromFile("res/menus/start.png");
+	// Resolution 1600x900
+	resolution2_tex = make_shared<Texture>();
+	resolution2_tex->loadFromFile("res/menus/1600x900.png");
 	{
-		start_btn = makeEntity();
-		start_btn->setPosition(Vector2f((GAMEX/2.0f) - (start_tex->getSize().x / 2.0f) - 17.0f, (GAMEY / 2.0f) + 130.0f));
-		// sprite
-		auto sprite = start_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(start_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 125, 37));
-		// button component
-		auto button = start_btn->addComponent<ChangeSceneButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 125, 37));
-		button->setHovered(sf::IntRect(0, 37, 125, 37));
-		button->setScene(&testing);
+		resolution2 = makeEntity();
+		resolution2->setPosition(Vector2f(300.0f, 370.0f));
+		// Sprite
+		auto sprite = resolution2->addComponent<SpriteComponent>();
+		sprite->setTexure(resolution2_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 87, 22));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// Active button component
+		auto resolutionButton = resolution2->addComponent<SpecificResolutionButtonComponent>();
+		resolutionButton->setNormal(IntRect(0, 0, 87, 22));
+		resolutionButton->setHovered(IntRect(0, 22, 87, 22));
+		resolutionButton->setPressed(IntRect(0, 22*2, 87, 22));
+		resolutionButton->setResolution(1600, 900);
+		resolutionButton->setMediator(mediator_resolution);
+		mediator_resolution->addResolutionButton(resolutionButton);
 	}
-	// Settings button 
-	settings_tex = make_shared<Texture>();
-	settings_tex->loadFromFile("res/menus/settings.png");
+	// Resolution 1280x720
+	resolution3_tex = make_shared<Texture>();
+	resolution3_tex->loadFromFile("res/menus/1280x720.png");
 	{
-		settings_btn = makeEntity();
-		settings_btn->setPosition(Vector2f((GAMEX / 2.0f) - (start_tex->getSize().x / 2.0f) - 40.0f, (GAMEY / 2.0f) + 180.0f));
-		// sprite
-		auto sprite = settings_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(settings_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 200, 40));
-		// button component
-		auto button = settings_btn->addComponent<ChangeSceneButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 200, 40));
-		button->setHovered(sf::IntRect(0, 40, 200, 40));
-		button->setScene(&testing);
+		resolution3 = makeEntity();
+		resolution3->setPosition(Vector2f(5.0f, 460.0f));
+		// Sprite
+		auto sprite = resolution3->addComponent<SpriteComponent>();
+		sprite->setTexure(resolution3_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 87, 22));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// Active button component
+		auto resolutionButton = resolution3->addComponent<SpecificResolutionButtonComponent>();
+		resolutionButton->setNormal(IntRect(0, 0, 87, 22));
+		resolutionButton->setHovered(IntRect(0, 22, 87, 22));
+		resolutionButton->setPressed(IntRect(0, 22*2, 87, 22));
+		resolutionButton->setResolution(1280, 720);
+		resolutionButton->setMediator(mediator_resolution);
+		resolutionButton->setActive(true);
+		mediator_resolution->addResolutionButton(resolutionButton);
 	}
-	// Credits button 
-	credits_tex = make_shared<Texture>();
-	credits_tex->loadFromFile("res/menus/credits.png");
+	// Resolution 1024x576
+	resolution4_tex = make_shared<Texture>();
+	resolution4_tex->loadFromFile("res/menus/1024x576.png");
 	{
-		credits_btn = makeEntity();
-		credits_btn->setPosition(Vector2f((GAMEX / 2.0f) - (credits_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 230.0f));
-		// sprite
-		auto sprite = credits_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(credits_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 150, 40));
-		// button component
-		auto button = credits_btn->addComponent<ChangeSceneButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 150, 40));
-		button->setHovered(sf::IntRect(0, 40, 150, 40));
-		button->setScene(&testing);
+		resolution4 = makeEntity();
+		resolution4->setPosition(Vector2f(300.0f, 460.0f));
+		// Sprite
+		auto sprite = resolution4->addComponent<SpriteComponent>();
+		sprite->setTexure(resolution4_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 87, 22));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// Active button component
+		auto resolutionButton = resolution4->addComponent<SpecificResolutionButtonComponent>();
+		resolutionButton->setNormal(IntRect(0, 0, 87, 22));
+		resolutionButton->setHovered(IntRect(0, 22, 87, 22));
+		resolutionButton->setPressed(IntRect(0, 22*2, 87, 22));
+		resolutionButton->setResolution(1024, 576);
+		resolutionButton->setMediator(mediator_resolution);
+		mediator_resolution->addResolutionButton(resolutionButton);
 	}
-	// Exit button
-	exit_tex = make_shared<Texture>();
-	exit_tex->loadFromFile("res/menus/exit.png");
+	// Fullscreen
+	fullscreen_tex = make_shared<Texture>();
+	fullscreen_tex->loadFromFile("res/menus/fullscreen.png");
 	{
-		exit_btn = makeEntity();
-		exit_btn->setPosition(Vector2f((GAMEX / 2.0f) - (exit_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 280.0f));
-		// sprite
-		auto sprite = exit_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(exit_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 100, 37));
-		// button component
-		auto button = exit_btn->addComponent<ExitButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 100, 37));
-		button->setHovered(sf::IntRect(0, 40, 100, 37));
-	}*/
+		fullscreen = makeEntity();
+		fullscreen->setPosition(Vector2f(10.0f, 550.0f));
+		// Sprite
+		auto sprite = fullscreen->addComponent<SpriteComponent>();
+		sprite->setTexure(fullscreen_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 84, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Fullscreen
+	borderless_tex = make_shared<Texture>();
+	borderless_tex->loadFromFile("res/menus/borderless.png");
+	{
+		borderless = makeEntity();
+		borderless->setPosition(Vector2f(305.0f, 550.0f));
+		// Sprite
+		auto sprite = borderless->addComponent<SpriteComponent>();
+		sprite->setTexure(borderless_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 80, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
 
 	setLoaded(true);
 }
 
-// Create FloatRect to fits Game into Screen while preserving aspect
-sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize) {
+sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)
+{
 
-	const Vector2f screensf(screensize.x, screensize.y);
-	const Vector2f gamesf(gamesize.x, gamesize.y);
+	const sf::Vector2f screensf(screensize.x, screensize.y);
+	const sf::Vector2f gamesf(gamesize.x, gamesize.y);
 	const float gameAspect = gamesf.x / gamesf.y;
 	const float screenAspect = screensf.x / screensf.y;
-	float scaledWidth;  // final size.x of game viewport in piels
-	float scaledHeight; //final size.y of game viewport in piels
-	bool scaleSide = false; // false = scale to screen.x, true = screen.y
+	// Final size.x of game viewport in pixels
+	float scaledWidth;
+	// Final size.y of game viewport in pixels
+	float scaledHeight;
+	// False = scale to screen.x, True = screen.y
+	bool scaleSide = false;
 
-							//Work out which way to scale
-	if (gamesize.x > gamesize.y) { // game is wider than tall
-								   // Can we use full width?
+	//Work out which way to scale
+	if (gamesize.x > gamesize.y)
+	{
+		// Game is wider than tall, can we use full width?
 		if (screensf.y < (screensf.x / gameAspect)) {
-			//no, not high enough to fit game height
+			// No, not high enough to fit game height
 			scaleSide = true;
 		}
 		else {
-			//Yes, use all width available
+			// Yes, use all width available
 			scaleSide = false;
 		}
 	}
-	else { // Game is Square or Taller than Wide
-		   // Can we use full height?
-		if (screensf.x < (screensf.y * gameAspect)) {
+	else
+	{
+		// Game is Square or Taller than Wide, can we use full height?
+		if (screensf.x < (screensf.y * gameAspect))
+		{
 			// No, screensize not wide enough to fit game width
 			scaleSide = false;
 		}
-		else {
+		else
+		{
 			// Yes, use all height available
 			scaleSide = true;
 		}
 	}
 
-	if (scaleSide) { // use max screen height
+	if (scaleSide)
+	{
+		// Use max screen height
 		scaledHeight = screensf.y;
 		scaledWidth = floor(scaledHeight * gameAspect);
 	}
-	else { //use max screen width
+	else
+	{
+		// Use max screen width
 		scaledWidth = screensf.x;
 		scaledHeight = floor(scaledWidth / gameAspect);
 	}
@@ -176,81 +271,52 @@ sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector
 	return sf::FloatRect(0, 0, widthPercent, heightPercent);
 }
 
+// Change screen resolution
+void ChangeScreenResolution(int _width, int _height)
+{
+	const sf::Vector2u screensize(_width, _height);
+	const sf::Vector2u gamesize(GAMEX, GAMEY);
+	//set View as normal
+	Engine::GetWindow().setSize(screensize);
+	sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+	auto v = sf::View(visibleArea);
+	// figure out how to scale and maintain aspect;
+	auto viewport = CalculateViewport(screensize, gamesize);
+	//Optionally Center it
+	bool centered = true;
+	if (centered)
+	{
+		viewport.left = (1.0 - viewport.width) * 0.5;
+		viewport.top = (1.0 - viewport.height) * 0.5;
+	}
+	v.setViewport(viewport);
+	Engine::GetWindow().setView(v);
+}
 
 void SettingsScene::Update(const double& dt)
 {
 	Scene::Update(dt);
 
-	if (Keyboard::isKeyPressed(sf::Keyboard::Num2))
+	if (Keyboard::isKeyPressed(sf::Keyboard::Num5))
 	{
-		// All together now in a reusable solution.
-		const sf::Vector2u screensize(1024, 576);
-		const sf::Vector2u gamesize(GAMEX, GAMEY);
-		//set View as normal
-		Engine::GetWindow().setSize(screensize);
-		sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
-		auto v = sf::View(visibleArea);
-		// figure out how to scale and maintain aspect;
-		auto viewport = CalculateViewport(screensize, gamesize);
-		//Optionally Center it
-		bool centered = true;
-		if (centered)
-		{
-			viewport.left = (1.0 - viewport.width) * 0.5;
-			viewport.top = (1.0 - viewport.height) * 0.5;
-		}
-		v.setViewport(viewport);
-		Engine::GetWindow().setView(v);
-	}
-	else if (Keyboard::isKeyPressed(sf::Keyboard::Num3)) 
-	{
-		// All together now in a reusable solution.
-		const sf::Vector2u screensize(1600, 900);
-		const sf::Vector2u gamesize(GAMEX, GAMEY);
-		//set View as normal
-		Engine::GetWindow().setSize(screensize);
-		sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
-		auto v = sf::View(visibleArea);
-		// figure out how to scale and maintain aspect;
-		auto viewport = CalculateViewport(screensize, gamesize);
-		//Optionally Center it
-		bool centered = true;
-		if (centered) 
-		{
-			viewport.left = (1.0 - viewport.width) * 0.5;
-			viewport.top = (1.0 - viewport.height) * 0.5;
-		}
-		v.setViewport(viewport);
-		Engine::GetWindow().setView(v);
-	}
-	else if (Keyboard::isKeyPressed(sf::Keyboard::Num4))
-	{
-		// All together now in a reusable solution.
-		const sf::Vector2u screensize(1920, 1080);
-		const sf::Vector2u gamesize(GAMEX, GAMEY);
-		//set View as normal
-		Engine::GetWindow().setSize(screensize);
-		sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
-		auto v = sf::View(visibleArea);
-		// figure out how to scale and maintain aspect;
-		auto viewport = CalculateViewport(screensize, gamesize);
-		//Optionally Center it
-		bool centered = true;
-		if (centered)
-		{
-			viewport.left = (1.0 - viewport.width) * 0.5;
-			viewport.top = (1.0 - viewport.height) * 0.5;
-		}
-		v.setViewport(viewport);
-		Engine::GetWindow().setView(v);
-	}
-	else if (Keyboard::isKeyPressed(sf::Keyboard::Num5))
-	{
-		Engine::GetWindow().create(sf::VideoMode(Engine::getWindowSize().x, Engine::getWindowSize().y), "Nightmarevania", sf::Style::Fullscreen);
+		int previousX = Engine::GetWindow().getSize().x;
+		int previousY = Engine::GetWindow().getSize().y;
+		Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::None);
+		ChangeScreenResolution(previousX, previousY);
 	}
 	else if (Keyboard::isKeyPressed(sf::Keyboard::Num6))
 	{
-		Engine::GetWindow().create(sf::VideoMode(Engine::getWindowSize().x, Engine::getWindowSize().y), "Nightmarevania", sf::Style::Default);
+		int previousX = Engine::GetWindow().getSize().x;
+		int previousY = Engine::GetWindow().getSize().y;
+		Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::Close);
+		ChangeScreenResolution(previousX, previousY);
+	}
+	else if (Keyboard::isKeyPressed(sf::Keyboard::Num7))
+	{
+		int x = sf::VideoMode::getDesktopMode().width;
+		int y = sf::VideoMode::getDesktopMode().height;
+		Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Fullscreen);
+		ChangeScreenResolution(x, y);
 	}
 }
 
@@ -261,5 +327,6 @@ void SettingsScene::Render()
 
 void SettingsScene::UnLoad()
 {
+	mediator_resolution->UnLoad();
 	Scene::UnLoad();
 }
