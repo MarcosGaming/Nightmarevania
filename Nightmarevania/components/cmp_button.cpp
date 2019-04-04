@@ -3,17 +3,29 @@
 #include "../game.h"
 #include <system_renderer.h>
 
+static float PressedCooldown = 0.5f;
+
 // Basic button
-ButtonComponent::ButtonComponent(Entity* p) : Component(p) { }
+ButtonComponent::ButtonComponent(Entity* p) : _active(false), Component(p) { }
 
 void ButtonComponent::setNormal(sf::IntRect normal) { _normal = normal; }
 void ButtonComponent::setHovered(sf::IntRect hovered) { _hovered = hovered; }
+void ButtonComponent::setPressed(sf::IntRect pressed) { _pressed = pressed; }
+
+void ButtonComponent::setActive(bool active) { _active = active; }
+bool ButtonComponent::isActive() const { return _active; }
 
 void ButtonComponent::update(double dt)
 {
+	PressedCooldown -= dt;
+
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-	if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+	if (_active)
+	{
+		sprite->getSprite().setTextureRect(_pressed);
+	}
+	else if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 	{
 		sprite->getSprite().setTextureRect(_hovered);
 	}
@@ -61,30 +73,157 @@ void ExitButtonComponent::update(double dt)
 	}
 }
 
-// Button that can be active
-ActiveButtonComponent::ActiveButtonComponent(Entity* p) : _active(false), ButtonComponent(p) { }
+// Button that changes the screen to a specific resolution
+ResolutionButtonComponent::ResolutionButtonComponent(Entity* p) : ButtonComponent(p) { }
 
-void ActiveButtonComponent::setPressed(sf::IntRect pressed) { _pressed = pressed; }
+void ResolutionButtonComponent::setResolution(int width, int height) { _width = width; _height = height; }
 
-bool ActiveButtonComponent::isActive() const { return _active; }
-void ActiveButtonComponent::setActive(bool active) { _active = active; }
+void ResolutionButtonComponent::setMediator(std::shared_ptr<MediatorResolutionButtons> mediator) { _mediator = mediator; }
 
-void ActiveButtonComponent::update(double dt)
+void ResolutionButtonComponent::update(double dt)
 {
 	ButtonComponent::update(dt);
+
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
-	if (_active)
+	if(!_active && PressedCooldown <= 0.0f)
 	{
-		sprite->getSprite().setTextureRect(_pressed);
+		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				_mediator->deactivateOtherResolutionButtons(this);
+				_mediator->deactivateFullScreen();
+				if (_mediator->isBorderlessActive())
+				{
+					Engine::GetWindow().create(sf::VideoMode(_width, _height), "Nightmarevania", sf::Style::None);
+					ChangeScreenResolution(_width, _height);
+				}
+				else
+				{
+					Engine::GetWindow().create(sf::VideoMode(_width, _height), "Nightmarevania", sf::Style::Close);
+					ChangeScreenResolution(_width, _height);
+				}
+				PressedCooldown = 1.0f;
+			}
+		}
 	}
 }
 
-// Mediator design pattern that is going to handle desactivating connected buttons
-void MediatorResolutionButtons::addResolutionButton(std::shared_ptr<SpecificResolutionButtonComponent> button) { _resolutionButtons.push_back(button); }
+// Button that sets the game to fullsscreen
+FullScreenButtonComponent::FullScreenButtonComponent(Entity* p) : ButtonComponent(p) { }
 
-void MediatorResolutionButtons::UnLoad() { _resolutionButtons.clear(); }
+void FullScreenButtonComponent::setMediator(std::shared_ptr<MediatorResolutionButtons> mediator) { _mediator = mediator; }
+void FullScreenButtonComponent::setHoveredActive(sf::IntRect hoveredActive) { _hoveredActive = hoveredActive; }
 
-void MediatorResolutionButtons::deactivateOtherResolutionButtons(SpecificResolutionButtonComponent* caller)
+void FullScreenButtonComponent::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				_mediator->deactivateAllResolutionButtons();
+				_mediator->activateBorderless();
+				int x = sf::VideoMode::getDesktopMode().width;
+				int y = sf::VideoMode::getDesktopMode().height;
+				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Fullscreen);
+				ChangeScreenResolution(x, y);
+				PressedCooldown = 0.5f;
+			}
+		}
+	}
+	else if (PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			sprite->getSprite().setTextureRect(_hoveredActive);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = false;
+				_mediator->deactivateAllResolutionButtons();
+				_mediator->deactivateBorderless();
+				int x = sf::VideoMode::getDesktopMode().width;
+				int y = sf::VideoMode::getDesktopMode().height;
+				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Close);
+				ChangeScreenResolution(x, y);
+				PressedCooldown = 0.5f;
+			}
+		}
+		else
+		{
+			sprite->getSprite().setTextureRect(_pressed);
+		}
+	}
+}
+// Buttons that sets the game to borderless window
+BorderlessButtonComponent::BorderlessButtonComponent(Entity* p) : ButtonComponent(p) { }
+
+void BorderlessButtonComponent::setMediator(std::shared_ptr<MediatorResolutionButtons> mediator) { _mediator = mediator; }
+
+void BorderlessButtonComponent::setHoveredActive(sf::IntRect hoveredActive) { _hoveredActive = hoveredActive; }
+
+void BorderlessButtonComponent::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				int previousX = Engine::GetWindow().getSize().x;
+				int previousY = Engine::GetWindow().getSize().y;
+				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::None);
+				ChangeScreenResolution(previousX, previousY);
+				PressedCooldown = 0.5f;
+			}
+		}
+	}
+	else if (PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			sprite->getSprite().setTextureRect(_hoveredActive);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = false;
+				_mediator->deactivateFullScreen();
+				int previousX = Engine::GetWindow().getSize().x;
+				int previousY = Engine::GetWindow().getSize().y;
+				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::Close);
+				ChangeScreenResolution(previousX, previousY);
+				PressedCooldown = 0.5f;
+			}
+		}
+		else
+		{
+			sprite->getSprite().setTextureRect(_pressed);
+		}
+	}
+}
+
+// Mediator design pattern that is going to handle communication between the resolution buttons
+void MediatorResolutionButtons::addResolutionButton(std::shared_ptr<ResolutionButtonComponent> button) { _resolutionButtons.push_back(button); }
+
+void MediatorResolutionButtons::addFullScreenButton(std::shared_ptr<FullScreenButtonComponent> button) { _fullscreenButton = button; }
+
+void MediatorResolutionButtons::addBorderlessButton(std::shared_ptr<BorderlessButtonComponent> button) { _borderlessButton = button; }
+
+void MediatorResolutionButtons::UnLoad() { _resolutionButtons.clear(); _fullscreenButton.reset(); _borderlessButton.reset(); }
+
+void MediatorResolutionButtons::deactivateOtherResolutionButtons(ResolutionButtonComponent* caller)
 {
 	// Deactivate all the buttons that are not the caller
 	for (int i = 0; i < _resolutionButtons.size(); i++)
@@ -96,74 +235,24 @@ void MediatorResolutionButtons::deactivateOtherResolutionButtons(SpecificResolut
 	}
 }
 
-// Base class for buttons that handle the screen resolution
-BaseResolutionButtonComponent::BaseResolutionButtonComponent(Entity* p) : ActiveButtonComponent(p) { }
-
-void BaseResolutionButtonComponent::setMediator(std::shared_ptr<MediatorResolutionButtons> mediator) { _mediator = mediator; }
-
-// Button that changes the screen to a specific resolution
-SpecificResolutionButtonComponent::SpecificResolutionButtonComponent(Entity* p) : BaseResolutionButtonComponent(p) { }
-
-void SpecificResolutionButtonComponent::setResolution(int width, int height) { _width = width; _height = height; }
-
-void SpecificResolutionButtonComponent::update(double dt)
+void MediatorResolutionButtons::deactivateAllResolutionButtons()
 {
-	ActiveButtonComponent::update(dt);
-
-	static float pressedCooldown = 1.0f;
-	pressedCooldown -= dt;
-
-	auto sprite = _parent->get_components<SpriteComponent>()[0];
-	if(!_active && pressedCooldown <= 0.0f)
+	// Deactivate all resolution buttons
+	for (int i = 0; i < _resolutionButtons.size(); i++)
 	{
-		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
-		{
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				_active = true;
-				changeScreenResolution(_width, _height);
-				_mediator->deactivateOtherResolutionButtons(this);
-				pressedCooldown = 1.0f;
-			}
-		}
+		_resolutionButtons[i]->setActive(false);
 	}
 }
 
-// Button that sets the game to fullsscreen
-FullScreenButtonComponent::FullScreenButtonComponent(Entity* p) : BaseResolutionButtonComponent(p) { }
+void MediatorResolutionButtons::deactivateBorderless() { _borderlessButton->setActive(false); }
+void MediatorResolutionButtons::activateBorderless() { _borderlessButton->setActive(true); }
+bool MediatorResolutionButtons::isBorderlessActive() const { return _borderlessButton->isActive(); }
 
-void FullScreenButtonComponent::update(double dt)
-{
-	ActiveButtonComponent::update(dt);
-
-	static float pressedCooldown = 1.0f;
-	pressedCooldown -= dt;
-
-
-	auto sprite = _parent->get_components<SpriteComponent>()[0];
-	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-	if (!_active && pressedCooldown <= 0.0f)
-	{
-		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
-		{
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-
-			}
-		}
-	}
-}
-// Buttons that sets the game to borderless window
-BorderlessButtonComponent::BorderlessButtonComponent(Entity* p) : BaseResolutionButtonComponent(p) { }
-
-void BorderlessButtonComponent::update(double dt)
-{
-	ActiveButtonComponent::update(dt);
-}
+void MediatorResolutionButtons::deactivateFullScreen() { _fullscreenButton->setActive(false); }
+void MediatorResolutionButtons::activateFullScreen() { _fullscreenButton->setActive(true); }
 
 // Create FloatRect to fits Game into Screen while preserving aspect
-sf::FloatRect BaseResolutionButtonComponent::calculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)
+sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)
 {
 
 	const sf::Vector2f screensf(screensize.x, screensize.y);
@@ -218,24 +307,24 @@ sf::FloatRect BaseResolutionButtonComponent::calculateViewport(const sf::Vector2
 		scaledHeight = floor(scaledWidth / gameAspect);
 	}
 
-	//calculate as percent of screen
+	// Calculate as percent of screen
 	const float widthPercent = (scaledWidth / screensf.x);
 	const float heightPercent = (scaledHeight / screensf.y);
 
 	return sf::FloatRect(0, 0, widthPercent, heightPercent);
 }
 // Change screen resolution
-void BaseResolutionButtonComponent::changeScreenResolution(int width, int height)
+void ChangeScreenResolution(int width, int height)
 {
 	const sf::Vector2u screensize(width, height);
 	const sf::Vector2u gamesize(GAMEX, GAMEY);
-	//set View as normal
+	// Set View as normal
 	Engine::GetWindow().setSize(screensize);
 	sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
 	auto v = sf::View(visibleArea);
-	// figure out how to scale and maintain aspect;
-	auto viewport = calculateViewport(screensize, gamesize);
-	//Optionally Center it
+	// Figure out how to scale and maintain aspect;
+	auto viewport = CalculateViewport(screensize, gamesize);
+	// Optionally Center it
 	bool centered = true;
 	if (centered)
 	{

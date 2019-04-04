@@ -7,6 +7,9 @@ class ButtonComponent : public Component
 protected:
 	sf::IntRect _normal;
 	sf::IntRect _hovered;
+	sf::IntRect _pressed;
+
+	bool _active;
 
 public:
 	ButtonComponent() = delete;
@@ -19,6 +22,11 @@ public:
 	void setNormal(sf::IntRect);
 
 	void setHovered(sf::IntRect);
+
+	void setPressed(sf::IntRect);
+
+	void setActive(bool);
+	bool isActive() const;
 
 };
 
@@ -45,114 +53,90 @@ public:
 	void update(double dt) override final;
 };
 
-class ActiveButtonComponent : public ButtonComponent
-{
-protected:
-	sf::IntRect _pressed;
-	bool _active;
+class MediatorResolutionButtons;
 
-public:
-	ActiveButtonComponent() = delete;
-	explicit ActiveButtonComponent(Entity* p);
+sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize);
 
-	virtual void update(double dt) override = 0;
+void ChangeScreenResolution(int width, int height);
 
-	void setPressed(sf::IntRect);
-
-	void setActive(bool);
-	bool isActive() const;
-};
-
-class BaseResolutionButtonComponent : public ActiveButtonComponent
-{
-protected:
-	std::shared_ptr<MediatorResolutionButtons> _mediator;
-
-public:
-	BaseResolutionButtonComponent() = delete;
-	explicit BaseResolutionButtonComponent(Entity* p);
-
-	void setMediator(std::shared_ptr<MediatorResolutionButtons>);
-
-protected:
-	sf::FloatRect calculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize);
-	void changeScreenResolution(int width, int height);
-
-};
-
-
-class SpecificResolutionButtonComponent : public BaseResolutionButtonComponent
+class ResolutionButtonComponent : public ButtonComponent
 {
 private:
+	std::shared_ptr<MediatorResolutionButtons> _mediator;
 	int _width;
 	int _height;
 
 public:
-	SpecificResolutionButtonComponent() = delete;
-	explicit SpecificResolutionButtonComponent(Entity* p);
+	ResolutionButtonComponent() = delete;
+	explicit ResolutionButtonComponent(Entity* p);
 
 	void update(double dt) override final;
+
+	void setMediator(std::shared_ptr<MediatorResolutionButtons>);
 
 	void setResolution(int, int);
 };
 
-class FullScreenButtonComponent : public BaseResolutionButtonComponent
+class FullScreenButtonComponent : public ButtonComponent
 {
+private:
+	sf::IntRect _hoveredActive;
+	std::shared_ptr<MediatorResolutionButtons> _mediator;
+
 public:
 	FullScreenButtonComponent() = delete;
 	explicit FullScreenButtonComponent(Entity* p);
 
+	void setMediator(std::shared_ptr<MediatorResolutionButtons>);
+
 	void update(double dt) override final;
+
+	void setHoveredActive(sf::IntRect);
 };
 
-class BorderlessButtonComponent : public BaseResolutionButtonComponent
+class BorderlessButtonComponent : public ButtonComponent
 {
+private:
+	sf::IntRect _hoveredActive;
+	std::shared_ptr<MediatorResolutionButtons> _mediator;
+
+public:
 	BorderlessButtonComponent() = delete;
 	explicit BorderlessButtonComponent(Entity* p);
 
+	void setMediator(std::shared_ptr<MediatorResolutionButtons>);
+
 	void update(double dt) override final;
+
+	void setHoveredActive(sf::IntRect);
 };
 
 class MediatorResolutionButtons
 {
 private:
-	std::vector<std::shared_ptr<SpecificResolutionButtonComponent>> _resolutionButtons;
+	std::vector<std::shared_ptr<ResolutionButtonComponent>> _resolutionButtons;
 	std::shared_ptr<FullScreenButtonComponent> _fullscreenButton;
 	std::shared_ptr<BorderlessButtonComponent> _borderlessButton;
 
 public:
 	MediatorResolutionButtons() = default;
 
-	void addResolutionButton(std::shared_ptr<SpecificResolutionButtonComponent>);
+	void addResolutionButton(std::shared_ptr<ResolutionButtonComponent>);
 
-	void deactivateOtherResolutionButtons(SpecificResolutionButtonComponent*);
+	void addFullScreenButton(std::shared_ptr<FullScreenButtonComponent>);
+
+	void addBorderlessButton(std::shared_ptr<BorderlessButtonComponent>);
+
+	void deactivateOtherResolutionButtons(ResolutionButtonComponent*);
 
 	void deactivateAllResolutionButtons();
 
+	void deactivateBorderless();
+	void activateBorderless();
+	bool isBorderlessActive() const;
+
+	void deactivateFullScreen();
+	void activateFullScreen();
+
 	void UnLoad();
 };
-
-/*class FullScreenButtonComponent : public ActiveButtonComponent
-{
-private:
-	bool _isOn;
-
-public:
-	FullScreenButtonComponent() = delete;
-	explicit FullScreenButtonComponent(Entity* p);
-
-	void update(double dt) final override;
-
-};*/
-
-/*class MusicButtonComponent : public ActiveButtonComponent
-{
-private:
-	bool _value;
-
-public:
-	MusicButtonComponent() = delete;
-	explicit MusicButtonComponent(Entity* p);
-
-	void update(double dt) override final;
-};*/

@@ -8,6 +8,6 @@ SettingsScene settings;
 
 int main() 
 {
-	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&settings);
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
 	return 0;
 }
