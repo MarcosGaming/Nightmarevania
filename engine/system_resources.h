@@ -31,7 +31,6 @@ namespace Resources
 	std::shared_ptr<sf::Music> load(const std::string& name);
 	#endif
 
-	// QUESTION: WHAT DOES THIS DO?
 	template <typename T>
 	static std::shared_ptr<T> get(const std::string& name) 
 	{
