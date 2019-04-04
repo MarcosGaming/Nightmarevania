@@ -4,18 +4,18 @@
 static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> music;
 static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> effects;
 
-void Sound::initialise()
+void SoundSystem::initialise()
 {
 	musicOn = true;
 	effectsOn = true;
 }
 
-void Sound::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
+void SoundSystem::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
 {
 	music[musicName] = musicSound;
 }
 
-void Sound::playMusic(const std::string& musicName) noexcept
+void SoundSystem::playMusic(const std::string& musicName) noexcept
 {
 	auto found = music.find(musicName);
 	if (musicOn && found != music.end())
@@ -23,7 +23,7 @@ void Sound::playMusic(const std::string& musicName) noexcept
 		found->second->play();
 	}
 }
-void Sound::stopMusic(const std::string& musicName)
+void SoundSystem::stopMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
 	if (musicOn && found != music.end())
@@ -32,12 +32,12 @@ void Sound::stopMusic(const std::string& musicName)
 	}
 }
 
-void Sound::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
+void SoundSystem::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
 {
 	effects[effectName] = effectSound;
 }
 
-void Sound::playEffect(const std::string& effectName)
+void SoundSystem::playEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
 	if (effectsOn && found != effects.end())
@@ -46,7 +46,7 @@ void Sound::playEffect(const std::string& effectName)
 	}
 }
 
-void Sound::stopEffect(const std::string& effectName)
+void SoundSystem::stopEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
 	if (effectsOn && found != effects.end())
@@ -55,7 +55,7 @@ void Sound::stopEffect(const std::string& effectName)
 	}
 }
 
-void Sound::clearAllSounds()
+void SoundSystem::clearAllSounds()
 {
 	music.clear();
 	effects.clear();

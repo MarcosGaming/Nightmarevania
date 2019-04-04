@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
+#include <memory>
 
-namespace Sound 
+namespace SoundSystem 
 {
 	bool musicOn;
 
