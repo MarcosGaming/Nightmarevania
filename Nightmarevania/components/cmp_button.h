@@ -140,3 +140,58 @@ public:
 
 	void UnLoad();
 };
+
+class MediatorSoundButtons;
+class SoundButtonComponent : public ButtonComponent
+{
+protected:
+	bool _On;
+	std::shared_ptr<MediatorSoundButtons> _mediator;
+	
+public:
+	SoundButtonComponent() = delete;
+	explicit SoundButtonComponent(Entity* p);
+
+	void setMediator(std::shared_ptr<MediatorSoundButtons>);
+
+	void setAsOnButton();
+};
+
+class MusicsButtonComponent : public SoundButtonComponent
+{
+public:
+	MusicsButtonComponent() = delete;
+	explicit MusicsButtonComponent(Entity* p);
+
+	void update(double dt) override final;
+};
+
+
+class EffectsButtonComponent : public SoundButtonComponent
+{
+public:
+	EffectsButtonComponent() = delete;
+	explicit EffectsButtonComponent(Entity* p);
+
+	void update(double dt) override final;
+};
+
+class MediatorSoundButtons
+{
+private:
+	std::vector<std::shared_ptr<MusicsButtonComponent>> _musicButtons;
+	std::vector<std::shared_ptr<EffectsButtonComponent>> _effectsButtons;
+
+public:
+	MediatorSoundButtons() = default;
+
+	void addMusicButton(std::shared_ptr<MusicsButtonComponent>);
+
+	void addEffectsButton(std::shared_ptr<EffectsButtonComponent>);
+
+	void deactivateOtherMusicButton(MusicsButtonComponent*);
+
+	void deactivateOtherEffectsButton(EffectsButtonComponent*);
+
+	void UnLoad();
+};

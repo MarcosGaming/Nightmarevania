@@ -3,6 +3,7 @@
 #include "../components/cmp_button.h"
 #include "../game.h"
 #include <system_renderer.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -131,5 +132,6 @@ void MainMenuScene::Render()
 
 void MainMenuScene::UnLoad()
 {
+	SoundSystem::clearAllSounds();
 	Scene::UnLoad();
 }

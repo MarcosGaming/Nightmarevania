@@ -2,6 +2,7 @@
 #include "cmp_sprite.h"
 #include "../game.h"
 #include <system_renderer.h>
+#include <system_sound.h>
 
 static float PressedCooldown = 0.5f;
 
@@ -48,9 +49,10 @@ void ChangeSceneButtonComponent::update(double dt)
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
 	if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f)
 		{
 			Engine::ChangeScene(_scene_to_change);
+			PressedCooldown = 1.0f;
 		}
 	}
 }
@@ -66,7 +68,7 @@ void ExitButtonComponent::update(double dt)
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
 	if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f)
 		{
 			Engine::GetWindow().close();
 		}
@@ -136,7 +138,7 @@ void FullScreenButtonComponent::update(double dt)
 				int y = sf::VideoMode::getDesktopMode().height;
 				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Fullscreen);
 				ChangeScreenResolution(x, y);
-				PressedCooldown = 0.5f;
+				PressedCooldown = 1.0f;
 			}
 		}
 	}
@@ -154,7 +156,7 @@ void FullScreenButtonComponent::update(double dt)
 				int y = sf::VideoMode::getDesktopMode().height;
 				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Close);
 				ChangeScreenResolution(x, y);
-				PressedCooldown = 0.5f;
+				PressedCooldown = 1.0f;
 			}
 		}
 		else
@@ -187,7 +189,7 @@ void BorderlessButtonComponent::update(double dt)
 				int previousY = Engine::GetWindow().getSize().y;
 				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::None);
 				ChangeScreenResolution(previousX, previousY);
-				PressedCooldown = 0.5f;
+				PressedCooldown = 1.5f;
 			}
 		}
 	}
@@ -204,7 +206,7 @@ void BorderlessButtonComponent::update(double dt)
 				int previousY = Engine::GetWindow().getSize().y;
 				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::Close);
 				ChangeScreenResolution(previousX, previousY);
-				PressedCooldown = 0.5f;
+				PressedCooldown = 1.5f;
 			}
 		}
 		else
@@ -250,6 +252,112 @@ bool MediatorResolutionButtons::isBorderlessActive() const { return _borderlessB
 
 void MediatorResolutionButtons::deactivateFullScreen() { _fullscreenButton->setActive(false); }
 void MediatorResolutionButtons::activateFullScreen() { _fullscreenButton->setActive(true); }
+
+// Base sound button
+SoundButtonComponent::SoundButtonComponent(Entity* p) : _On(false),  ButtonComponent(p) { }
+
+void SoundButtonComponent::setMediator(std::shared_ptr<MediatorSoundButtons> mediator) { _mediator = mediator; }
+
+void SoundButtonComponent::setAsOnButton() { _On = true; }
+
+// Button that handles turning the music on/off
+MusicsButtonComponent::MusicsButtonComponent(Entity* p) : SoundButtonComponent(p) { }
+
+void MusicsButtonComponent::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				if (_On)
+				{
+					_mediator->deactivateOtherMusicButton(this);
+					SoundSystem::turnMusicOn();
+				}
+				else
+				{
+					_mediator->deactivateOtherMusicButton(this);
+					SoundSystem::turnMusicOff();
+				}
+				PressedCooldown = 1.0f;
+			}
+		}
+	}
+
+}
+// Button that handles turning the effects on/off
+EffectsButtonComponent::EffectsButtonComponent(Entity* p) : SoundButtonComponent(p) { }
+
+void EffectsButtonComponent::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				if (_On)
+				{
+					_mediator->deactivateOtherEffectsButton(this);
+					SoundSystem::turnEffectsOn();
+				}
+				else
+				{
+					_mediator->deactivateOtherEffectsButton(this);
+					SoundSystem::turnEffectsOff();
+				}
+				PressedCooldown = 1.0f;
+			}
+		}
+	}
+}
+
+// Mediator that handles communication between sound buttons
+void MediatorSoundButtons::addMusicButton(std::shared_ptr<MusicsButtonComponent> button) { _musicButtons.push_back(button); }
+
+void MediatorSoundButtons::addEffectsButton(std::shared_ptr<EffectsButtonComponent> button) { _effectsButtons.push_back(button); }
+
+void MediatorSoundButtons::deactivateOtherMusicButton(MusicsButtonComponent* caller)
+{
+	// Deactivate all the buttons that are not the caller
+	for (int i = 0; i < _musicButtons.size(); i++)
+	{
+		if (_musicButtons[i].get() != caller)
+		{
+			_musicButtons[i]->setActive(false);
+		}
+	}
+}
+
+void MediatorSoundButtons::deactivateOtherEffectsButton(EffectsButtonComponent* caller)
+{
+	// Deactivate all the buttons that are not the caller
+	for (int i = 0; i < _effectsButtons.size(); i++)
+	{
+		if (_effectsButtons[i].get() != caller)
+		{
+			_effectsButtons[i]->setActive(false);
+		}
+	}
+}
+
+void MediatorSoundButtons::UnLoad()
+{
+	_musicButtons.clear();
+	_effectsButtons.clear();
+}
 
 // Create FloatRect to fits Game into Screen while preserving aspect
 sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)

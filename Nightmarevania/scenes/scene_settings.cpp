@@ -3,6 +3,7 @@
 #include "../components/cmp_button.h"
 #include "../game.h"
 #include <system_renderer.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -18,6 +19,7 @@ shared_ptr<Entity> resolution3;
 shared_ptr<Entity> resolution4;
 shared_ptr<Entity> fullscreen;
 shared_ptr<Entity> borderless;
+shared_ptr<Entity> goBack;
 
 
 shared_ptr<Texture> settings_background_tex;
@@ -29,16 +31,14 @@ shared_ptr<Texture> resolution3_tex;
 shared_ptr<Texture> resolution4_tex;
 shared_ptr<Texture> fullscreen_tex;
 shared_ptr<Texture> borderless_tex;
+shared_ptr<Texture> goBack_tex;
 
 shared_ptr<MediatorResolutionButtons> mediator_resolution;
+shared_ptr<MediatorSoundButtons> mediator_sound;
+
 
 void SettingsScene::Load()
 {
-	// On and Off textures
-	on_tex = make_shared<Texture>();
-	on_tex->loadFromFile("res/menus/on.png");
-	off_tex = make_shared<Texture>();
-	off_tex->loadFromFile("res/menus/off.png");
 	// Background
 	settings_background_tex = make_shared<Texture>();
 	settings_background_tex->loadFromFile("res/menus/settings_background.png");
@@ -54,45 +54,101 @@ void SettingsScene::Load()
 		float scaleY = (float) GAMEY / (sprite->getSprite().getTextureRect().height);
 		sprite->getSprite().scale(scaleX, scaleY);
 	}
+	// Return 
+	goBack_tex = make_shared<Texture>();
+	goBack_tex->loadFromFile("res/menus/return.png");
+	{
+		goBack = makeEntity();
+		goBack->setPosition(Vector2f((GAMEX / 2.0f) - (goBack_tex->getSize().x / 2.0f) - 100.0f, 650.0f));
+		// sprite
+		auto sprite = goBack->addComponent<SpriteComponent>();
+		sprite->setTexure(goBack_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 55, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = goBack->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 55, 15));
+		button->setHovered(sf::IntRect(0, 15, 55, 15));
+		button->setScene(&main_menu);
+	}
+	// On and Off textures
+	on_tex = make_shared<Texture>();
+	on_tex->loadFromFile("res/menus/on.png");
+	off_tex = make_shared<Texture>();
+	off_tex->loadFromFile("res/menus/off.png");
+	// Mediator for sound buttons
+	mediator_sound = make_shared<MediatorSoundButtons>();
 	// Music On
 	{
 		music_on = makeEntity();
-		music_on->setPosition(Vector2f(240.0f, 114.0f));
+		music_on->setPosition(Vector2f(260.0f, 114.0f));
 		// sprite
 		auto sprite = music_on->addComponent<SpriteComponent>();
 		sprite->setTexure(on_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 25, 15));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Music button
+		auto musicButton = music_on->addComponent<MusicsButtonComponent>();
+		musicButton->setNormal(IntRect(0, 0, 25, 15));
+		musicButton->setHovered(IntRect(0, 15, 25, 15));
+		musicButton->setPressed(IntRect(0, 30, 25, 15));
+		musicButton->setActive(true);
+		musicButton->setAsOnButton();
+		musicButton->setMediator(mediator_sound);
+		mediator_sound->addMusicButton(musicButton);
 	}
 	// Music Off
 	{
 		music_off = makeEntity();
-		music_off->setPosition(Vector2f(390.0f, 110.0f));
+		music_off->setPosition(Vector2f(410.0f, 110.0f));
 		// sprite
 		auto sprite = music_off->addComponent<SpriteComponent>();
 		sprite->setTexure(off_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 28, 15));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Music button
+		auto musicButton = music_off->addComponent<MusicsButtonComponent>();
+		musicButton->setNormal(IntRect(0, 0, 28, 15));
+		musicButton->setHovered(IntRect(0, 15, 28, 15));
+		musicButton->setPressed(IntRect(0, 30, 28, 15));
+		musicButton->setMediator(mediator_sound);
+		mediator_sound->addMusicButton(musicButton);
 	}
 	// Effects On 
 	{
 		effects_on = makeEntity();
-		effects_on->setPosition(Vector2f(240.0f, 188.0f));
+		effects_on->setPosition(Vector2f(260.0f, 188.0f));
 		// sprite
 		auto sprite = effects_on->addComponent<SpriteComponent>();
 		sprite->setTexure(on_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 25, 15));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Effects button
+		auto effectsButton = effects_on->addComponent<EffectsButtonComponent>();
+		effectsButton->setNormal(IntRect(0, 0, 25, 15));
+		effectsButton->setHovered(IntRect(0, 15, 25, 15));
+		effectsButton->setPressed(IntRect(0, 30, 25, 15));
+		effectsButton->setActive(true);
+		effectsButton->setAsOnButton();
+		effectsButton->setMediator(mediator_sound);
+		mediator_sound->addEffectsButton(effectsButton);
 	}
 	// Effects Off
 	{
 		effects_off = makeEntity();
-		effects_off->setPosition(Vector2f(390.0f, 184.0f));
+		effects_off->setPosition(Vector2f(410.0f, 184.0f));
 		// sprite
 		auto sprite = effects_off->addComponent<SpriteComponent>();
 		sprite->setTexure(off_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 40, 15));
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 28, 15));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Effects button
+		auto effectsButton = effects_off->addComponent<EffectsButtonComponent>();
+		effectsButton->setNormal(IntRect(0, 0, 28, 15));
+		effectsButton->setHovered(IntRect(0, 15, 28, 15));
+		effectsButton->setPressed(IntRect(0, 30, 28, 15));
+		effectsButton->setMediator(mediator_sound);
+		mediator_sound->addEffectsButton(effectsButton);
 	}
 	// Mediator for resolution buttons
 	mediator_resolution = make_shared<MediatorResolutionButtons>();
@@ -235,5 +291,7 @@ void SettingsScene::Render()
 void SettingsScene::UnLoad()
 {
 	mediator_resolution->UnLoad();
+	mediator_sound->UnLoad();
+	SoundSystem::clearAllSounds();
 	Scene::UnLoad();
 }
