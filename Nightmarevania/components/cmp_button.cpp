@@ -3,6 +3,7 @@
 #include "../game.h"
 #include <system_renderer.h>
 #include <system_sound.h>
+#include <system_resolution.h>
 
 static float PressedCooldown = 0.5f;
 
@@ -76,9 +77,12 @@ void ExitButtonComponent::update(double dt)
 }
 
 // Button that changes the screen to a specific resolution
-ResolutionButtonComponent::ResolutionButtonComponent(Entity* p) : ButtonComponent(p) { }
+ResolutionButtonComponent::ResolutionButtonComponent(Entity* p) : _is1920x1080(false), _is1600x900(false), _is1280x720(false), _is1024x576(false),  ButtonComponent(p) { }
 
-void ResolutionButtonComponent::setResolution(int width, int height) { _width = width; _height = height; }
+void ResolutionButtonComponent::setResolutionTo1920x1080() { _is1920x1080 = true; }
+void ResolutionButtonComponent::setResolutionTo1600x900() { _is1600x900 = true; }
+void ResolutionButtonComponent::setResolutionTo1280x720() { _is1280x720 = true; }
+void ResolutionButtonComponent::setResolutionTo1024x576() { _is1024x576 = true; }
 
 void ResolutionButtonComponent::setMediator(std::shared_ptr<MediatorResolutionButtons> mediator) { _mediator = mediator; }
 
@@ -97,15 +101,28 @@ void ResolutionButtonComponent::update(double dt)
 				_active = true;
 				_mediator->deactivateOtherResolutionButtons(this);
 				_mediator->deactivateFullScreen();
+				// Check if the window is currently borderless
+				bool borderless = false;
 				if (_mediator->isBorderlessActive())
 				{
-					Engine::GetWindow().create(sf::VideoMode(_width, _height), "Nightmarevania", sf::Style::None);
-					ChangeScreenResolution(_width, _height);
+					borderless = true;
 				}
-				else
+				// Change to the corresponding resolution
+				if (_is1920x1080)
 				{
-					Engine::GetWindow().create(sf::VideoMode(_width, _height), "Nightmarevania", sf::Style::Close);
-					ChangeScreenResolution(_width, _height);
+					Resolution::changeTo1920x1080(borderless);
+				}
+				else if (_is1600x900)
+				{
+					Resolution::changeTo1600x900(borderless);
+				}
+				else if (_is1280x720)
+				{
+					Resolution::changeTo1280x720(borderless);
+				}
+				else if (_is1024x576)
+				{
+					Resolution::changeTo1024x576(borderless);
 				}
 				PressedCooldown = 1.0f;
 			}
@@ -134,10 +151,7 @@ void FullScreenButtonComponent::update(double dt)
 				_active = true;
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->activateBorderless();
-				int x = sf::VideoMode::getDesktopMode().width;
-				int y = sf::VideoMode::getDesktopMode().height;
-				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Fullscreen);
-				ChangeScreenResolution(x, y);
+				Resolution::turnFullScreenOn();
 				PressedCooldown = 1.0f;
 			}
 		}
@@ -152,10 +166,7 @@ void FullScreenButtonComponent::update(double dt)
 				_active = false;
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->deactivateBorderless();
-				int x = sf::VideoMode::getDesktopMode().width;
-				int y = sf::VideoMode::getDesktopMode().height;
-				Engine::GetWindow().create(sf::VideoMode(x, y), "Nightmarevania", sf::Style::Close);
-				ChangeScreenResolution(x, y);
+				Resolution::turnFullScreenOff();
 				PressedCooldown = 1.0f;
 			}
 		}
@@ -185,10 +196,7 @@ void BorderlessButtonComponent::update(double dt)
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				_active = true;
-				int previousX = Engine::GetWindow().getSize().x;
-				int previousY = Engine::GetWindow().getSize().y;
-				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::None);
-				ChangeScreenResolution(previousX, previousY);
+				Resolution::turnBorderlessOn();
 				PressedCooldown = 1.5f;
 			}
 		}
@@ -202,10 +210,7 @@ void BorderlessButtonComponent::update(double dt)
 			{
 				_active = false;
 				_mediator->deactivateFullScreen();
-				int previousX = Engine::GetWindow().getSize().x;
-				int previousY = Engine::GetWindow().getSize().y;
-				Engine::GetWindow().create(sf::VideoMode(previousX, previousY), "Nightmarevania", sf::Style::Close);
-				ChangeScreenResolution(previousX, previousY);
+				Resolution::turnBorderlessOff();
 				PressedCooldown = 1.5f;
 			}
 		}
@@ -279,12 +284,12 @@ void MusicsButtonComponent::update(double dt)
 				if (_On)
 				{
 					_mediator->deactivateOtherMusicButton(this);
-					SoundSystem::turnMusicOn();
+					Audio::turnMusicOn();
 				}
 				else
 				{
 					_mediator->deactivateOtherMusicButton(this);
-					SoundSystem::turnMusicOff();
+					Audio::turnMusicOff();
 				}
 				PressedCooldown = 1.0f;
 			}
@@ -311,12 +316,12 @@ void EffectsButtonComponent::update(double dt)
 				if (_On)
 				{
 					_mediator->deactivateOtherEffectsButton(this);
-					SoundSystem::turnEffectsOn();
+					Audio::turnEffectsOn();
 				}
 				else
 				{
 					_mediator->deactivateOtherEffectsButton(this);
-					SoundSystem::turnEffectsOff();
+					Audio::turnEffectsOff();
 				}
 				PressedCooldown = 1.0f;
 			}
@@ -357,88 +362,4 @@ void MediatorSoundButtons::UnLoad()
 {
 	_musicButtons.clear();
 	_effectsButtons.clear();
-}
-
-// Create FloatRect to fits Game into Screen while preserving aspect
-sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)
-{
-
-	const sf::Vector2f screensf(screensize.x, screensize.y);
-	const sf::Vector2f gamesf(gamesize.x, gamesize.y);
-	const float gameAspect = gamesf.x / gamesf.y;
-	const float screenAspect = screensf.x / screensf.y;
-	// Final size.x of game viewport in pixels
-	float scaledWidth;
-	// Final size.y of game viewport in pixels
-	float scaledHeight;
-	// False = scale to screen.x, True = screen.y
-	bool scaleSide = false;
-
-	//Work out which way to scale
-	if (gamesize.x > gamesize.y)
-	{
-		// Game is wider than tall, can we use full width?
-		if (screensf.y < (screensf.x / gameAspect)) {
-			// No, not high enough to fit game height
-			scaleSide = true;
-		}
-		else {
-			// Yes, use all width available
-			scaleSide = false;
-		}
-	}
-	else
-	{
-		// Game is Square or Taller than Wide, can we use full height?
-		if (screensf.x < (screensf.y * gameAspect))
-		{
-			// No, screensize not wide enough to fit game width
-			scaleSide = false;
-		}
-		else
-		{
-			// Yes, use all height available
-			scaleSide = true;
-		}
-	}
-
-	if (scaleSide)
-	{
-		// Use max screen height
-		scaledHeight = screensf.y;
-		scaledWidth = floor(scaledHeight * gameAspect);
-	}
-	else
-	{
-		// Use max screen width
-		scaledWidth = screensf.x;
-		scaledHeight = floor(scaledWidth / gameAspect);
-	}
-
-	// Calculate as percent of screen
-	const float widthPercent = (scaledWidth / screensf.x);
-	const float heightPercent = (scaledHeight / screensf.y);
-
-	return sf::FloatRect(0, 0, widthPercent, heightPercent);
-}
-// Change screen resolution
-void ChangeScreenResolution(int width, int height)
-{
-	const sf::Vector2u screensize(width, height);
-	const sf::Vector2u gamesize(GAMEX, GAMEY);
-	// Set View as normal
-	Engine::GetWindow().setSize(screensize);
-	sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
-	auto v = sf::View(visibleArea);
-	// Figure out how to scale and maintain aspect;
-	auto viewport = CalculateViewport(screensize, gamesize);
-	// Optionally Center it
-	bool centered = true;
-	if (centered)
-	{
-		viewport.left = (1.0 - viewport.width) * 0.5;
-		viewport.top = (1.0 - viewport.height) * 0.5;
-	}
-	v.setViewport(viewport);
-	Engine::GetWindow().setView(v);
 }

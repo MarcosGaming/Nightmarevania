@@ -55,16 +55,14 @@ public:
 
 class MediatorResolutionButtons;
 
-sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize);
-
-void ChangeScreenResolution(int width, int height);
-
 class ResolutionButtonComponent : public ButtonComponent
 {
 private:
 	std::shared_ptr<MediatorResolutionButtons> _mediator;
-	int _width;
-	int _height;
+	bool _is1920x1080;
+	bool _is1600x900;
+	bool _is1280x720;
+	bool _is1024x576;
 
 public:
 	ResolutionButtonComponent() = delete;
@@ -74,7 +72,11 @@ public:
 
 	void setMediator(std::shared_ptr<MediatorResolutionButtons>);
 
-	void setResolution(int, int);
+	void setResolutionTo1920x1080();
+	void setResolutionTo1600x900();
+	void setResolutionTo1280x720();
+	void setResolutionTo1024x576();
+
 };
 
 class FullScreenButtonComponent : public ButtonComponent

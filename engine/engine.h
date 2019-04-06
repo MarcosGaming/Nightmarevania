@@ -6,6 +6,9 @@
 #include <mutex>
 #include <string>
 
+#define GAMEX 1280
+#define GAMEY 720
+
 class Scene 
 {
 public:

@@ -8,35 +8,35 @@
 using namespace std;
 using namespace sf;
 
-static shared_ptr<Entity> main_menu_background;
+static shared_ptr<Entity> background;
 static shared_ptr<Entity> title;
 static shared_ptr<Entity> start_btn;
 static shared_ptr<Entity> settings_btn;
 static shared_ptr<Entity> credits_btn;
 static shared_ptr<Entity> exit_btn;
 
-shared_ptr<Texture> main_menu_background_tex;
-shared_ptr<Texture> title_tex;
-shared_ptr<Texture> start_tex;
-shared_ptr<Texture> settings_tex;
-shared_ptr<Texture> credits_tex;
-shared_ptr<Texture> exit_tex;
+static shared_ptr<Texture> background_tex;
+static shared_ptr<Texture> title_tex;
+static shared_ptr<Texture> start_tex;
+static shared_ptr<Texture> settings_tex;
+static shared_ptr<Texture> credits_tex;
+static shared_ptr<Texture> exit_tex;
 
 void MainMenuScene::Load()
 {
 	// Background
-	main_menu_background_tex = make_shared<Texture>();
-	main_menu_background_tex->loadFromFile("res/menus/main_menu_background.png");
+	background_tex = make_shared<Texture>();
+	background_tex->loadFromFile("res/menus/main_menu_background.png");
 	{
-		main_menu_background = makeEntity();
-		main_menu_background->setPosition(Vector2f(GAMEX / 2.0f,  GAMEY / 2.0f));
-		main_menu_background->addTag("Background");
+		background = makeEntity();
+		background->setPosition(Vector2f(GAMEX / 2.0f,  GAMEY / 2.0f));
+		background->addTag("Background");
 		// Sprite
-		auto sprite = main_menu_background->addComponent<SpriteComponent>();
-		sprite->setTexure(main_menu_background_tex);
-		sprite->getSprite().setOrigin(main_menu_background_tex->getSize().x * 0.5f, main_menu_background_tex->getSize().y * 0.5f);
-		float scaleX = (float) GAMEX / (main_menu_background_tex->getSize().x);
-		float scaleY = (float) GAMEY / (main_menu_background_tex->getSize().y);
+		auto sprite = background->addComponent<SpriteComponent>();
+		sprite->setTexure(background_tex);
+		sprite->getSprite().setOrigin(background_tex->getSize().x * 0.5f, background_tex->getSize().y * 0.5f);
+		float scaleX = (float) GAMEX / (background_tex->getSize().x);
+		float scaleY = (float) GAMEY / (background_tex->getSize().y);
 		sprite->getSprite().scale(scaleX, scaleY);
 	}
 	// Title
@@ -132,6 +132,6 @@ void MainMenuScene::Render()
 
 void MainMenuScene::UnLoad()
 {
-	SoundSystem::clearAllSounds();
+	Audio::clearAllSounds();
 	Scene::UnLoad();
 }

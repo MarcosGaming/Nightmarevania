@@ -4,6 +4,7 @@
 #include "system_renderer.h"
 #include "system_resources.h"
 #include "system_sound.h"
+#include "system_resolution.h"
 #include <SFML/Graphics.hpp>
 #include <future>
 #include <iostream>
@@ -105,7 +106,8 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	_window = &window;
 	Renderer::initialise(window);
 	Physics::initialise();
-	SoundSystem::initialise();
+	Audio::initialise();
+	Resolution::initialise();
 	ChangeScene(scn);
 	while (window.isOpen())
 	{
