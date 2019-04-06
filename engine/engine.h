@@ -6,6 +6,9 @@
 #include <mutex>
 #include <string>
 
+using namespace std;
+using namespace sf;
+
 class Scene 
 {
 public:
@@ -21,6 +24,12 @@ public:
 
 	EntityManager ents;
 
+	//static std::shared_ptr<Entity> player;
+	std::shared_ptr<Entity> player;
+	std::shared_ptr<sf::Texture> playerAnimations;
+	std::shared_ptr<Texture> spriteSheet;
+	std::shared_ptr<Texture> combatIcons;
+
 protected:
 	void setLoaded(bool);
 
@@ -28,6 +37,9 @@ private:
 	mutable bool _loaded;
 	mutable std::future<void> _loaded_future;
 	mutable std::mutex _loaded_mtx;
+
+
+	
 };
 
 class Engine 
@@ -51,6 +63,7 @@ private:
 	static std::string _gameName;
 	static void Update();
 	static void Render(sf::RenderWindow& window);
+
 };
 
 namespace timing 

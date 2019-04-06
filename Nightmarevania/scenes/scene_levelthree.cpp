@@ -1,4 +1,4 @@
-#include "scene_testing.h"
+#include "scene_levelthree.h"
 #include "../game.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
@@ -7,6 +7,7 @@
 #include <iostream>
 #include <LevelSystem.h>
 
+
 using namespace std;
 using namespace sf;
 
@@ -14,81 +15,18 @@ using namespace sf;
 //shared_ptr<Texture> playerAnimations;
 //shared_ptr<Texture> combatIcons;
 
-void TestingScene::Load()
+void LevelThree::Load()
 {
 	// Level file
-	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
+	ls::loadLevelFile("res/levels/level_three.txt", 60.0f);
 	// Tiles offset
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
-	combatIcons = make_shared<Texture>();
-	//spriteSheet->loadFromFile("res/img/adventurer.png");
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
+	combatIcons = make_shared<Texture>();
 	combatIcons->loadFromFile("res/img/combat_icons.png");
-
-	// Player for levels 1 and 2
-	/*{
-		player = makeEntity();
-		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-		player->addTag("Player");
-		// Sprite component
-		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
-		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
-		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
-		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
-		for (int i = 0; i < 4; i++)
-		{
-			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
-		}
-		shared_ptr<RunAnimation> run = make_shared<RunAnimation>();
-		for (int i = 1; i < 7; i++)
-		{
-			run->addFrame(IntRect(50 * i, 37, 50, 37));
-		}
-		shared_ptr<JumpAnimation> jump = make_shared<JumpAnimation>();
-		for (int i = 1; i < 4; i++)
-		{
-			jump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
-		}
-		shared_ptr<FallAnimation> fall = make_shared<FallAnimation>();
-		for (int i = 1; i < 3; i++)
-		{
-			fall->addFrame(IntRect(50 * i, 37 * 3, 50, 37));
-		}
-		shared_ptr<DoubleJumpAnimation> doubleJump = make_shared<DoubleJumpAnimation>();
-		for (int i = 3; i < 7; i++)
-		{
-			doubleJump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
-		}
-		doubleJump->addFrame(IntRect(0, 37 * 3, 50, 37));
-		shared_ptr<DeathAnimationFall> deathFall = make_shared<DeathAnimationFall>();
-		for (int i = 0; i < 3; i++)
-		{
-			deathFall->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
-		}
-		shared_ptr<DeathAnimationGround> deathGround = make_shared<DeathAnimationGround>();
-		for (int i = 2; i < 7; i++)
-		{
-			deathGround->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
-		}
-		// Component that manages player animations
-		auto anim = player->addComponent<AnimationMachineComponent>();
-		anim->addAnimation("Iddle", iddle);
-		anim->addAnimation("Run", run);
-		anim->addAnimation("Jump", jump);
-		anim->addAnimation("Fall", fall);
-		anim->addAnimation("DoubleJump", doubleJump);
-		anim->addAnimation("DeathFall", deathFall);
-		anim->addAnimation("DeathGround", deathGround);
-		anim->changeAnimation("Iddle");
-
-		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
-	}*/
 
 	// Player for level 3
 	{
@@ -279,41 +217,25 @@ void TestingScene::Load()
 		}
 	}
 
-
-	//TESTING FOR RENDERING GUI SEPARATELY
-	/*sf::Sprite healthBar;
-	healthBar.setTexture(*combatIcons);
-	healthBar.setTextureRect((IntRect(0, 0, 100, 37)));
-	healthBar.scale(Vector2f(5.0f, 5.0f));
-	healthBar.setOrigin(Vector2f(50.0f, 18.0f));
-	healthBar.setPosition(Vector2f(350.0f, 100.0f));
-	GUI.push_back(healthBar);*/
-
-
 	setLoaded(true);
 }
 
-void TestingScene::UnLoad()
+void LevelThree::UnLoad()
 {
 	player.reset();
 	ls::unload();
 	Scene::UnLoad();
 }
 
-void TestingScene::Update(const double& dt)
+void LevelThree::Update(const double& dt)
 {
+	//TODO Do we need to zoom the camera out and have a bigger room for fighting?
+
 	Scene::Update(dt);
 }
 
-void TestingScene::Render()
+void LevelThree::Render()
 {
 	ls::render(Engine::GetWindow());
 	Scene::Render();
-
-	//Rendering GUI separately
-	/*Engine::GetWindow().setView(Engine::GetWindow().getDefaultView());
-	for(auto s : GUI) {
-		Engine::GetWindow().draw(s);
-	}*/
-
 }

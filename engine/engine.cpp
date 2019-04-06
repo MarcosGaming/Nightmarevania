@@ -8,6 +8,7 @@
 #include <future>
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 
 using namespace sf;
 using namespace std;
@@ -55,6 +56,8 @@ void Loading_render()
 	Renderer::queue(&octagon);
 }
 
+
+
 // SCENE
 
 Scene::~Scene() { UnLoad(); }
@@ -100,6 +103,8 @@ void Scene::setLoaded(bool b)
 	std::lock_guard<std::mutex> lck(_loaded_mtx);
    _loaded = b;
 }
+
+
 
 // ENGINE
 
