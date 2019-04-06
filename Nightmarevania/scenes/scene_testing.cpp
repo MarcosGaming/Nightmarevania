@@ -15,7 +15,6 @@ shared_ptr<Texture> playerAnimations;
 shared_ptr<Texture> combatIcons;
 
 sf::View followPlayer;
-//std::vector<sf::Sprite> GUI; //For rendering GUI separately
 
 void TestingScene::Load()
 {
@@ -312,10 +311,12 @@ void TestingScene::UnLoad()
 
 void TestingScene::Update(const double& dt)
 {
-	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 0.6f, 1.0f)); //TODO - it's making the view a much smaller window?
+	sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	//followPlayer.setCenter(sf::Vector2f(player->getPosition().x, 0.0f)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
 	followPlayer.setCenter(player->getPosition()); //LEVEL2 - Follows player in all directions
-	//Engine::GetWindow().setView(followPlayer); //For LEVEL3, do not set view to followPlayer. L3 will just be one visible room with no camera movement
+	Engine::GetWindow().setView(followPlayer); //For LEVEL3, do not set view to followPlayer. L3 will just be one visible room with no camera movement
 
 	Scene::Update(dt);
 }
