@@ -11,7 +11,7 @@ using namespace std;
 using namespace sf;
 
 sf::View followPlayer;
-sf::Vector2f screenSize;
+//private sf::Vector2f screenSize;
 
 void LevelOne::Load()
 {

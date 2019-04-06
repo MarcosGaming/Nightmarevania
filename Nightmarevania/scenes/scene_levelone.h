@@ -13,5 +13,8 @@ public:
 
 	void Update(const double& dt) override;
 	void Render() override;
+
+private:
+	sf::Vector2f screenSize;
 };
 

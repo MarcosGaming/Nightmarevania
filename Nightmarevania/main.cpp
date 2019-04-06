@@ -15,8 +15,8 @@ int main()
 	//Engine::Start(1920, 1080, "Nightmarevania", &testing);
 
 	//for debugging...
-	Engine::Start(1920, 1080, "Nightmarevania",&levelOne);
-	//Engine::Start(1920, 1080, "Nightmarevania", &levelTwo);
+	//Engine::Start(1920, 1080, "Nightmarevania",&levelOne);
+	Engine::Start(1920, 1080, "Nightmarevania", &levelTwo);
 	//Engine::Start(1920, 1080, "Nightmarevania", &levelThree);
 
 	return 0;

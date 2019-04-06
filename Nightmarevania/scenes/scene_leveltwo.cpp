@@ -11,6 +11,14 @@ using namespace std;
 using namespace sf;
 
 sf::View followPC;
+sf::Vector2f screenSize;
+
+sf::Vector2f curCentre; //debugging
+float leftBoundary = 967.0f;
+float rightBoundary = 2795.0f;
+float topBoundary = -470.0f;
+float bottomBoundary = 607.0f;
+sf::Vector2f centrePoint;
 
 void LevelTwo::Load()
 {
@@ -110,6 +118,14 @@ void LevelTwo::Load()
 		}
 	}
 
+	//MOVING CAMERA STUFF
+	//for debugging:
+	//printf("(%f, %f)\n", player->getPosition().x, player->getPosition().y);
+	curCentre = player->getPosition();
+
+	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);//Engine::GetWindow().getView().getCenter();// = player->getPosition();
+
 	setLoaded(true);
 }
 
@@ -122,17 +138,46 @@ void LevelTwo::UnLoad()
 
 void LevelTwo::Update(const double& dt)
 {
-	sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	followPC = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
+	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+	
+	
+	
+
+	
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary){
+		centrePoint.x = player->getPosition().x;
+	}
+
+	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary){
+		centrePoint.y = player->getPosition().y;
+	}
+
+	if (curCentre != followPC.getCenter()) {
+		printf("(%f, %f)\n", followPC.getCenter().x, followPC.getCenter().y);
+		curCentre = followPC.getCenter();
+	}
+
+
+	followPC = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPC.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPC.setCenter(player->getPosition()); //LEVEL2 - Follows player in all directions
-	Engine::GetWindow().setView(followPC);
+	followPC.setCenter(centrePoint); //LEVEL2 - Follows player in all directions
+	//Engine::GetWindow().setView(followPC);
 
 	Scene::Update(dt);
 }
 
 void LevelTwo::Render()
 {
-	ls::render(Engine::GetWindow());
+	Engine::GetWindow().setView(followPC);
+	ls::render(Engine::GetWindow()); //render the enviro tiles
+	//TODO - render bg and fg seperately (in diff views)
+	/* Something like:
+	* sf::View background;
+	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
+	* Engine::GetWindow().setView(background);
+	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
+	* Engine::GetWindow().setView(followPlayer);
+	* ls::render(Engine::GetWindow());
+	*/
 	Scene::Render();
 }
