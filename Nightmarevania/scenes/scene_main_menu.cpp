@@ -10,14 +10,16 @@ using namespace sf;
 
 static shared_ptr<Entity> background;
 static shared_ptr<Entity> title;
-static shared_ptr<Entity> start_btn;
+static shared_ptr<Entity> new_game_btn;
+static shared_ptr<Entity> continue_btn;
 static shared_ptr<Entity> settings_btn;
 static shared_ptr<Entity> credits_btn;
 static shared_ptr<Entity> exit_btn;
 
 static shared_ptr<Texture> background_tex;
 static shared_ptr<Texture> title_tex;
-static shared_ptr<Texture> start_tex;
+static shared_ptr<Texture> new_game_tex;
+static shared_ptr<Texture> continue_tex;
 static shared_ptr<Texture> settings_tex;
 static shared_ptr<Texture> credits_tex;
 static shared_ptr<Texture> exit_tex;
@@ -52,20 +54,40 @@ void MainMenuScene::Load()
 		sprite->getSprite().scale(Vector2f(2.0f, 2.0f));
 		title->setPosition(Vector2f(title->getPosition().x / 1.35f, title->getPosition().y));
 	}
-	// Start button
-	start_tex = make_shared<Texture>();
-	start_tex->loadFromFile("res/menus/start.png");
+	// New game button
+	new_game_tex = make_shared<Texture>();
+	new_game_tex->loadFromFile("res/menus/new_game.png");
 	{
-		start_btn = makeEntity();
-		start_btn->setPosition(Vector2f((GAMEX/2.0f) - (start_tex->getSize().x / 2.0f) - 17.0f, (GAMEY / 2.0f) + 130.0f));
+		new_game_btn = makeEntity();
+		new_game_btn->setPosition(Vector2f((GAMEX/2.0f) - (new_game_tex->getSize().x / 2.0f) - 20.0f, (GAMEY / 2.0f) + 100.0f));
 		// sprite
-		auto sprite = start_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(start_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 125, 37));
+		auto sprite = new_game_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(new_game_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 200, 42));
 		// button component
-		auto button = start_btn->addComponent<ChangeSceneButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 125, 37));
-		button->setHovered(sf::IntRect(0, 37, 125, 37));
+		auto button = new_game_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 200, 42));
+		button->setHovered(sf::IntRect(0, 42, 200, 42));
+		button->setScene(&testing);
+	}
+	// Continue button
+	continue_tex = make_shared<Texture>();
+	continue_tex->loadFromFile("res/menus/continue.png");
+	{
+		continue_btn = makeEntity();
+		continue_btn->setPosition(Vector2f((GAMEX / 2.0f) - (continue_tex->getSize().x / 2.0f) - 7.0f, (GAMEY / 2.0f) + 150.0f));
+		// sprite
+		auto sprite = continue_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(continue_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 200, 37));
+		// button component
+		auto button = continue_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 200, 37));
+		button->setHovered(sf::IntRect(0, 37, 200, 37));
+		button->setPressed(sf::IntRect(0, 74, 200, 37));
+		// Active depends in having something stored in the save file
+		button->setActive(true);
+		// The scene is the one in the save file
 		button->setScene(&testing);
 	}
 	// Settings button 
@@ -73,7 +95,7 @@ void MainMenuScene::Load()
 	settings_tex->loadFromFile("res/menus/settings.png");
 	{
 		settings_btn = makeEntity();
-		settings_btn->setPosition(Vector2f((GAMEX / 2.0f) - (start_tex->getSize().x / 2.0f) - 40.0f, (GAMEY / 2.0f) + 180.0f));
+		settings_btn->setPosition(Vector2f((GAMEX / 2.0f) - (settings_tex->getSize().x / 2.0f) - 5.0f, (GAMEY / 2.0f) + 200.0f));
 		// sprite
 		auto sprite = settings_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(settings_tex);
@@ -89,7 +111,7 @@ void MainMenuScene::Load()
 	credits_tex->loadFromFile("res/menus/credits.png");
 	{
 		credits_btn = makeEntity();
-		credits_btn->setPosition(Vector2f((GAMEX / 2.0f) - (credits_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 230.0f));
+		credits_btn->setPosition(Vector2f((GAMEX / 2.0f) - (credits_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 250.0f));
 		// sprite
 		auto sprite = credits_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(credits_tex);
@@ -105,7 +127,7 @@ void MainMenuScene::Load()
 	exit_tex->loadFromFile("res/menus/exit.png");
 	{
 		exit_btn = makeEntity();
-		exit_btn->setPosition(Vector2f((GAMEX / 2.0f) - (exit_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 280.0f));
+		exit_btn->setPosition(Vector2f((GAMEX / 2.0f) - (exit_tex->getSize().x / 2.0f) - 18.0f, (GAMEY / 2.0f) + 300.0f));
 		// sprite
 		auto sprite = exit_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(exit_tex);

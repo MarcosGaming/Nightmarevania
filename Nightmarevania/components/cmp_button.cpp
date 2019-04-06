@@ -50,7 +50,7 @@ void ChangeSceneButtonComponent::update(double dt)
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
 	if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f)
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
 		{
 			Engine::ChangeScene(_scene_to_change);
 			PressedCooldown = 1.0f;

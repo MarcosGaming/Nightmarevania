@@ -11,30 +11,52 @@ using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> background;
+// Sound buttons
 static shared_ptr<Entity> music_on_btn;
 static shared_ptr<Entity> music_off_btn;
 static shared_ptr<Entity> effects_on_btn;
 static shared_ptr<Entity> effects_off_btn;
+// Resolution buttons
 static shared_ptr<Entity> resolution1_btn;
 static shared_ptr<Entity> resolution2_btn;
 static shared_ptr<Entity> resolution3_btn;
 static shared_ptr<Entity> resolution4_btn;
 static shared_ptr<Entity> fullscreen_btn;
 static shared_ptr<Entity> borderless_btn;
+// Controls buttons
+static shared_ptr<Entity> move_right_btn;
+static shared_ptr<Entity> move_left_btn;
+static shared_ptr<Entity> jump_btn;
+static shared_ptr<Entity> basic_attack_btn;
+static shared_ptr<Entity> defend_btn;
+static shared_ptr<Entity> up_attack_btn;
+static shared_ptr<Entity> down_attack_btn;
+// Return button
 static shared_ptr<Entity> goBack_btn;
 
-
 static shared_ptr<Texture> background_tex;
+// Sound buttons textures
 static shared_ptr<Texture> on_tex;
 static shared_ptr<Texture> off_tex;
+// Resolution buttons textures
 static shared_ptr<Texture> resolution1_tex;
 static shared_ptr<Texture> resolution2_tex;
 static shared_ptr<Texture> resolution3_tex;
 static shared_ptr<Texture> resolution4_tex;
 static shared_ptr<Texture> fullscreen_tex;
 static shared_ptr<Texture> borderless_tex;
+// Control buttons textures
+static shared_ptr<Texture> move_right_tex;
+static shared_ptr<Texture> move_left_tex;
+static shared_ptr<Texture> jump_tex;
+static shared_ptr<Texture> basic_attack_tex;
+static shared_ptr<Texture> defend_tex;
+static shared_ptr<Texture> up_attack_tex;
+static shared_ptr<Texture> down_attack_tex;
+// Return button texture
 static shared_ptr<Texture> goBack_tex;
 
+// Mediators
 shared_ptr<MediatorResolutionButtons> mediator_resolution;
 shared_ptr<MediatorSoundButtons> mediator_sound;
 
@@ -313,7 +335,90 @@ void SettingsScene::Load()
 		borderlessButton->setMediator(mediator_resolution);
 		mediator_resolution->addBorderlessButton(borderlessButton);
 	}
-
+	// Move right / right attack
+	move_right_tex = make_shared<Texture>();
+	move_right_tex->loadFromFile("res/menus/move_right.png");
+	{
+		move_right_btn = makeEntity();
+		move_right_btn->setPosition(Vector2f(629.0f, 100.0f));
+		// Sprite
+		auto sprite = move_right_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(move_right_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 205, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Move left / left attack
+	move_left_tex = make_shared<Texture>();
+	move_left_tex->loadFromFile("res/menus/move_left.png");
+	{
+		move_left_btn = makeEntity();
+		move_left_btn->setPosition(Vector2f(695.0f, 160.0f));
+		// Sprite
+		auto sprite = move_left_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(move_left_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 183, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Jump
+	jump_tex = make_shared<Texture>();
+	jump_tex->loadFromFile("res/menus/jump.png");
+	{
+		jump_btn = makeEntity();
+		jump_btn->setPosition(Vector2f(956.0f, 220.0f));
+		// Sprite
+		auto sprite = jump_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(jump_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 96, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Basic attack
+	basic_attack_tex = make_shared<Texture>();
+	basic_attack_tex->loadFromFile("res/menus/basic_attack.png");
+	{
+		basic_attack_btn = makeEntity();
+		basic_attack_btn->setPosition(Vector2f(851.0f, 280.0f));
+		// Sprite
+		auto sprite = basic_attack_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(basic_attack_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 131, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Defend
+	defend_tex = make_shared<Texture>();
+	defend_tex->loadFromFile("res/menus/defend.png");
+	{
+		defend_btn = makeEntity();
+		defend_btn->setPosition(Vector2f(941.0f, 340.0f));
+		// Sprite
+		auto sprite = defend_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(defend_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 101, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Up attack
+	up_attack_tex = make_shared<Texture>();
+	up_attack_tex->loadFromFile("res/menus/up_attack.png");
+	{
+		up_attack_btn = makeEntity();
+		up_attack_btn->setPosition(Vector2f(896.0f, 400.0f));
+		// Sprite
+		auto sprite = up_attack_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(up_attack_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 116, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
+	// Down attack
+	down_attack_tex = make_shared<Texture>();
+	down_attack_tex->loadFromFile("res/menus/down_attack.png");
+	{
+		down_attack_btn = makeEntity();
+		down_attack_btn->setPosition(Vector2f(860.0f, 460.0f));
+		// Sprite
+		auto sprite = down_attack_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(down_attack_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 128, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+	}
 	setLoaded(true);
 }
 
