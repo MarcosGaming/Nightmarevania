@@ -126,7 +126,7 @@ void LevelOne::Update(const double& dt)
 	sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(sf::Vector2f(player->getPosition().x, 0.0f)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
+	followPlayer.setCenter(sf::Vector2f(player->getPosition().x, size.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
 	Engine::GetWindow().setView(followPlayer);
 
 	Scene::Update(dt);
