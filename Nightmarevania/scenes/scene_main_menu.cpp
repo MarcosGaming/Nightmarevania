@@ -120,7 +120,7 @@ void MainMenuScene::Load()
 		auto button = credits_btn->addComponent<ChangeSceneButtonComponent>();
 		button->setNormal(sf::IntRect(0, 0, 150, 40));
 		button->setHovered(sf::IntRect(0, 40, 150, 40));
-		button->setScene(&testing);
+		button->setScene(&credits);
 	}
 	// Exit button
 	exit_tex = make_shared<Texture>();
