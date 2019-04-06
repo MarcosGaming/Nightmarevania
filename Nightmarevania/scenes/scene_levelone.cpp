@@ -11,9 +11,12 @@ using namespace std;
 using namespace sf;
 
 sf::View followPlayer;
+sf::Vector2f screenSize;
 
 void LevelOne::Load()
 {
+	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_one.txt", 60.0f);
 	// Tiles offset
@@ -123,17 +126,28 @@ void LevelOne::UnLoad()
 
 void LevelOne::Update(const double& dt)
 {
-	sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y));
+	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(sf::Vector2f(player->getPosition().x, size.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
-	Engine::GetWindow().setView(followPlayer);
+	followPlayer.setCenter(sf::Vector2f(player->getPosition().x, screenSize.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
+	//Engine::GetWindow().setView(followPlayer);
 
 	Scene::Update(dt);
 }
 
 void LevelOne::Render()
 {
-	ls::render(Engine::GetWindow());
+	Engine::GetWindow().setView(followPlayer);
+	ls::render(Engine::GetWindow()); //render the enviro tiles
+	//TODO - render bg and fg seperately (in diff views)
+	/* Something like:
+	* sf::View background;
+	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
+	* Engine::GetWindow().setView(background);
+	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
+	* Engine::GetWindow().setView(followPlayer);
+	* ls::render(Engine::GetWindow());
+	*/
+
 	Scene::Render();
 }

@@ -17,12 +17,8 @@ float LevelSystem::_tileSize(100.f);
 int spriteSize = 32;
 
 sf::Texture foreground;
-//sf::Texture background;
-//sf::IntRect sprite;
 
-//std::map<LevelSystem::Tile, sf::Color> LevelSystem::_colours{ {WALL, Color::White}, {END, Color::Red} };
-std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
-	//{WALL, Color::White}, 
+std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{ 
 
 	{BG1, sf::IntRect((4 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
 	{BG2, sf::IntRect((4 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
@@ -82,16 +78,6 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{FLOOR, sf::IntRect((1 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)}
 };
 
-/*sf::Color LevelSystem::getColor(LevelSystem::Tile t)
-{
-	auto it = _colours.find(t);
-	if (it == _colours.end())
-	{
-		_colours[t] = Color::Transparent;
-	}
-	return _colours[t];
-}*/
-
 sf::IntRect LevelSystem::getSprite(LevelSystem::Tile t)
 {
 	auto it = _images.find(t);
@@ -101,11 +87,6 @@ sf::IntRect LevelSystem::getSprite(LevelSystem::Tile t)
 	}
 	return _images[t];
 }
-
-/*void LevelSystem::setColor(LevelSystem::Tile t, sf::Color c)
-{
-	_colours[t] = c;
-}*/
 
 void LevelSystem::setSprite(LevelSystem::Tile t, sf::IntRect i)
 {
@@ -180,11 +161,6 @@ void LevelSystem::buildSprites(bool optimise)
 	if (!(foreground.loadFromFile("res/img/foreground_tiles.png"))) {
 		cerr << "Failed to load spritesheet!" << std::endl;
 	}
-	/*if (!background.loadFromFile("res/img/invaders_sheet.png")) {
-		cerr << "Failed to load spritesheet!" << std::endl;
-	}*/
-
-	//sprite.setTexture(foreground);
 
 	_sprites.clear();
 
@@ -208,7 +184,6 @@ void LevelSystem::buildSprites(bool optimise)
 			{
 				continue;
 			}
-			//tps.push_back({getTilePosition({x, y}), tls, getColor(t)});
 			tps.push_back({ getTilePosition({x, y}), tls, getSprite(t) });
 		}
 	}
@@ -287,9 +262,6 @@ void LevelSystem::buildSprites(bool optimise)
 		s->setSize(t.s);
 		s->setTexture(&foreground);
 		s->setTextureRect(t.i);
-		//s->setFillColor(Color::Red);
-		//s->setFillColor(t.i);
-		// s->setFillColor(Color(rand()%255,rand()%255,rand()%255));
 		_sprites.push_back(move(s));
 	}
 
