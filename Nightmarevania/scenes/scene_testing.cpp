@@ -315,7 +315,7 @@ void TestingScene::Update(const double& dt)
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 0.6f, 1.0f)); //TODO - it's making the view a much smaller window?
 	//followPlayer.setCenter(sf::Vector2f(player->getPosition().x, 0.0f)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
 	followPlayer.setCenter(player->getPosition()); //LEVEL2 - Follows player in all directions
-	Engine::GetWindow().setView(followPlayer); //For LEVEL3, do not set view to followPlayer. L3 will just be one visible room with no camera movement
+	//Engine::GetWindow().setView(followPlayer); //For LEVEL3, do not set view to followPlayer. L3 will just be one visible room with no camera movement
 
 	Scene::Update(dt);
 }
