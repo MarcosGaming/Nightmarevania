@@ -13,6 +13,10 @@ static bool resolution1024x576;
 static void SetWindowView(int width, int height);
 static void ChangeResolution(int, int, bool);
 
+// Icon for the window
+// Icon for the window
+static sf::Image Icon;
+
 void Resolution::initialise()
 {
 	fullScreen = false;
@@ -21,6 +25,8 @@ void Resolution::initialise()
 	resolution1600x900 = false;
 	resolution1280x720 = true;
 	resolution1024x576 = false;
+	Icon.loadFromFile("res/img/Icon.png");
+	Engine::GetWindow().setIcon(Icon.getSize().x, Icon.getSize().y, Icon.getPixelsPtr());
 }
 
 bool Resolution::isFullScreenOn() { return fullScreen; }
@@ -189,6 +195,7 @@ static void SetWindowView(int width, int height)
 	}
 	v.setViewport(viewport);
 	Engine::GetWindow().setView(v);
+	Engine::GetWindow().setIcon(Icon.getSize().x, Icon.getSize().y, Icon.getPixelsPtr());
 }
 // Creates new window with the new settings
 static void ChangeResolution(int width, int height, bool borderless)
