@@ -1,7 +1,7 @@
 #include "cmp_player_combat.h"
 #include "cmp_player_physics.h"
 #include "system_renderer.h"
-#include <engine.h>
+#include <system_controller.h>
 
 using namespace sf;
 using namespace std;
@@ -46,9 +46,9 @@ void PlayerCombatComponent::update(double dt)
 	_upAttackCooldown -= dt;
 	_downAttackCooldown -= dt;
 	// Attacking behaviour
-	if ((Mouse::isButtonPressed(Mouse::Left)) && !_defending &&!_hurt)
+	if (Controller::isPressed(Controller::AttackButton) && !_defending &&!_hurt)
 	{
-		Engine::setAttackButtonReleased(false);
+		Controller::setAttackButtonReleased(false);
 		_attackDamage = 1;
 		_attacking = true;
 		_basicAttack = true;
@@ -59,18 +59,18 @@ void PlayerCombatComponent::update(double dt)
 		// Possible special ground attacks
 		if (_parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded())
 		{
-			if ((Keyboard::isKeyPressed(Keyboard::W)) && _upAttackCooldown <= 0.0f)
+			if (Controller::isPressed(Controller::UpAttackButton) && _upAttackCooldown <= 0.0f)
 			{
 				_attackDamage = 2;
 				_basicAttack = false;
 				_upAttack = true;
 				_upAttackCooldown = 3.0f;
 			}
-			if ((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::A)) && _circularAttackCooldown <= 0.0f)
+			if (((Controller::isPressed(Controller::MoveRightButton)) || (Controller::isPressed(Controller::MoveLeftButton))) && _circularAttackCooldown <= 0.0f)
 			{
 				_attackDamage = 3;
 				_basicAttack = false;
-				if (Keyboard::isKeyPressed(Keyboard::D))
+				if (Controller::isPressed(Controller::MoveRightButton))
 				{
 					_circularAttackRight = true;
 				}
@@ -84,7 +84,7 @@ void PlayerCombatComponent::update(double dt)
 		// Possible special air attack
 		else
 		{
-			if ((Keyboard::isKeyPressed(Keyboard::S)) && _downAttackCooldown <= 0.0f)
+			if (Controller::isPressed(Controller::DownAttackButton) && _downAttackCooldown <= 0.0f)
 			{
 				_attackDamage = 5;
 				_basicAttack = false;
@@ -94,7 +94,7 @@ void PlayerCombatComponent::update(double dt)
 		}
 
 	}
-	else if (Engine::isAttackButtonReleased() || _hurt)
+	else if (Controller::isAttackButtonReleased() || _hurt)
 	{
 		_attackDamage = 1;
 		_attacking = false;
@@ -105,9 +105,9 @@ void PlayerCombatComponent::update(double dt)
 		_downAttack = false;
 	}
 	// Defending behaviour
-	if ((Mouse::isButtonPressed(Mouse::Right)) && !_attacking && !_hurt && _parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded() && _defendingCooldown <= 0.0f)
+	if (Controller::isPressed(Controller::DefendButton) && !_attacking && !_hurt && _parent->get_components<PlayerPhysicsComponent>()[0]->isGrounded() && _defendingCooldown <= 0.0f)
 	{
-		Engine::setDefendButtonReleased(false);
+		Controller::setDefendButtonReleased(false);
 		_defending = true;
 		_defendingTime -= dt;
 		if (_defendingTime <= 0)
@@ -117,7 +117,7 @@ void PlayerCombatComponent::update(double dt)
 			_defending = false;
 		}
 	}
-	else if(Engine::isDefendButtonReleased() || _hurt)
+	else if(Controller::isDefendButtonReleased() || _hurt)
 	{
 		if (_defendingTime != 3.0f)
 		{

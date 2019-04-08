@@ -76,6 +76,33 @@ void ExitButtonComponent::update(double dt)
 	}
 }
 
+// Button that handles control mapping
+ControlsButton::ControlsButton(Entity* p) : ButtonComponent(p) { }
+
+void ControlsButton::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				return;
+			}
+		}
+	}
+	// Control mapping
+	if (_active)
+	{
+
+	}
+}
+
 // Button that changes the screen to a specific resolution
 ResolutionButtonComponent::ResolutionButtonComponent(Entity* p) : _is1920x1080(false), _is1600x900(false), _is1280x720(false), _is1024x576(false),  ButtonComponent(p) { }
 

@@ -9,7 +9,6 @@ namespace Physics
 	static shared_ptr<b2World> world;
 	const int32 velocityIterations = 6;
 	const int32 positionIterations = 2;
-	bool playerCanDoubleJump = false;
 
 	void initialise() 
 	{
@@ -54,15 +53,5 @@ namespace Physics
 	const Vector2f invert_height(const Vector2f& in) 
 	{
 		return Vector2f(in.x, 720 - in.y);
-	}
-
-	const bool getCanDoubleJump()
-	{
-		return playerCanDoubleJump;
-	}
-
-	void setCanDoubleJump(bool canDoubleJump)
-	{
-		playerCanDoubleJump = canDoubleJump;
 	}
 }

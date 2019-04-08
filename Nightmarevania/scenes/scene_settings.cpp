@@ -346,6 +346,11 @@ void SettingsScene::Load()
 		sprite->setTexure(move_right_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 205, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = move_right_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 205, 20));
+		controlsButton->setHovered(IntRect(0, 20, 205, 20));
+		controlsButton->setPressed(IntRect(0, 40, 205, 20));
 	}
 	// Move left / left attack
 	move_left_tex = make_shared<Texture>();
@@ -358,6 +363,11 @@ void SettingsScene::Load()
 		sprite->setTexure(move_left_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 183, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = move_left_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 183, 20));
+		controlsButton->setHovered(IntRect(0, 20, 183, 20));
+		controlsButton->setPressed(IntRect(0, 40, 183, 20));
 	}
 	// Jump
 	jump_tex = make_shared<Texture>();
@@ -370,6 +380,11 @@ void SettingsScene::Load()
 		sprite->setTexure(jump_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 96, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = jump_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 96, 20));
+		controlsButton->setHovered(IntRect(0, 20, 96, 20));
+		controlsButton->setPressed(IntRect(0, 40, 96, 20));
 	}
 	// Basic attack
 	basic_attack_tex = make_shared<Texture>();
@@ -382,6 +397,11 @@ void SettingsScene::Load()
 		sprite->setTexure(basic_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 131, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = basic_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 131, 20));
+		controlsButton->setHovered(IntRect(0, 20, 131, 20));
+		controlsButton->setPressed(IntRect(0, 40, 131, 20));
 	}
 	// Defend
 	defend_tex = make_shared<Texture>();
@@ -394,6 +414,11 @@ void SettingsScene::Load()
 		sprite->setTexure(defend_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 101, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = defend_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 101, 20));
+		controlsButton->setHovered(IntRect(0, 20, 101, 20));
+		controlsButton->setPressed(IntRect(0, 40, 101, 20));
 	}
 	// Up attack
 	up_attack_tex = make_shared<Texture>();
@@ -406,6 +431,11 @@ void SettingsScene::Load()
 		sprite->setTexure(up_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 116, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = up_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 116, 20));
+		controlsButton->setHovered(IntRect(0, 20, 116, 20));
+		controlsButton->setPressed(IntRect(0, 40, 116, 20));
 	}
 	// Down attack
 	down_attack_tex = make_shared<Texture>();
@@ -418,6 +448,11 @@ void SettingsScene::Load()
 		sprite->setTexure(down_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 128, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Button
+		auto controlsButton = down_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setNormal(IntRect(0, 0, 128, 20));
+		controlsButton->setHovered(IntRect(0, 20, 128, 20));
+		controlsButton->setPressed(IntRect(0, 40, 128, 20));
 	}
 	setLoaded(true);
 }

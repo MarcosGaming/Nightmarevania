@@ -197,3 +197,14 @@ public:
 
 	void UnLoad();
 };
+
+class ControlsButton : public ButtonComponent
+{
+private:
+
+public:
+	ControlsButton() = delete;
+	explicit ControlsButton(Entity* p);
+
+	void update(double dt) override final;
+};

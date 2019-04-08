@@ -5,6 +5,7 @@
 #include "system_resources.h"
 #include "system_sound.h"
 #include "system_resolution.h"
+#include "system_controller.h"
 #include <SFML/Graphics.hpp>
 #include <future>
 #include <iostream>
@@ -24,8 +25,6 @@ static RenderWindow* _window;
 float frametimes[256] = {};
 uint8_t ftc = 0;
 
-static bool attackButtonReleased = false;
-static bool defendButtonReleased = false;
 // LOADING SCREEN
 
 void Loading_update(float dt, const Scene* const scn) 
@@ -108,6 +107,7 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	Physics::initialise();
 	Audio::initialise();
 	Resolution::initialise();
+	Controller::initialise();
 	ChangeScene(scn);
 	while (window.isOpen())
 	{
@@ -118,17 +118,10 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 			{
 				window.close();
 			}
-			if ((event.type == Event::KeyReleased) && (event.key.code == Keyboard::Space))
+			// The controller will process the events relevant to it
+			if ((event.type == Event::KeyReleased) || (event.type == Event::MouseButtonReleased) || (event.type == Event::JoystickButtonReleased))
 			{
-				Physics::setCanDoubleJump(true);
-			}
-			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Left))
-			{
-				attackButtonReleased = true;
-			}
-			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Right))
-			{
-				defendButtonReleased = true;
+				Controller::processEvent(event);
 			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
@@ -219,12 +212,6 @@ void Engine::ChangeScene(Scene* s)
 sf::Vector2u Engine::getWindowSize() { return _window->getSize(); }
 
 sf::RenderWindow& Engine::GetWindow() { return *_window; }
-
-bool Engine::isAttackButtonReleased() { return attackButtonReleased; }
-void Engine::setAttackButtonReleased(bool status) { attackButtonReleased = status; }
-
-bool Engine::isDefendButtonReleased() { return defendButtonReleased; }
-void Engine::setDefendButtonReleased(bool status) { defendButtonReleased = status; }
 
 // TIMING
 
