@@ -6,6 +6,7 @@
 #include "../components/cmp_player_combat.h"
 #include <iostream>
 #include <LevelSystem.h>
+//#include "../components/cmp_door.h"
 
 using namespace std;
 using namespace sf;

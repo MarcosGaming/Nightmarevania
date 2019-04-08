@@ -45,7 +45,11 @@ public:
 		BG17 = ';',
 		BG18 = '#',
 
-		UDOOR1 = '!',
+		SPIKES1 = '!',
+		SPIKES2 = '$',
+		UDOOR = '1',
+		LDOOR = '2',
+		/*UDOOR1 = '!',
 		UDOOR2 = '$',
 		UDOOR3 = '&',
 		UDOOR4 = '*',
@@ -53,9 +57,9 @@ public:
 		UDOOR6 = '"',
 		UDOOR7 = '£',
 		UDOOR8 = '^',
-		UDOOR9 = '(',
+		UDOOR9 = '(',*/
 
-		LDOOR1 = '1',
+		/*LDOOR1 = '1',
 		LDOOR2 = '4',
 		LDOOR3 = '7',
 		LDOOR4 = '8',
@@ -63,7 +67,7 @@ public:
 		LDOOR6 = '2',
 		LDOOR7 = '3',
 		LDOOR8 = '6',
-		LDOOR9 = '9',
+		LDOOR9 = '9',*/
 
 		TORCHa = 'z', //top
 		TORCHb = 'x', //middle

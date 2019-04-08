@@ -1,5 +1,6 @@
 #include "LevelSystem.h"
 #include <fstream>
+#include "../Nightmarevania/components/cmp_door.h"
 
 using namespace std;
 using namespace sf;
@@ -39,7 +40,13 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{BG17, sf::IntRect((9 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
 	{BG18, sf::IntRect((9 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
 
-	{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES1, sf::IntRect((2 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES2, sf::IntRect((3 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+
+	{UDOOR, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	{LDOOR, sf::IntRect((0 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+
+	/*{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR2, sf::IntRect((3 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR3, sf::IntRect((3 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR4, sf::IntRect((4 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
@@ -47,9 +54,9 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{UDOOR6, sf::IntRect((4 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR7, sf::IntRect((5 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR8, sf::IntRect((5 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR9, sf::IntRect((5 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
+	{UDOOR9, sf::IntRect((5 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},*/
 
-	{LDOOR1, sf::IntRect((0 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	/*{LDOOR1, sf::IntRect((0 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{LDOOR2, sf::IntRect((0 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
 	{LDOOR3, sf::IntRect((0 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
 	{LDOOR4, sf::IntRect((1 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
@@ -57,7 +64,7 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{LDOOR6, sf::IntRect((1 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{LDOOR7, sf::IntRect((2 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{LDOOR8, sf::IntRect((2 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR9, sf::IntRect((2 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
+	{LDOOR9, sf::IntRect((2 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},*/
 
 	{TORCHa, sf::IntRect((8 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
 	{TORCHb, sf::IntRect((8 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
@@ -182,6 +189,21 @@ void LevelSystem::buildSprites(bool optimise)
 			Tile t = getTile({ x, y });
 			if (t == EMPTY)
 			{
+				continue;
+			}
+			if (t == UDOOR) {
+				unique_ptr<Door> door = make_unique<Door>();
+				//door->setTexure(&foreground);
+				door->setLocked(false);
+				door->setPosition(getTilePosition({ x, y }));
+				continue;
+			}
+			if (t == LDOOR) {
+
+				unique_ptr<Door> door = make_unique<Door>();
+				//door->setTexure(&foreground);
+				door->setLocked(true);
+				door->setPosition(getTilePosition({ x, y }));
 				continue;
 			}
 			tps.push_back({ getTilePosition({x, y}), tls, getSprite(t) });
