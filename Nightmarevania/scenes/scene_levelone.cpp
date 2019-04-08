@@ -10,13 +10,12 @@
 using namespace std;
 using namespace sf;
 
-sf::View followPlayer;
+//sf::View followPlayer;
+sf::Vector2f curCentre; //debugging
 //private sf::Vector2f screenSize;
 
 void LevelOne::Load()
 {
-	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-
 	// Level file
 	ls::loadLevelFile("res/levels/level_one.txt", 60.0f);
 	// Tiles offset
@@ -114,6 +113,12 @@ void LevelOne::Load()
 		}
 	}
 
+	//MOVING CAMERA STUFF
+	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+	curCentre = player->getPosition();
+	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);//Engine::GetWindow().getView().getCenter();// = player->getPosition();
+
+
 	setLoaded(true);
 }
 
@@ -126,10 +131,15 @@ void LevelOne::UnLoad()
 
 void LevelOne::Update(const double& dt)
 {
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
+		centrePoint.x = player->getPosition().x;
+	}
+
 	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(sf::Vector2f(player->getPosition().x, screenSize.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
+	//followPlayer.setCenter(sf::Vector2f(player->getPosition().x, screenSize.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
+	followPlayer.setCenter(centrePoint);
 	//Engine::GetWindow().setView(followPlayer);
 
 	Scene::Update(dt);

@@ -16,5 +16,9 @@ public:
 
 private:
 	sf::Vector2f screenSize;
+	sf::View followPlayer;
+	sf::Vector2f centrePoint;
+	float leftBoundary = 967.0f;
+	float rightBoundary = 12795.0f;
 };
 
