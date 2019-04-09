@@ -210,3 +210,16 @@ public:
 
 	void setAction(std::string);
 };
+
+class ResumeButton : public ButtonComponent
+{
+private:
+	Scene* _currentScene;
+public:
+	ResumeButton() = delete;
+	explicit ResumeButton(Entity* p);
+
+	void setCurrentScene(Scene*);
+
+	void update(double dt) override final;
+};

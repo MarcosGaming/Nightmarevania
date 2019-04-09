@@ -58,7 +58,7 @@ void Loading_render()
 // SCENE
 
 Scene::~Scene() { UnLoad(); }
-// QUESTION: WHAT DOES THIS DO?
+
 void Scene::LoadAsync() { _loaded_future = std::async(&Scene::Load, this); }
 
 void Scene::UnLoad()
@@ -67,10 +67,27 @@ void Scene::UnLoad()
 	setLoaded(false);
 }
 
-void Scene::Update(const double& dt) { ents.update(dt); }
+void Scene::Update(const double& dt) 
+{ 
+	if (_paused)
+	{
+		pausedEnts.update(dt);
+	}
+	else
+	{
+		ents.update(dt);
+	} 
+}
 
-void Scene::Render() { ents.render(); }
-// QUESTION: WHAT DOES THIS DO?
+void Scene::Render() 
+{ 
+	ents.render(); 
+	if (_paused)
+	{
+		pausedEnts.render();
+	}
+}
+
 bool Scene::isLoaded() const
 {
 	std::lock_guard<std::mutex> lck(_loaded_mtx);
@@ -89,7 +106,16 @@ std::shared_ptr<Entity> Scene::makeEntity()
 	ents.list.push_back(e);
 	return std::move(e);
 }
-// QUESTION: WHAT DOES THIS DO?
+
+std::shared_ptr<Entity> Scene::makePausedEntity()
+{
+	auto e = make_shared<Entity>(this);
+	pausedEnts.list.push_back(e);
+	return std::move(e);
+}
+
+void Scene::setPause(bool pause) { _paused = pause; }
+
 void Scene::setLoaded(bool b) 
 {
 	std::lock_guard<std::mutex> lck(_loaded_mtx);

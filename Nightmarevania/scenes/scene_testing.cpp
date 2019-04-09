@@ -1,11 +1,13 @@
 #include "scene_testing.h"
-#include "../game.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
-#include "../animation_states.h"
+#include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
+#include "../animation_states.h"
+#include "../game.h"
 #include <iostream>
 #include <LevelSystem.h>
+#include <system_controller.h>
 
 using namespace std;
 using namespace sf;
@@ -14,8 +16,20 @@ static shared_ptr<Entity> player;
 shared_ptr<Texture> playerAnimations;
 shared_ptr<Texture> combatIcons;
 
+static shared_ptr<Entity> pause_background;
+static shared_ptr<Texture> pause_background_tex;
+
+static shared_ptr<Entity> returnToMenu_btn;
+static shared_ptr<Texture> returnToMenu_tex;
+
+static shared_ptr<Entity> resume_btn;
+static shared_ptr<Texture> resume_tex;
+
 void TestingScene::Load()
 {
+	_paused = false;
+	// Disable cursor
+	Engine::GetWindow().setMouseCursorVisible(false);
 	// Level file
 	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	// Tiles offset
@@ -269,6 +283,56 @@ void TestingScene::Load()
 		}
 	}
 
+	// Pause background
+	pause_background_tex = make_shared<Texture>();
+	pause_background_tex->loadFromFile("res/menus/pause_background.png");
+	{
+		pause_background = makePausedEntity();
+		pause_background->setPosition(Vector2f(GAMEX / 2.0f, GAMEY / 2.0f));
+		// Sprite
+		auto sprite = pause_background->addComponent<SpriteComponent>();
+		sprite->setTexure(pause_background_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 384, 224));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		float scaleX = (float)GAMEX / (sprite->getSprite().getTextureRect().width);
+		float scaleY = (float)GAMEY / (sprite->getSprite().getTextureRect().height);
+		sprite->getSprite().scale(scaleX, scaleY);
+	}
+	// Resume
+	resume_tex = make_shared<Texture>();
+	resume_tex->loadFromFile("res/menus/resume.png");
+	{
+		resume_btn = makePausedEntity();
+		resume_btn->setPosition(Vector2f((GAMEX / 2.0f) - (resume_tex->getSize().x / 2.0f) - 90.0f, 400.0f));
+		// sprite
+		auto sprite = resume_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(resume_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 60, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = resume_btn->addComponent<ResumeButton>();
+		button->setNormal(sf::IntRect(0, 0, 60, 15));
+		button->setHovered(sf::IntRect(0, 15, 60, 15));
+		button->setCurrentScene(this);
+	}
+	// Return to menu
+	returnToMenu_tex = make_shared<Texture>();
+	returnToMenu_tex->loadFromFile("res/menus/returnToMenu.png");
+	{
+		returnToMenu_btn = makePausedEntity();
+		returnToMenu_btn->setPosition(Vector2f((GAMEX / 2.0f) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, 500.0f));
+		// sprite
+		auto sprite = returnToMenu_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(returnToMenu_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 117, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = returnToMenu_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 117, 15));
+		button->setHovered(sf::IntRect(0, 15, 117, 15));
+		button->setScene(&main_menu);
+	}
+
 	setLoaded(true);
 }
 
@@ -281,6 +345,13 @@ void TestingScene::UnLoad()
 
 void TestingScene::Update(const double& dt)
 {
+	// Pause game
+	if (Controller::isPressed(Controller::PauseButton))
+	{
+		// Enable cursor when game is paused
+		Engine::GetWindow().setMouseCursorVisible(true);
+		_paused = true;
+	}
 	Scene::Update(dt);
 }
 

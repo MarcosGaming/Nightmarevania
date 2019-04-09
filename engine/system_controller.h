@@ -13,6 +13,7 @@ namespace Controller
 	const std::string DefendButton = "Defend";
 	const std::string UpAttackButton = "UpAttack";
 	const std::string DownAttackButton = "DownAttack";
+	const std::string PauseButton = "Pause";
 
 	sf::Keyboard::Key* getActionKey(std::string&);
 	sf::Mouse::Button* getActionMouseButton(std::string&);

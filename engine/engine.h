@@ -21,11 +21,15 @@ public:
 	virtual void Render();
 	bool isLoaded() const;
 	std::shared_ptr<Entity> makeEntity();
+	std::shared_ptr<Entity> makePausedEntity();
+	void setPause(bool);
 
 	EntityManager ents;
+	EntityManager pausedEnts;
 
 protected:
 	void setLoaded(bool);
+	bool _paused;
 
 private:
 	mutable bool _loaded;

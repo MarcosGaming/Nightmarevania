@@ -33,6 +33,7 @@ static shared_ptr<Entity> basic_attack_btn;
 static shared_ptr<Entity> defend_btn;
 static shared_ptr<Entity> up_attack_btn;
 static shared_ptr<Entity> down_attack_btn;
+static shared_ptr<Entity> pause_btn;
 // Return button
 static shared_ptr<Entity> goBack_btn;
 
@@ -55,6 +56,7 @@ static shared_ptr<Texture> basic_attack_tex;
 static shared_ptr<Texture> defend_tex;
 static shared_ptr<Texture> up_attack_tex;
 static shared_ptr<Texture> down_attack_tex;
+static shared_ptr<Texture> pause_tex;
 // Return button texture
 static shared_ptr<Texture> goBack_tex;
 
@@ -490,6 +492,28 @@ void SettingsScene::Load()
 		auto text = down_attack_btn->addComponent<ControlsTextComponent>();
 		text->setAction(Controller::DownAttackButton);
 		text->setInitialPosition(Vector2f(1165.0f, 468.0f));
+	}
+	// Pause
+	pause_tex = make_shared<Texture>();
+	pause_tex->loadFromFile("res/menus/pause.png");
+	{
+		pause_btn = makeEntity();
+		pause_btn->setPosition(Vector2f(956.0f, 520.0f));
+		// Button
+		auto controlsButton = pause_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::PauseButton);
+		controlsButton->setNormal(IntRect(0, 0, 96, 20));
+		controlsButton->setHovered(IntRect(0, 20, 96, 20));
+		controlsButton->setPressed(IntRect(0, 40, 96, 20));
+		// Sprite
+		auto sprite = pause_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(pause_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 96, 20));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// Text
+		auto text = pause_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::PauseButton);
+		text->setInitialPosition(Vector2f(1165.0f, 528.0f));
 	}
 	setLoaded(true);
 }

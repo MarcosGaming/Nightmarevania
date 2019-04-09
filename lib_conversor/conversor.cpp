@@ -158,10 +158,10 @@ std::string Conversor::ControllerButtonToString(int button)
 		ret = "RB";
 		break;
 	case 6:
-		ret = "BACK";
+		ret = "Back";
 		break;
 	case 7:
-		ret = "START";
+		ret = "Start";
 		break;
 	case 8:
 		ret = "LS";

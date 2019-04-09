@@ -28,10 +28,12 @@ void Controller::initialise()
 	mouse[DefendButton] = sf::Mouse::Right;
 	keyboard[UpAttackButton] = sf::Keyboard::W;
 	keyboard[DownAttackButton] = sf::Keyboard::S;
+	keyboard[PauseButton] = sf::Keyboard::Escape;
 	// Standard controller mapping
 	controller[JumpButton] = 0;
 	controller[AttackButton] = 2;
 	controller[DefendButton] = 1;
+	controller[PauseButton] = 7;
 }
 
 bool Controller::isPressed(std::string action)

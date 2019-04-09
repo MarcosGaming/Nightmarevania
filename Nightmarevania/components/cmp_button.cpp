@@ -6,7 +6,7 @@
 #include <system_resolution.h>
 #include <system_controller.h>
 
-static float PressedCooldown = 0.5f;
+static float PressedCooldown = 0.5;
 
 // Basic button
 ButtonComponent::ButtonComponent(Entity* p) : _active(false), Component(p) { }
@@ -54,7 +54,7 @@ void ChangeSceneButtonComponent::update(double dt)
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
 		{
 			Engine::ChangeScene(_scene_to_change);
-			PressedCooldown = 1.0f;
+			PressedCooldown = 0.5f;
 		}
 	}
 }
@@ -125,7 +125,7 @@ void ResolutionButtonComponent::update(double dt)
 				{
 					Resolution::changeTo1024x576(borderless);
 				}
-				PressedCooldown = 1.0f;
+				PressedCooldown = 4.0f;
 			}
 		}
 	}
@@ -153,7 +153,7 @@ void FullScreenButtonComponent::update(double dt)
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->activateBorderless();
 				Resolution::turnFullScreenOn();
-				PressedCooldown = 1.0f;
+				PressedCooldown = 2.5f;
 			}
 		}
 	}
@@ -168,7 +168,7 @@ void FullScreenButtonComponent::update(double dt)
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->deactivateBorderless();
 				Resolution::turnFullScreenOff();
-				PressedCooldown = 1.0f;
+				PressedCooldown = 2.5f;
 			}
 		}
 		else
@@ -198,7 +198,7 @@ void BorderlessButtonComponent::update(double dt)
 			{
 				_active = true;
 				Resolution::turnBorderlessOn();
-				PressedCooldown = 1.5f;
+				PressedCooldown = 2.5f;
 			}
 		}
 	}
@@ -212,7 +212,7 @@ void BorderlessButtonComponent::update(double dt)
 				_active = false;
 				_mediator->deactivateFullScreen();
 				Resolution::turnBorderlessOff();
-				PressedCooldown = 1.5f;
+				PressedCooldown = 2.5f;
 			}
 		}
 		else
@@ -292,7 +292,7 @@ void MusicsButtonComponent::update(double dt)
 					_mediator->deactivateOtherMusicButton(this);
 					Audio::turnMusicOff();
 				}
-				PressedCooldown = 1.0f;
+				PressedCooldown = 2.5f;
 			}
 		}
 	}
@@ -324,7 +324,7 @@ void EffectsButtonComponent::update(double dt)
 					_mediator->deactivateOtherEffectsButton(this);
 					Audio::turnEffectsOff();
 				}
-				PressedCooldown = 1.0f;
+				PressedCooldown = 2.5f;
 			}
 		}
 	}
@@ -383,7 +383,7 @@ void ControlsButton::update(double dt)
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				_active = true;
-				PressedCooldown = 1.0f;
+				PressedCooldown = 2.5f;
 				return;
 			}
 		}
@@ -400,6 +400,27 @@ void ControlsButton::update(double dt)
 			Controller::mapInputToAction(_action);
 		}
 		_active = false;
-		PressedCooldown = 2.0f;
+		PressedCooldown = 2.5f;
+	}
+}
+
+// Button that resumes the game when this is paused
+ResumeButton::ResumeButton(Entity* p) : ButtonComponent(p) { }
+
+void ResumeButton::setCurrentScene(Scene* scene) { _currentScene = scene; }
+
+void ResumeButton::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
+		{
+			_currentScene->setPause(false);
+			PressedCooldown = 0.1f;
+		}
 	}
 }
