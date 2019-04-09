@@ -119,8 +119,12 @@ std::string Conversor::MouseButtonToString(sf::Mouse::Button button)
 	#define CONVERT(x) case sf::Mouse:: ## x : ret = #x; break;
 	switch (button)
 	{
-		CONVERT(Left);
-		CONVERT(Right);
+	case sf::Mouse::Left:
+		ret = "L.Mouse";
+		break;
+	case sf::Mouse::Right:
+		ret = "R.Mouse";
+		break;
 		CONVERT(Middle);
 		CONVERT(XButton1);
 		CONVERT(XButton2);
@@ -129,7 +133,7 @@ std::string Conversor::MouseButtonToString(sf::Mouse::Button button)
 	#undef CONVERT
 }
 
-// This mapping only works for XBOX controllers and is only for the buttons of the controller
+// This mapping only works for XBOX controllers and is only for the buttons of the controller not the axis
 std::string Conversor::ControllerButtonToString(int button)
 {
 	std::string ret;
@@ -137,24 +141,34 @@ std::string Conversor::ControllerButtonToString(int button)
 	{
 	case 0 :
 		ret = "A";
+		break;
 	case 1:
 		ret = "B";
+		break;
 	case 2:
 		ret = "X";
+		break;
 	case 3:
 		ret = "Y";
+		break;
 	case 4:
 		ret = "LB";
+		break;
 	case 5:
 		ret = "RB";
+		break;
 	case 6:
 		ret = "BACK";
+		break;
 	case 7:
 		ret = "START";
+		break;
 	case 8:
 		ret = "LS";
+		break;
 	case 9:
 		ret = "RS";
+		break;
 	}
 	return ret;
 }

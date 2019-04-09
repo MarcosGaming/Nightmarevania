@@ -201,10 +201,12 @@ public:
 class ControlsButton : public ButtonComponent
 {
 private:
-
+	std::string _action;
 public:
 	ControlsButton() = delete;
 	explicit ControlsButton(Entity* p);
 
 	void update(double dt) override final;
+
+	void setAction(std::string);
 };

@@ -4,6 +4,7 @@
 #include <system_renderer.h>
 #include <system_sound.h>
 #include <system_resolution.h>
+#include <system_controller.h>
 
 static float PressedCooldown = 0.5f;
 
@@ -73,33 +74,6 @@ void ExitButtonComponent::update(double dt)
 		{
 			Engine::GetWindow().close();
 		}
-	}
-}
-
-// Button that handles control mapping
-ControlsButton::ControlsButton(Entity* p) : ButtonComponent(p) { }
-
-void ControlsButton::update(double dt)
-{
-	ButtonComponent::update(dt);
-
-	auto sprite = _parent->get_components<SpriteComponent>()[0];
-	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-	if (!_active && PressedCooldown <= 0.0f)
-	{
-		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
-		{
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				_active = true;
-				return;
-			}
-		}
-	}
-	// Control mapping
-	if (_active)
-	{
-
 	}
 }
 
@@ -389,4 +363,43 @@ void MediatorSoundButtons::UnLoad()
 {
 	_musicButtons.clear();
 	_effectsButtons.clear();
+}
+
+// Button that handles control mapping
+ControlsButton::ControlsButton(Entity* p) : ButtonComponent(p) { }
+
+void ControlsButton::setAction(std::string action) { _action = action; }
+
+void ControlsButton::update(double dt)
+{
+	ButtonComponent::update(dt);
+
+	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	if (!_active && PressedCooldown <= 0.0f)
+	{
+		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				_active = true;
+				PressedCooldown = 1.0f;
+				return;
+			}
+		}
+	}
+	// Control mapping
+	if (_active && PressedCooldown <= 0.0f)
+	{
+		if (sf::Joystick::isConnected(0))
+		{
+			Controller::mapInputToActionController(_action);
+		}
+		else
+		{
+			Controller::mapInputToAction(_action);
+		}
+		_active = false;
+		PressedCooldown = 2.0f;
+	}
 }

@@ -124,10 +124,6 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 				Controller::processEvent(event);
 			}
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Escape))
-		{
-			window.close();
-		}
 		window.clear();
 		Update();
 		Render(window);

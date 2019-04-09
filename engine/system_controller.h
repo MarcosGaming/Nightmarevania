@@ -14,11 +14,9 @@ namespace Controller
 	const std::string UpAttackButton = "UpAttack";
 	const std::string DownAttackButton = "DownAttack";
 
-	void mapActionToKey(std::string, sf::Keyboard::Key);
-
-	void mapActionToMouseButton(std::string, sf::Mouse::Button);
-
-	void mapActionToControllerButton(std::string, int);
+	sf::Keyboard::Key* getActionKey(std::string&);
+	sf::Mouse::Button* getActionMouseButton(std::string&);
+	int* getActionControllerButton(std::string&);
 
 	void processEvent(sf::Event);
 
@@ -32,5 +30,8 @@ namespace Controller
 	void setJumpButtonReleased(bool);
 
 	bool isPressed(std::string);
+
+	void mapInputToAction(std::string& action);
+	void mapInputToActionController(std::string& action);
 
 };

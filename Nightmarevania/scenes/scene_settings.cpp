@@ -1,10 +1,12 @@
 #include "scene_settings.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_button.h"
+#include "../components/cmp_text.h"
 #include "../game.h"
 #include <system_renderer.h>
 #include <system_sound.h>
 #include <system_resolution.h>
+#include <system_controller.h>
 #include <iostream>
 
 using namespace std;
@@ -341,16 +343,21 @@ void SettingsScene::Load()
 	{
 		move_right_btn = makeEntity();
 		move_right_btn->setPosition(Vector2f(629.0f, 100.0f));
+		// Button
+		auto controlsButton = move_right_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::MoveRightButton);
+		controlsButton->setNormal(IntRect(0, 0, 205, 20));
+		controlsButton->setHovered(IntRect(0, 20, 205, 20));
+		controlsButton->setPressed(IntRect(0, 40, 205, 20));
 		// Sprite
 		auto sprite = move_right_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(move_right_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 205, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = move_right_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 205, 20));
-		controlsButton->setHovered(IntRect(0, 20, 205, 20));
-		controlsButton->setPressed(IntRect(0, 40, 205, 20));
+		// Text
+		auto text = move_right_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::MoveRightButton);
+		text->setInitialPosition(Vector2f(1165.0f, 108.0f));
 	}
 	// Move left / left attack
 	move_left_tex = make_shared<Texture>();
@@ -358,16 +365,21 @@ void SettingsScene::Load()
 	{
 		move_left_btn = makeEntity();
 		move_left_btn->setPosition(Vector2f(695.0f, 160.0f));
+		// Button
+		auto controlsButton = move_left_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::MoveLeftButton);
+		controlsButton->setNormal(IntRect(0, 0, 183, 20));
+		controlsButton->setHovered(IntRect(0, 20, 183, 20));
+		controlsButton->setPressed(IntRect(0, 40, 183, 20));
 		// Sprite
 		auto sprite = move_left_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(move_left_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 183, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = move_left_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 183, 20));
-		controlsButton->setHovered(IntRect(0, 20, 183, 20));
-		controlsButton->setPressed(IntRect(0, 40, 183, 20));
+		// Text
+		auto text = move_left_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::MoveLeftButton);
+		text->setInitialPosition(Vector2f(1165.0f, 168.0f));
 	}
 	// Jump
 	jump_tex = make_shared<Texture>();
@@ -375,16 +387,21 @@ void SettingsScene::Load()
 	{
 		jump_btn = makeEntity();
 		jump_btn->setPosition(Vector2f(956.0f, 220.0f));
+		// Button
+		auto controlsButton = jump_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::JumpButton);
+		controlsButton->setNormal(IntRect(0, 0, 96, 20));
+		controlsButton->setHovered(IntRect(0, 20, 96, 20));
+		controlsButton->setPressed(IntRect(0, 40, 96, 20));
 		// Sprite
 		auto sprite = jump_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(jump_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 96, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = jump_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 96, 20));
-		controlsButton->setHovered(IntRect(0, 20, 96, 20));
-		controlsButton->setPressed(IntRect(0, 40, 96, 20));
+		// Text
+		auto text = jump_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::JumpButton);
+		text->setInitialPosition(Vector2f(1165.0f, 228.0f));
 	}
 	// Basic attack
 	basic_attack_tex = make_shared<Texture>();
@@ -392,16 +409,21 @@ void SettingsScene::Load()
 	{
 		basic_attack_btn = makeEntity();
 		basic_attack_btn->setPosition(Vector2f(851.0f, 280.0f));
+		// Button
+		auto controlsButton = basic_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::AttackButton);
+		controlsButton->setNormal(IntRect(0, 0, 131, 20));
+		controlsButton->setHovered(IntRect(0, 20, 131, 20));
+		controlsButton->setPressed(IntRect(0, 40, 131, 20));
 		// Sprite
 		auto sprite = basic_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(basic_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 131, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = basic_attack_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 131, 20));
-		controlsButton->setHovered(IntRect(0, 20, 131, 20));
-		controlsButton->setPressed(IntRect(0, 40, 131, 20));
+		// Text
+		auto text = basic_attack_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::AttackButton);
+		text->setInitialPosition(Vector2f(1165.0f, 288.0f));
 	}
 	// Defend
 	defend_tex = make_shared<Texture>();
@@ -409,16 +431,21 @@ void SettingsScene::Load()
 	{
 		defend_btn = makeEntity();
 		defend_btn->setPosition(Vector2f(941.0f, 340.0f));
+		// Button
+		auto controlsButton = defend_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::DefendButton);
+		controlsButton->setNormal(IntRect(0, 0, 101, 20));
+		controlsButton->setHovered(IntRect(0, 20, 101, 20));
 		// Sprite
 		auto sprite = defend_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(defend_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 101, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = defend_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 101, 20));
-		controlsButton->setHovered(IntRect(0, 20, 101, 20));
 		controlsButton->setPressed(IntRect(0, 40, 101, 20));
+		// Text
+		auto text = defend_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::DefendButton);
+		text->setInitialPosition(Vector2f(1165.0f, 348.0f));
 	}
 	// Up attack
 	up_attack_tex = make_shared<Texture>();
@@ -426,16 +453,21 @@ void SettingsScene::Load()
 	{
 		up_attack_btn = makeEntity();
 		up_attack_btn->setPosition(Vector2f(896.0f, 400.0f));
+		// Button
+		auto controlsButton = up_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::UpAttackButton);
+		controlsButton->setNormal(IntRect(0, 0, 116, 20));
+		controlsButton->setHovered(IntRect(0, 20, 116, 20));
+		controlsButton->setPressed(IntRect(0, 40, 116, 20));
 		// Sprite
 		auto sprite = up_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(up_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 116, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = up_attack_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 116, 20));
-		controlsButton->setHovered(IntRect(0, 20, 116, 20));
-		controlsButton->setPressed(IntRect(0, 40, 116, 20));
+		// Text
+		auto text = up_attack_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::UpAttackButton);
+		text->setInitialPosition(Vector2f(1165.0f, 408.0f));
 	}
 	// Down attack
 	down_attack_tex = make_shared<Texture>();
@@ -443,16 +475,21 @@ void SettingsScene::Load()
 	{
 		down_attack_btn = makeEntity();
 		down_attack_btn->setPosition(Vector2f(860.0f, 460.0f));
+		// Button
+		auto controlsButton = down_attack_btn->addComponent<ControlsButton>();
+		controlsButton->setAction(Controller::DownAttackButton);
+		controlsButton->setNormal(IntRect(0, 0, 128, 20));
+		controlsButton->setHovered(IntRect(0, 20, 128, 20));
+		controlsButton->setPressed(IntRect(0, 40, 128, 20));
 		// Sprite
 		auto sprite = down_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(down_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 128, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
-		// Button
-		auto controlsButton = down_attack_btn->addComponent<ControlsButton>();
-		controlsButton->setNormal(IntRect(0, 0, 128, 20));
-		controlsButton->setHovered(IntRect(0, 20, 128, 20));
-		controlsButton->setPressed(IntRect(0, 40, 128, 20));
+		// Text
+		auto text = down_attack_btn->addComponent<ControlsTextComponent>();
+		text->setAction(Controller::DownAttackButton);
+		text->setInitialPosition(Vector2f(1165.0f, 468.0f));
 	}
 	setLoaded(true);
 }
