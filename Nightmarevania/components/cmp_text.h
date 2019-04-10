@@ -22,6 +22,7 @@ protected:
   sf::Text _text;
 };
 
+// Text used for the controls in the settings scene
 class ControlsTextComponent : public TextComponent
 {
 private:

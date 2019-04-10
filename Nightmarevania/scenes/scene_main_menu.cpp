@@ -24,8 +24,12 @@ static shared_ptr<Texture> settings_tex;
 static shared_ptr<Texture> credits_tex;
 static shared_ptr<Texture> exit_tex;
 
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
+
 void MainMenuScene::Load()
 {
+	buttonsCurrentIndex = 0;
 	// Background
 	background_tex = make_shared<Texture>();
 	background_tex->loadFromFile("res/menus/main_menu_background.png");
@@ -69,6 +73,8 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 200, 42));
 		button->setHovered(sf::IntRect(0, 42, 200, 42));
 		button->setScene(&testing);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
 	}
 	// Continue button
 	continue_tex = make_shared<Texture>();
@@ -89,6 +95,8 @@ void MainMenuScene::Load()
 		button->setActive(true);
 		// The scene is the one in the save file
 		button->setScene(&testing);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
 	}
 	// Settings button 
 	settings_tex = make_shared<Texture>();
@@ -105,6 +113,8 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 200, 40));
 		button->setHovered(sf::IntRect(0, 40, 200, 40));
 		button->setScene(&settings);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
 	}
 	// Credits button 
 	credits_tex = make_shared<Texture>();
@@ -121,6 +131,8 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 150, 40));
 		button->setHovered(sf::IntRect(0, 40, 150, 40));
 		button->setScene(&credits);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
 	}
 	// Exit button
 	exit_tex = make_shared<Texture>();
@@ -136,6 +148,8 @@ void MainMenuScene::Load()
 		auto button = exit_btn->addComponent<ExitButtonComponent>();
 		button->setNormal(sf::IntRect(0, 0, 100, 37));
 		button->setHovered(sf::IntRect(0, 40, 100, 37));
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
 	}
 
 	setLoaded(true);
@@ -145,6 +159,7 @@ void MainMenuScene::Load()
 void MainMenuScene::Update(const double& dt)
 {
 	Scene::Update(dt);
+	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 }
 
 void MainMenuScene::Render()
@@ -154,6 +169,7 @@ void MainMenuScene::Render()
 
 void MainMenuScene::UnLoad()
 {
+	buttonsForController.clear();
 	Audio::clearAllSounds();
 	Scene::UnLoad();
 }

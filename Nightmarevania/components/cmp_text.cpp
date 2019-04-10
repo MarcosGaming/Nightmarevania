@@ -30,10 +30,27 @@ void ControlsTextComponent::setAction(std::string action) { _action = action; }
 
 void ControlsTextComponent::setInitialPosition(sf::Vector2f position) { _initialPosition = position; }
 
+// The text changes dynamically based on which device is connected
 void ControlsTextComponent::update(double dt)
 {
 	if (sf::Joystick::isConnected(0))
 	{
+		if (_action == Controller::MoveRightButton)
+		{
+			SetText("LS Right");
+		}
+		else if (_action == Controller::MoveLeftButton)
+		{
+			SetText("LS Left");
+		}
+		else if (_action == Controller::UpAttackButton)
+		{
+			SetText("LS Up");
+		}
+		else if (_action == Controller::DownAttackButton)
+		{
+			SetText("LS Down");
+		}
 		int* button = Controller::getActionControllerButton(_action);
 		if (button != NULL)
 		{

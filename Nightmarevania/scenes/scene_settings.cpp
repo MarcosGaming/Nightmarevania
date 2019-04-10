@@ -64,6 +64,13 @@ static shared_ptr<Texture> goBack_tex;
 shared_ptr<MediatorResolutionButtons> mediator_resolution;
 shared_ptr<MediatorSoundButtons> mediator_sound;
 
+// Elements for controller navigation
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
+
+// Obeserver for the buttons that cannot be modified by the controller
+shared_ptr<ObserverControls> observer_controls;
+
 
 void SettingsScene::Load()
 {
@@ -81,23 +88,6 @@ void SettingsScene::Load()
 		float scaleX = (float) GAMEX / (sprite->getSprite().getTextureRect().width);
 		float scaleY = (float) GAMEY / (sprite->getSprite().getTextureRect().height);
 		sprite->getSprite().scale(scaleX, scaleY);
-	}
-	// Return 
-	goBack_tex = make_shared<Texture>();
-	goBack_tex->loadFromFile("res/menus/return.png");
-	{
-		goBack_btn = makeEntity();
-		goBack_btn->setPosition(Vector2f((GAMEX / 2.0f) - (goBack_tex->getSize().x / 2.0f) - 100.0f, 650.0f));
-		// sprite
-		auto sprite = goBack_btn->addComponent<SpriteComponent>();
-		sprite->setTexure(goBack_tex);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 55, 15));
-		sprite->getSprite().scale(3.0f, 3.0f);
-		// button component
-		auto button = goBack_btn->addComponent<ChangeSceneButtonComponent>();
-		button->setNormal(sf::IntRect(0, 0, 55, 15));
-		button->setHovered(sf::IntRect(0, 15, 55, 15));
-		button->setScene(&main_menu);
 	}
 	// On and Off textures
 	on_tex = make_shared<Texture>();
@@ -120,13 +110,16 @@ void SettingsScene::Load()
 		musicButton->setNormal(IntRect(0, 0, 25, 15));
 		musicButton->setHovered(IntRect(0, 15, 25, 15));
 		musicButton->setPressed(IntRect(0, 30, 25, 15));
+		musicButton->setAsOnButton();
 		if (Audio::isMusicOn())
 		{
 			musicButton->setActive(true);
 		}
-		musicButton->setAsOnButton();
+		// Sound mediator
 		musicButton->setMediator(mediator_sound);
 		mediator_sound->addMusicButton(musicButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(musicButton);
 	}
 	// Music Off
 	{
@@ -146,8 +139,11 @@ void SettingsScene::Load()
 		{
 			musicButton->setActive(true);
 		}
+		// Sound mediator
 		musicButton->setMediator(mediator_sound);
 		mediator_sound->addMusicButton(musicButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(musicButton);
 	}
 	// Effects On 
 	{
@@ -163,13 +159,16 @@ void SettingsScene::Load()
 		effectsButton->setNormal(IntRect(0, 0, 25, 15));
 		effectsButton->setHovered(IntRect(0, 15, 25, 15));
 		effectsButton->setPressed(IntRect(0, 30, 25, 15));
+		effectsButton->setAsOnButton();
 		if (Audio::areEffectsOn())
 		{
 			effectsButton->setActive(true);
 		}
-		effectsButton->setAsOnButton();
+		// Sound mediator
 		effectsButton->setMediator(mediator_sound);
 		mediator_sound->addEffectsButton(effectsButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(effectsButton);
 	}
 	// Effects Off
 	{
@@ -189,8 +188,11 @@ void SettingsScene::Load()
 		{
 			effectsButton->setActive(true);
 		}
+		// Sound mediator
 		effectsButton->setMediator(mediator_sound);
 		mediator_sound->addEffectsButton(effectsButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(effectsButton);
 	}
 	// Mediator for resolution buttons
 	mediator_resolution = make_shared<MediatorResolutionButtons>();
@@ -215,8 +217,11 @@ void SettingsScene::Load()
 		{
 			resolutionButton->setActive(true);
 		}
+		// Resolution mediator
 		resolutionButton->setMediator(mediator_resolution);
 		mediator_resolution->addResolutionButton(resolutionButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(resolutionButton);
 	}
 	// Resolution 1600x900
 	resolution2_tex = make_shared<Texture>();
@@ -239,8 +244,11 @@ void SettingsScene::Load()
 		{
 			resolutionButton->setActive(true);
 		}
+		// Resolution mediator
 		resolutionButton->setMediator(mediator_resolution);
 		mediator_resolution->addResolutionButton(resolutionButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(resolutionButton);
 	}
 	// Resolution 1280x720
 	resolution3_tex = make_shared<Texture>();
@@ -259,12 +267,15 @@ void SettingsScene::Load()
 		resolutionButton->setHovered(IntRect(0, 22, 87, 22));
 		resolutionButton->setPressed(IntRect(0, 22*2, 87, 22));
 		resolutionButton->setResolutionTo1280x720();
-		resolutionButton->setMediator(mediator_resolution);
 		if (Resolution::isResolution1280x720On())
 		{
 			resolutionButton->setActive(true);
 		}
+		// Resolution mediator
+		resolutionButton->setMediator(mediator_resolution);
 		mediator_resolution->addResolutionButton(resolutionButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(resolutionButton);
 	}
 	// Resolution 1024x576
 	resolution4_tex = make_shared<Texture>();
@@ -287,8 +298,11 @@ void SettingsScene::Load()
 		{
 			resolutionButton->setActive(true);
 		}
+		// Resolution mediator
 		resolutionButton->setMediator(mediator_resolution);
 		mediator_resolution->addResolutionButton(resolutionButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(resolutionButton);
 	}
 	// Fullscreen
 	fullscreen_tex = make_shared<Texture>();
@@ -307,13 +321,16 @@ void SettingsScene::Load()
 		fullscreenButton->setHovered(IntRect(0, 15, 84, 15));
 		fullscreenButton->setPressed(IntRect(0, 30, 84, 15));
 		fullscreenButton->setHoveredActive(IntRect(0, 45, 84, 15));
+		fullscreenButton->setCanHoverActive(true);
 		if (Resolution::isFullScreenOn())
 		{
 			fullscreenButton->setActive(true);
 		}
+		// Resolution mediator
 		fullscreenButton->setMediator(mediator_resolution);
 		mediator_resolution->addFullScreenButton(fullscreenButton);
-
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(fullscreenButton);
 	}
 	// Borderless
 	borderless_tex = make_shared<Texture>();
@@ -332,13 +349,19 @@ void SettingsScene::Load()
 		borderlessButton->setHovered(IntRect(0, 15, 80, 14.8));
 		borderlessButton->setPressed(IntRect(0, 30, 80, 14.8));
 		borderlessButton->setHoveredActive(IntRect(0, 45, 80, 14.8));
+		borderlessButton->setCanHoverActive(true);
 		if (Resolution::isBorderlessOn())
 		{
 			borderlessButton->setActive(true);
 		}
+		// Resolution mediator
 		borderlessButton->setMediator(mediator_resolution);
 		mediator_resolution->addBorderlessButton(borderlessButton);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(borderlessButton);
 	}
+	// Observer for controls
+	observer_controls = make_shared<ObserverControls>();
 	// Move right / right attack
 	move_right_tex = make_shared<Texture>();
 	move_right_tex->loadFromFile("res/menus/move_right.png");
@@ -351,6 +374,10 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 205, 20));
 		controlsButton->setHovered(IntRect(0, 20, 205, 20));
 		controlsButton->setPressed(IntRect(0, 40, 205, 20));
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
+		// Add button to observer as it cannot be modified when the controller is connected
+		observer_controls->attach(controlsButton);
 		// Sprite
 		auto sprite = move_right_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(move_right_tex);
@@ -373,6 +400,10 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 183, 20));
 		controlsButton->setHovered(IntRect(0, 20, 183, 20));
 		controlsButton->setPressed(IntRect(0, 40, 183, 20));
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
+		// Add button to observer as it cannot be modified when the controller is connected
+		observer_controls->attach(controlsButton);
 		// Sprite
 		auto sprite = move_left_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(move_left_tex);
@@ -394,7 +425,10 @@ void SettingsScene::Load()
 		controlsButton->setAction(Controller::JumpButton);
 		controlsButton->setNormal(IntRect(0, 0, 96, 20));
 		controlsButton->setHovered(IntRect(0, 20, 96, 20));
+		controlsButton->setCanHoverActive(true);
 		controlsButton->setPressed(IntRect(0, 40, 96, 20));
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
 		// Sprite
 		auto sprite = jump_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(jump_tex);
@@ -417,6 +451,9 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 131, 20));
 		controlsButton->setHovered(IntRect(0, 20, 131, 20));
 		controlsButton->setPressed(IntRect(0, 40, 131, 20));
+		controlsButton->setCanHoverActive(true);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
 		// Sprite
 		auto sprite = basic_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(basic_attack_tex);
@@ -438,6 +475,9 @@ void SettingsScene::Load()
 		controlsButton->setAction(Controller::DefendButton);
 		controlsButton->setNormal(IntRect(0, 0, 101, 20));
 		controlsButton->setHovered(IntRect(0, 20, 101, 20));
+		controlsButton->setCanHoverActive(true);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
 		// Sprite
 		auto sprite = defend_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(defend_tex);
@@ -461,6 +501,10 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 116, 20));
 		controlsButton->setHovered(IntRect(0, 20, 116, 20));
 		controlsButton->setPressed(IntRect(0, 40, 116, 20));
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
+		// Add button to observer as it cannot be modified when the controller is connected
+		observer_controls->attach(controlsButton);
 		// Sprite
 		auto sprite = up_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(up_attack_tex);
@@ -483,11 +527,15 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 128, 20));
 		controlsButton->setHovered(IntRect(0, 20, 128, 20));
 		controlsButton->setPressed(IntRect(0, 40, 128, 20));
+		// Add button to observer as it cannot be modified when the controller is connected
+		observer_controls->attach(controlsButton);
 		// Sprite
 		auto sprite = down_attack_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(down_attack_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 128, 20));
 		sprite->getSprite().scale(3.0f, 3.0f);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
 		// Text
 		auto text = down_attack_btn->addComponent<ControlsTextComponent>();
 		text->setAction(Controller::DownAttackButton);
@@ -505,6 +553,9 @@ void SettingsScene::Load()
 		controlsButton->setNormal(IntRect(0, 0, 96, 20));
 		controlsButton->setHovered(IntRect(0, 20, 96, 20));
 		controlsButton->setPressed(IntRect(0, 40, 96, 20));
+		controlsButton->setCanHoverActive(true);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(controlsButton);
 		// Sprite
 		auto sprite = pause_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(pause_tex);
@@ -515,12 +566,47 @@ void SettingsScene::Load()
 		text->setAction(Controller::PauseButton);
 		text->setInitialPosition(Vector2f(1165.0f, 528.0f));
 	}
+	// Return 
+	goBack_tex = make_shared<Texture>();
+	goBack_tex->loadFromFile("res/menus/return.png");
+	{
+		goBack_btn = makeEntity();
+		goBack_btn->setPosition(Vector2f((GAMEX / 2.0f) - (goBack_tex->getSize().x / 2.0f) - 100.0f, 650.0f));
+		// sprite
+		auto sprite = goBack_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(goBack_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 55, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = goBack_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 55, 15));
+		button->setHovered(sf::IntRect(0, 15, 55, 15));
+		button->setScene(&main_menu);
+		// Add button to the vector used when the controller is connected
+		buttonsForController.push_back(button);
+	}
+	// Controller starts at first button that is not active
+	buttonsCurrentIndex = 0;
+	while (buttonsForController[buttonsCurrentIndex]->isActive())
+	{
+		buttonsCurrentIndex++;
+	}
 	setLoaded(true);
 }
 
 void SettingsScene::Update(const double& dt)
 {
 	Scene::Update(dt);
+	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	// Observer activates/deactivates some buttons according to which device is connected
+	if (Joystick::isConnected(0) && !observer_controls->isControllerActiveSet())
+	{
+		observer_controls->setControllerActive(true);
+	}
+	else if(!Joystick::isConnected(0) && observer_controls->isControllerActiveSet())
+	{
+		observer_controls->setControllerActive(false);
+	}
 }
 
 void SettingsScene::Render()
@@ -530,7 +616,9 @@ void SettingsScene::Render()
 
 void SettingsScene::UnLoad()
 {
+	observer_controls->UnLoad();
 	mediator_resolution->UnLoad();
+	buttonsForController.clear();
 	mediator_sound->UnLoad();
 	Audio::clearAllSounds();
 	Scene::UnLoad();

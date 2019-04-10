@@ -83,6 +83,7 @@ bool Controller::isPressed(std::string action)
 	return false;
 }
 
+// Returns the key that corresponds to the action 
 sf::Keyboard::Key* Controller::getActionKey(std::string& action)
 {
 	auto found = keyboard.find(action);
@@ -92,7 +93,7 @@ sf::Keyboard::Key* Controller::getActionKey(std::string& action)
 	}
 	return NULL;
 }
-
+// Returns the button that corresponds to the action 
 sf::Mouse::Button* Controller::getActionMouseButton(std::string& action)
 {
 	auto found = mouse.find(action);
@@ -102,6 +103,7 @@ sf::Mouse::Button* Controller::getActionMouseButton(std::string& action)
 	}
 	return NULL;
 }
+// Returns the int button that corresponds to the action 
 int* Controller::getActionControllerButton(std::string& action)
 {
 	auto found = controller.find(action);
@@ -206,6 +208,7 @@ void Controller::processEvent(sf::Event eventReleased)
 	}
 }
 
+// Wait for user input and map it to the keyboard or mouse map
 void Controller::mapInputToAction(std::string& action)
 {
 	while (true)
@@ -226,6 +229,7 @@ void Controller::mapInputToAction(std::string& action)
 		}
 	}
 }
+// Wait for user input and map it to the controller map
 void Controller::mapInputToActionController(std::string& action)
 {
 	while (true)
@@ -239,7 +243,7 @@ void Controller::mapInputToActionController(std::string& action)
 				return;
 			}
 		}
-		if (sf::Joystick::isConnected(0))
+		if (!sf::Joystick::isConnected(0))
 		{
 			return;
 		}
@@ -335,7 +339,7 @@ void mapActionToControllerButton(std::string action, int button)
 			// Get the action that the button was mapped to
 			std::string previousAction = element->first;
 			// Map previous action to the button of the action to change before mapping the action to the new button 
-			keyboard[previousAction] = keyboard[action];
+			controller[previousAction] = controller[action];
 		}
 	}
 	// Map action to button

@@ -9,26 +9,87 @@
 static float PressedCooldown = 0.5;
 
 // Basic button
-ButtonComponent::ButtonComponent(Entity* p) : _active(false), Component(p) { }
+ButtonComponent::ButtonComponent(Entity* p) : _active(false), _controllerHovered(false), _controllerPressed(false), _canHoverActive(false), Component(p) { }
 
 void ButtonComponent::setNormal(sf::IntRect normal) { _normal = normal; }
 void ButtonComponent::setHovered(sf::IntRect hovered) { _hovered = hovered; }
 void ButtonComponent::setPressed(sf::IntRect pressed) { _pressed = pressed; }
 
+void ButtonComponent::setControllerHovered(bool status) { _controllerHovered = status; }
+void ButtonComponent::setControllerPressed(bool status) { _controllerPressed = status; }
+
 void ButtonComponent::setActive(bool active) { _active = active; }
 bool ButtonComponent::isActive() const { return _active; }
 
+void ButtonComponent::setCanHoverActive(bool status) { _canHoverActive = status; }
+
+void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonComponent>>& buttons, int& index, const double& dt)
+{
+	static float coolDown = 0.2f;
+	coolDown -= dt;
+	if (sf::Joystick::isConnected(0) && !buttons.empty())
+	{
+		if (sf::Joystick::isButtonPressed(0, 0) && PressedCooldown <= 0.0f)
+		{
+			buttons[index]->_controllerPressed = true;
+			PressedCooldown = 0.2f;
+		}
+		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) > 70.0f && coolDown <= 0.0f)
+		{
+			buttons[index]->_controllerHovered = false;
+			index++;
+			coolDown = 0.2f;
+			// Skip buttons that are active when going down
+			while (index < buttons.size() - 1 && buttons[index]->isActive() && !buttons[index]->_canHoverActive)
+			{
+				index++;
+			}
+		}
+		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) < -70.0f && coolDown <= 0.0f)
+		{
+			buttons[index]->_controllerHovered = false;
+			index--;
+			coolDown = 0.2f;
+			// Skip buttons that are active when going up
+			while (index >= 0 && buttons[index]->isActive() && !buttons[index]->_canHoverActive)
+			{
+				index--;
+			}
+		}
+		// If the index is less than 0 set it to be the last element in the vector
+		if (index < 0)
+		{
+			index = buttons.size() - 1;
+		}
+		// If the index is greater than the vector size then set it to be the first element in the vector
+		else if (index > buttons.size() - 1)
+		{
+			index = 0;
+		}
+		buttons[index]->_controllerHovered = true;
+	}
+	// If the controller gets disconnected removed the hovered status from the current button
+	else if (!buttons.empty())
+	{
+		buttons[index]->_controllerHovered = false;
+	}
+}
+
 void ButtonComponent::update(double dt)
 {
-	PressedCooldown -= dt;
-
+	// Control button selection freezes the game causing delta time to increase too much and affecting button selection
+	if (dt < 0.1)
+	{
+		PressedCooldown -= dt;
+	}
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	// Change button sprite based on its status
 	if (_active)
 	{
 		sprite->getSprite().setTextureRect(_pressed);
 	}
-	else if (sprite->getSprite().getGlobalBounds().contains(worldPos))
+	else if (sprite->getSprite().getGlobalBounds().contains(worldPos) || _controllerHovered)
 	{
 		sprite->getSprite().setTextureRect(_hovered);
 	}
@@ -57,6 +118,11 @@ void ChangeSceneButtonComponent::update(double dt)
 			PressedCooldown = 0.5f;
 		}
 	}
+	else if (_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
+	{
+		Engine::ChangeScene(_scene_to_change);
+		PressedCooldown = 1.0f;
+	}
 }
 
 // Button that exits the game
@@ -75,6 +141,10 @@ void ExitButtonComponent::update(double dt)
 			Engine::GetWindow().close();
 		}
 	}
+	else if (_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
+	{
+		Engine::GetWindow().close();
+	}
 }
 
 // Button that changes the screen to a specific resolution
@@ -92,6 +162,7 @@ void ResolutionButtonComponent::update(double dt)
 	ButtonComponent::update(dt);
 
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
+	bool changeResolution = false;
 	if(!_active && PressedCooldown <= 0.0f)
 	{
 		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
@@ -99,35 +170,45 @@ void ResolutionButtonComponent::update(double dt)
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				_active = true;
-				_mediator->deactivateOtherResolutionButtons(this);
-				_mediator->deactivateFullScreen();
-				// Check if the window is currently borderless
-				bool borderless = false;
-				if (_mediator->isBorderlessActive())
-				{
-					borderless = true;
-				}
-				// Change to the corresponding resolution
-				if (_is1920x1080)
-				{
-					Resolution::changeTo1920x1080(borderless);
-				}
-				else if (_is1600x900)
-				{
-					Resolution::changeTo1600x900(borderless);
-				}
-				else if (_is1280x720)
-				{
-					Resolution::changeTo1280x720(borderless);
-				}
-				else if (_is1024x576)
-				{
-					Resolution::changeTo1024x576(borderless);
-				}
-				PressedCooldown = 4.0f;
+				changeResolution = true;
 			}
 		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_controllerPressed = false;
+			_controllerHovered = false;
+			changeResolution = true;
+		}
+	}
+	if (changeResolution)
+	{
+		_active = true;
+		_mediator->deactivateOtherResolutionButtons(this);
+		_mediator->deactivateFullScreen();
+		// Check if the window is currently borderless
+		bool borderless = false;
+		if (_mediator->isBorderlessActive())
+		{
+			borderless = true;
+		}
+		// Change to the corresponding resolution
+		if (_is1920x1080)
+		{
+			Resolution::changeTo1920x1080(borderless);
+		}
+		else if (_is1600x900)
+		{
+			Resolution::changeTo1600x900(borderless);
+		}
+		else if (_is1280x720)
+		{
+			Resolution::changeTo1280x720(borderless);
+		}
+		else if (_is1024x576)
+		{
+			Resolution::changeTo1024x576(borderless);
+		}
+		PressedCooldown = 4.0f;
 	}
 }
 
@@ -156,6 +237,15 @@ void FullScreenButtonComponent::update(double dt)
 				PressedCooldown = 2.5f;
 			}
 		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_controllerPressed = false;
+			_active = true;
+			_mediator->deactivateAllResolutionButtons();
+			_mediator->activateBorderless();
+			Resolution::turnFullScreenOn();
+			PressedCooldown = 2.5f;
+		}
 	}
 	else if (PressedCooldown <= 0.0f)
 	{
@@ -164,6 +254,19 @@ void FullScreenButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				_active = false;
+				_mediator->deactivateAllResolutionButtons();
+				_mediator->deactivateBorderless();
+				Resolution::turnFullScreenOff();
+				PressedCooldown = 2.5f;
+			}
+		}
+		else if (_controllerHovered)
+		{
+			sprite->getSprite().setTextureRect(_hoveredActive);
+			if (_controllerPressed)
+			{
+				_controllerPressed = false;
 				_active = false;
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->deactivateBorderless();
@@ -201,6 +304,13 @@ void BorderlessButtonComponent::update(double dt)
 				PressedCooldown = 2.5f;
 			}
 		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_controllerPressed = false;
+			_active = true;
+			Resolution::turnBorderlessOn();
+			PressedCooldown = 2.5f;
+		}
 	}
 	else if (PressedCooldown <= 0.0f)
 	{
@@ -209,6 +319,18 @@ void BorderlessButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				_active = false;
+				_mediator->deactivateFullScreen();
+				Resolution::turnBorderlessOff();
+				PressedCooldown = 2.5f;
+			}
+		}
+		else if (_controllerHovered)
+		{
+			sprite->getSprite().setTextureRect(_hoveredActive);
+			if (_controllerPressed)
+			{
+				_controllerPressed = false;
 				_active = false;
 				_mediator->deactivateFullScreen();
 				Resolution::turnBorderlessOff();
@@ -231,9 +353,9 @@ void MediatorResolutionButtons::addBorderlessButton(std::shared_ptr<BorderlessBu
 
 void MediatorResolutionButtons::UnLoad() { _resolutionButtons.clear(); _fullscreenButton.reset(); _borderlessButton.reset(); }
 
+// Deactivate all the buttons that are not the caller
 void MediatorResolutionButtons::deactivateOtherResolutionButtons(ResolutionButtonComponent* caller)
 {
-	// Deactivate all the buttons that are not the caller
 	for (int i = 0; i < _resolutionButtons.size(); i++)
 	{
 		if (_resolutionButtons[i].get() != caller)
@@ -245,7 +367,6 @@ void MediatorResolutionButtons::deactivateOtherResolutionButtons(ResolutionButto
 
 void MediatorResolutionButtons::deactivateAllResolutionButtons()
 {
-	// Deactivate all resolution buttons
 	for (int i = 0; i < _resolutionButtons.size(); i++)
 	{
 		_resolutionButtons[i]->setActive(false);
@@ -276,24 +397,35 @@ void MusicsButtonComponent::update(double dt)
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	if (!_active && PressedCooldown <= 0.0f)
 	{
+		bool changeMusicStatus = false;
 		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
 		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				_active = true;
-				if (_On)
-				{
-					_mediator->deactivateOtherMusicButton(this);
-					Audio::turnMusicOn();
-				}
-				else
-				{
-					_mediator->deactivateOtherMusicButton(this);
-					Audio::turnMusicOff();
-				}
-				PressedCooldown = 2.5f;
+				changeMusicStatus = true;
 			}
+		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_controllerPressed = false;
+			_controllerHovered = false;
+			changeMusicStatus = true;
+		}
+		if (changeMusicStatus)
+		{
+			_active = true;
+			if (_On)
+			{
+				_mediator->deactivateOtherMusicButton(this);
+				Audio::turnMusicOn();
+			}
+			else
+			{
+				_mediator->deactivateOtherMusicButton(this);
+				Audio::turnMusicOff();
+			}
+			PressedCooldown = 2.5f;
 		}
 	}
 
@@ -308,24 +440,35 @@ void EffectsButtonComponent::update(double dt)
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	if (!_active && PressedCooldown <= 0.0f)
 	{
+		bool changeEffectsStatus = false;
 		sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
 		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				_active = true;
-				if (_On)
-				{
-					_mediator->deactivateOtherEffectsButton(this);
-					Audio::turnEffectsOn();
-				}
-				else
-				{
-					_mediator->deactivateOtherEffectsButton(this);
-					Audio::turnEffectsOff();
-				}
-				PressedCooldown = 2.5f;
+				changeEffectsStatus = true;
 			}
+		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_controllerPressed = false;
+			_controllerHovered = false;
+			changeEffectsStatus = true;
+		}
+		if (changeEffectsStatus)
+		{
+			_active = true;
+			if (_On)
+			{
+				_mediator->deactivateOtherEffectsButton(this);
+				Audio::turnEffectsOn();
+			}
+			else
+			{
+				_mediator->deactivateOtherEffectsButton(this);
+				Audio::turnEffectsOff();
+			}
+			PressedCooldown = 2.5f;
 		}
 	}
 }
@@ -335,9 +478,9 @@ void MediatorSoundButtons::addMusicButton(std::shared_ptr<MusicsButtonComponent>
 
 void MediatorSoundButtons::addEffectsButton(std::shared_ptr<EffectsButtonComponent> button) { _effectsButtons.push_back(button); }
 
+// Deactivate all the music buttons that are not the caller
 void MediatorSoundButtons::deactivateOtherMusicButton(MusicsButtonComponent* caller)
 {
-	// Deactivate all the buttons that are not the caller
 	for (int i = 0; i < _musicButtons.size(); i++)
 	{
 		if (_musicButtons[i].get() != caller)
@@ -347,9 +490,9 @@ void MediatorSoundButtons::deactivateOtherMusicButton(MusicsButtonComponent* cal
 	}
 }
 
+// Deactivate all the effect buttons that are not the caller
 void MediatorSoundButtons::deactivateOtherEffectsButton(EffectsButtonComponent* caller)
 {
-	// Deactivate all the buttons that are not the caller
 	for (int i = 0; i < _effectsButtons.size(); i++)
 	{
 		if (_effectsButtons[i].get() != caller)
@@ -366,9 +509,11 @@ void MediatorSoundButtons::UnLoad()
 }
 
 // Button that handles control mapping
-ControlsButton::ControlsButton(Entity* p) : ButtonComponent(p) { }
+ControlsButton::ControlsButton(Entity* p) : _unnactive(false), ButtonComponent(p) { }
 
 void ControlsButton::setAction(std::string action) { _action = action; }
+
+void ControlsButton::setDeactive(bool deactivate) { _unnactive = deactivate; }
 
 void ControlsButton::update(double dt)
 {
@@ -376,6 +521,7 @@ void ControlsButton::update(double dt)
 
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
+	// In the first just set active to true with the purpose of allowing the sprite to change
 	if (!_active && PressedCooldown <= 0.0f)
 	{
 		if (sprite->getSprite().getGlobalBounds().contains(worldPos))
@@ -387,9 +533,15 @@ void ControlsButton::update(double dt)
 				return;
 			}
 		}
+		else if (_controllerPressed && _controllerHovered)
+		{
+			_active = true;
+			PressedCooldown = 2.5f;
+			return;
+		}
 	}
 	// Control mapping
-	if (_active && PressedCooldown <= 0.0f)
+	if (!_unnactive && _active && PressedCooldown <= 0.0f)
 	{
 		if (sf::Joystick::isConnected(0))
 		{
@@ -400,7 +552,8 @@ void ControlsButton::update(double dt)
 			Controller::mapInputToAction(_action);
 		}
 		_active = false;
-		PressedCooldown = 2.5f;
+		_controllerPressed = false;
+		PressedCooldown = 3.5f;
 	}
 }
 
@@ -420,7 +573,41 @@ void ResumeButton::update(double dt)
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
 		{
 			_currentScene->setPause(false);
-			PressedCooldown = 0.1f;
+			PressedCooldown = 0.2f;
 		}
 	}
+	else if(_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
+	{
+		_controllerPressed = false;
+		_currentScene->setPause(false);
+		PressedCooldown = 0.2f;
+	}
+}
+
+// Observer that is going to deactivate/reactivate the control buttons that cannot be modified by the controller
+void ObserverControls::setControllerActive(bool active) 
+{
+	_controllerActive = active; 
+	this->notify();
+}
+
+bool ObserverControls::isControllerActiveSet() const { return _controllerActive; }
+
+void ObserverControls::notify()
+{
+	for (int i = 0; i < _views.size(); i++)
+	{
+		_views[i]->setActive(_controllerActive);
+		_views[i]->setDeactive(_controllerActive);
+	}
+}
+
+void ObserverControls::attach(std::shared_ptr<ControlsButton> button)
+{
+	_views.push_back(button);
+}
+
+void ObserverControls::UnLoad()
+{
+	_views.clear();
 }

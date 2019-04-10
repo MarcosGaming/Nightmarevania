@@ -14,7 +14,6 @@ static void SetWindowView(int width, int height);
 static void ChangeResolution(int, int, bool);
 
 // Icon for the window
-// Icon for the window
 static sf::Image Icon;
 
 void Resolution::initialise()

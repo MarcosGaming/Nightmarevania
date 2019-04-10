@@ -10,6 +10,9 @@ protected:
 	sf::IntRect _pressed;
 
 	bool _active;
+	bool _controllerHovered;
+	bool _controllerPressed;
+	bool _canHoverActive;
 
 public:
 	ButtonComponent() = delete;
@@ -24,6 +27,14 @@ public:
 	void setHovered(sf::IntRect);
 
 	void setPressed(sf::IntRect);
+
+	void setControllerHovered(bool);
+
+	void setControllerPressed(bool);
+
+	void setCanHoverActive(bool);
+
+	static void ButtonNavigation(const std::vector<std::shared_ptr<ButtonComponent>>&, int&, const double& dt);
 
 	void setActive(bool);
 	bool isActive() const;
@@ -202,6 +213,7 @@ class ControlsButton : public ButtonComponent
 {
 private:
 	std::string _action;
+	bool _unnactive;
 public:
 	ControlsButton() = delete;
 	explicit ControlsButton(Entity* p);
@@ -209,6 +221,8 @@ public:
 	void update(double dt) override final;
 
 	void setAction(std::string);
+
+	void setDeactive(bool);
 };
 
 class ResumeButton : public ButtonComponent
@@ -222,4 +236,23 @@ public:
 	void setCurrentScene(Scene*);
 
 	void update(double dt) override final;
+};
+
+class ObserverControls
+{
+private:
+	std::vector<std::shared_ptr<ControlsButton>> _views;
+	bool _controllerActive;
+
+	void notify();
+
+public:
+	ObserverControls() = default;
+
+	void setControllerActive(bool);
+	bool isControllerActiveSet() const;
+
+	void attach(std::shared_ptr<ControlsButton>);
+
+	void UnLoad();
 };

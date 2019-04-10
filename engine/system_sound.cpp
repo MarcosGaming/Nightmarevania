@@ -13,11 +13,11 @@ void Audio::initialise()
 	audioEffectsOn = true;
 }
 
+// Methods that handle the game music
 void Audio::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
 {
 	music[musicName] = musicSound;
 }
-
 void Audio::playMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
@@ -34,16 +34,15 @@ void Audio::stopMusic(const std::string& musicName)
 		found->second->stop();
 	}
 }
-
 void Audio::turnMusicOn() { audioMusicOn = true; }
 void Audio::turnMusicOff() { audioMusicOn = false; }
 bool Audio::isMusicOn() { return audioMusicOn; }
 
+// Methods that handle the game effects
 void Audio::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
 {
 	effects[effectName] = effectSound;
 }
-
 void Audio::playEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
@@ -52,7 +51,6 @@ void Audio::playEffect(const std::string& effectName)
 		found->second->play();
 	}
 }
-
 void Audio::stopEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
@@ -61,7 +59,6 @@ void Audio::stopEffect(const std::string& effectName)
 		found->second->stop();
 	}
 }
-
 void Audio::turnEffectsOn() { audioEffectsOn = true; }
 void Audio::turnEffectsOff() { audioEffectsOn = false; }
 bool Audio::areEffectsOn() { return audioEffectsOn; }

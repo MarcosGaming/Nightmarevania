@@ -25,8 +25,14 @@ static shared_ptr<Texture> returnToMenu_tex;
 static shared_ptr<Entity> resume_btn;
 static shared_ptr<Texture> resume_tex;
 
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
+
 void TestingScene::Load()
 {
+	// Controller starts at button 0
+	buttonsCurrentIndex = 0;
+	// The scene is not paused at the beginning
 	_paused = false;
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
@@ -314,6 +320,7 @@ void TestingScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 60, 15));
 		button->setHovered(sf::IntRect(0, 15, 60, 15));
 		button->setCurrentScene(this);
+		buttonsForController.push_back(button);
 	}
 	// Return to menu
 	returnToMenu_tex = make_shared<Texture>();
@@ -331,16 +338,10 @@ void TestingScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 117, 15));
 		button->setHovered(sf::IntRect(0, 15, 117, 15));
 		button->setScene(&main_menu);
+		buttonsForController.push_back(button);
 	}
 
 	setLoaded(true);
-}
-
-void TestingScene::UnLoad()
-{
-	player.reset();
-	ls::unload();
-	Scene::UnLoad();
 }
 
 void TestingScene::Update(const double& dt)
@@ -352,6 +353,10 @@ void TestingScene::Update(const double& dt)
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
 	}
+	if (_paused)
+	{
+		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
 	Scene::Update(dt);
 }
 
@@ -360,3 +365,12 @@ void TestingScene::Render()
 	ls::render(Engine::GetWindow());
 	Scene::Render();
 }
+
+void TestingScene::UnLoad()
+{
+	buttonsForController.clear();
+	player.reset();
+	ls::unload();
+	Scene::UnLoad();
+}
+

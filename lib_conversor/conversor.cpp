@@ -1,5 +1,6 @@
 #include "conversor.h"
 
+// Converts key to string
 std::string Conversor::KeyboardKeyToString(sf::Keyboard::Key key)
 {
 	std::string ret;
@@ -113,6 +114,7 @@ std::string Conversor::KeyboardKeyToString(sf::Keyboard::Key key)
 	#undef CONVERT
 }
 
+// Converts mouse button to string
 std::string Conversor::MouseButtonToString(sf::Mouse::Button button)
 {
 	std::string ret;

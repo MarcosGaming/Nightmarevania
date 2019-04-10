@@ -63,6 +63,7 @@ void Scene::LoadAsync() { _loaded_future = std::async(&Scene::Load, this); }
 
 void Scene::UnLoad()
 {
+	pausedEnts.list.clear();
 	ents.list.clear();
 	setLoaded(false);
 }

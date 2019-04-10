@@ -5,22 +5,24 @@
 #include <system_renderer.h>
 #include <system_sound.h>
 #include <system_resolution.h>
-#include <iostream>
 
 using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> background;
-// Return button
 static shared_ptr<Entity> goBack_btn;
 
 static shared_ptr<Texture> background_tex;
-// Return button texture
 static shared_ptr<Texture> goBack_tex;
+
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
 
 
 void CreditsScene::Load()
 {
+	// Controller starts at button 0
+	buttonsCurrentIndex = 0;
 	// Background
 	background_tex = make_shared<Texture>();
 	background_tex->loadFromFile("res/menus/credits_background.png");
@@ -52,6 +54,7 @@ void CreditsScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 55, 15));
 		button->setHovered(sf::IntRect(0, 15, 55, 15));
 		button->setScene(&main_menu);
+		buttonsForController.push_back(button);
 	}
 	setLoaded(true);
 }
@@ -59,6 +62,7 @@ void CreditsScene::Load()
 void CreditsScene::Update(const double& dt)
 {
 	Scene::Update(dt);
+	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 }
 
 void CreditsScene::Render()
@@ -68,6 +72,7 @@ void CreditsScene::Render()
 
 void CreditsScene::UnLoad()
 {
+	buttonsForController.clear();
 	Audio::clearAllSounds();
 	Scene::UnLoad();
 }
