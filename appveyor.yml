@@ -12,22 +12,23 @@ before_build:
 - cmd: >-
     git submodule update --init --recursive
     
-    if not exist build\ mkdir build
+    mkdir build || VER>NUL
+    
     cd build
     
     cmake -G "Visual Studio 15 2017 Win64" ../
     
+    dir 
+    
 build:
-  project: build/PACKAGE.vcxproj
+  project: build/NIGHTMAREVANIA.vcxproj
   parallel: true
   verbosity: minimal
   
 after_build:
 - cmd: >-
     7z a Nightmarevania%CONFIGURATION%_win64.zip %APPVEYOR_BUILD_FOLDER%/build/bin/%CONFIGURATION%/Nightmarevania.exe %APPVEYOR_BUILD_FOLDER%/build/bin/%CONFIGURATION%/*.dll  %APPVEYOR_BUILD_FOLDER%/build/bin/%CONFIGURATION%/**/*
-    
-    cd ../build/installer/
-    
+      
     dir
     
     for %%a in (*.exe) do ren "%%~a" "%%~na_%CONFIGURATION%_win64%%~xa"
@@ -37,8 +38,6 @@ after_build:
 artifacts:
   - path: build/*.zip
     name: Nightmarevania_zip
-  - path: build/installer/*.exe
-    name: Nightmarevania_installer
     
 deploy:
 - provider: GitHub
