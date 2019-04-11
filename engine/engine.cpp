@@ -163,6 +163,7 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 		_activeScene->UnLoad();
 		_activeScene = nullptr;
 	}
+	Saving::saveSettingsInFile();
 	window.close();
 	Physics::shutdown();
 	// Render::shutdown();

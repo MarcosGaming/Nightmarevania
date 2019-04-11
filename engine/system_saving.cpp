@@ -1,4 +1,7 @@
 #include "system_saving.h"
+#include "system_controller.h"
+#include "system_sound.h"
+#include "system_resolution.h"
 #include <vector>
 #include <fstream>
 
@@ -10,6 +13,8 @@ static std::string fullscreenSettingSaved;
 static std::string borderlessSettingSaved;
 
 static std::fstream saveFile;
+
+static void getSettingsFromSystem();
 
 void Saving::initialise()
 {
@@ -48,6 +53,7 @@ void Saving::initialise()
 			counter++;
 		}
 	}
+	saveFile.close();
 }
 
 void Saving::saveLevel(std::string level) { levelSaved = level; }
@@ -68,4 +74,86 @@ std::string* Saving::getFullscreenSettingSaved() { return &fullscreenSettingSave
 void Saving::saveBorderlessSetting(std::string borderless) { borderlessSettingSaved = borderless; }
 std::string* Saving::getBorderlessSettingSaved() { return &borderlessSettingSaved; }
 
-void Saving::saveSettingsInFile();
+void Saving::saveSettingsInFile()
+{
+	getSettingsFromSystem();
+	// Open the file and remove all the contents from it
+	std::string userpath = getenv("USERPROFILE");
+	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::out | std::fstream::app);
+	// Add level to file
+	saveFile << levelSaved << std::endl;
+	// Add music setting to file 
+	saveFile << musicSettingSaved << std::endl;
+	// Add effects setting to file
+	saveFile << effectsSettingSaved << std::endl;
+	// Add resolution setting to file
+	saveFile << resolutionSettingSaved << std::endl;
+	// Add music setting to file
+	saveFile << fullscreenSettingSaved << std::endl;
+	// Add borderless setting to file
+	saveFile << borderlessSettingSaved << std::endl;
+	// Close file
+	saveFile.close();
+}
+
+static void getSettingsFromSystem()
+{
+	// Set level safe to 0 if it is empty
+	if (levelSaved.empty())
+	{
+		levelSaved = "0";
+	}
+	// Set music setting to save
+	if (Audio::isMusicOn())
+	{
+		musicSettingSaved = "On";
+	}
+	else
+	{
+		musicSettingSaved = "Off";
+	}
+	// Set effect setting to save
+	if (Audio::areEffectsOn())
+	{
+		effectsSettingSaved = "On";
+	}
+	else
+	{
+		effectsSettingSaved = "Off";
+	}
+	// Set resolution setting to save
+	if (Resolution::isResolution1920x1080On())
+	{
+		resolutionSettingSaved = "1920x1080";
+	}
+	else if (Resolution::isResolution1600x900On())
+	{
+		resolutionSettingSaved = "1600x900";
+	}
+	else if (Resolution::isResolution1280x720On())
+	{
+		resolutionSettingSaved = "1280x720";
+	}
+	else
+	{
+		resolutionSettingSaved = "1024x576";
+	}
+	// Set fullscreen setting to save
+	if (Resolution::isFullScreenOn())
+	{
+		fullscreenSettingSaved = "On";
+	}
+	else
+	{
+		fullscreenSettingSaved = "Off";
+	}
+	// Set borderless setting to save
+	if (Resolution::isBorderlessOn())
+	{
+		borderlessSettingSaved = "On";
+	}
+	else
+	{
+		borderlessSettingSaved = "Off";
+	}
+}
