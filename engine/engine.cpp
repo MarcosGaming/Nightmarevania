@@ -6,6 +6,7 @@
 #include "system_sound.h"
 #include "system_resolution.h"
 #include "system_controller.h"
+#include "system_saving.h"
 #include <SFML/Graphics.hpp>
 #include <future>
 #include <iostream>
@@ -132,6 +133,7 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	_window = &window;
 	Renderer::initialise(window);
 	Physics::initialise();
+	Saving::initialise();
 	Audio::initialise();
 	Resolution::initialise();
 	Controller::initialise();
