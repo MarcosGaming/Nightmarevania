@@ -44,6 +44,7 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{SPIKES2, sf::IntRect((3 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
 
 	{DOOR, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{KEY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 
 	/*{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR2, sf::IntRect((3 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},

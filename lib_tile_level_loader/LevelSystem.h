@@ -48,6 +48,7 @@ public:
 		SPIKES1 = '!',
 		SPIKES2 = '$',
 		DOOR = '1',
+		KEY = '2',
 		/*UDOOR1 = '!',
 		UDOOR2 = '$',
 		UDOOR3 = '&',
