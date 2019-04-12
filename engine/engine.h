@@ -6,8 +6,13 @@
 #include <mutex>
 #include <string>
 
+
 using namespace std;
 using namespace sf;
+
+#define GAMEX 1280
+#define GAMEY 720
+
 
 class Scene 
 {
@@ -21,8 +26,11 @@ public:
 	virtual void Render();
 	bool isLoaded() const;
 	std::shared_ptr<Entity> makeEntity();
+	std::shared_ptr<Entity> makePausedEntity();
+	void setPause(bool);
 
 	EntityManager ents;
+	EntityManager pausedEnts;
 
 	//static std::shared_ptr<Entity> player;
 	std::shared_ptr<Entity> player;
@@ -32,6 +40,7 @@ public:
 
 protected:
 	void setLoaded(bool);
+	bool _paused;
 
 private:
 	mutable bool _loaded;
@@ -51,12 +60,6 @@ public:
 	static sf::RenderWindow& GetWindow();
 	static sf::Vector2u getWindowSize();
 	static void setVsync(bool b);
-
-	static bool isAttackButtonReleased();
-	static void setAttackButtonReleased(bool);
-
-	static bool isDefendButtonReleased();
-	static void setDefendButtonReleased(bool);
 
 private:
 	static Scene* _activeScene;

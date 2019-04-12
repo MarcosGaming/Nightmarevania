@@ -59,7 +59,8 @@ foreach(exe ${EXECUTABLES})
 		lib_tile_level_loader
 		lib_ecm
 		Box2D
-		lib_engine)
+		lib_engine
+		lib_conversor)
 	add_dependencies(${exe} sfml-graphics sfml-audio copy_resources)
 endforeach ()
 
@@ -85,4 +86,10 @@ file(GLOB_RECURSE SOURCE_FILES lib_ecm/*.cpp lib_ecm/*.h)
 add_library(lib_ecm STATIC ${SOURCE_FILES})
 target_include_directories(lib_ecm INTERFACE "${CMAKE_SOURCE_DIR}/lib_ecm")
 target_link_libraries(lib_ecm PRIVATE lib_maths)
+
+### CONVERSOR LIBRARY ###
+file(GLOB_RECURSE SOURCE_FILES lib_conversor/*.cpp lib_conversor/*.h)
+add_library(lib_conversor STATIC ${SOURCE_FILES})
+target_include_directories(lib_conversor INTERFACE "${CMAKE_SOURCE_DIR}/lib_conversor")
+target_link_libraries(lib_conversor lib_maths sfml-graphics)
 

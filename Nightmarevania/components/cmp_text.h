@@ -8,7 +8,7 @@ class TextComponent : public Component
 public:
   TextComponent() = delete;
   explicit TextComponent(Entity* p, const std::string& str = "");
-  void update(double dt) override;
+  virtual void update(double dt) override;
 
   void render() override;
 
@@ -20,4 +20,21 @@ protected:
   std::shared_ptr<sf::Font> _font;
   std::string _string;
   sf::Text _text;
+};
+
+// Text used for the controls in the settings scene
+class ControlsTextComponent : public TextComponent
+{
+private:
+	std::string _action;
+	sf::Vector2f _initialPosition;
+public:
+	ControlsTextComponent() = delete;
+	explicit ControlsTextComponent(Entity*, const std::string& str = "");
+
+	void update(double) override;
+
+	void setInitialPosition(sf::Vector2f);
+
+	void setAction(std::string);
 };

@@ -1,23 +1,23 @@
 #include "engine.h"
 #include "game.h"
 
-using namespace std;
-
 // Scenes
 TestingScene testing;
 LevelOne levelOne;
 LevelTwo levelTwo;
 LevelThree levelThree;
+MainMenuScene main_menu;
+SettingsScene settings;
+CreditsScene credits;
 
 int main() 
 {
-	// Previous 1280x720
-	//Engine::Start(1920, 1080, "Nightmarevania", &testing);
-
-	//for debugging...
-	Engine::Start(1920, 1080, "Nightmarevania",&levelOne);
-	//Engine::Start(1920, 1080, "Nightmarevania", &levelTwo);
-	//Engine::Start(1920, 1080, "Nightmarevania", &levelThree);
-
+	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
+	//debugging:
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelOne);
+	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelTwo);
+	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelThree);
+	
+	
 	return 0;
 }

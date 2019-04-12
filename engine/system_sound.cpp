@@ -4,67 +4,66 @@
 static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> music;
 static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> effects;
 
-static bool musicOn;
-static bool effectsOn;
+static bool audioMusicOn;
+static bool audioEffectsOn;
 
-void SoundSystem::initialise()
+void Audio::initialise()
 {
-	musicOn = true;
-	effectsOn = true;
+	audioMusicOn = true;
+	audioEffectsOn = true;
 }
 
-void SoundSystem::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
+// Methods that handle the game music
+void Audio::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
 {
 	music[musicName] = musicSound;
 }
-
-void SoundSystem::playMusic(const std::string& musicName)
+void Audio::playMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
-	if (musicOn && found != music.end())
+	if (audioMusicOn && found != music.end())
 	{
 		found->second->play();
 	}
 }
-void SoundSystem::stopMusic(const std::string& musicName)
+void Audio::stopMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
-	if (musicOn && found != music.end())
+	if (audioMusicOn && found != music.end())
 	{
 		found->second->stop();
 	}
 }
+void Audio::turnMusicOn() { audioMusicOn = true; }
+void Audio::turnMusicOff() { audioMusicOn = false; }
+bool Audio::isMusicOn() { return audioMusicOn; }
 
-void SoundSystem::turnMusicOn() { musicOn = true; }
-void SoundSystem::turnMusicOff() { musicOn = false; }
-
-void SoundSystem::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
+// Methods that handle the game effects
+void Audio::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
 {
 	effects[effectName] = effectSound;
 }
-
-void SoundSystem::playEffect(const std::string& effectName)
+void Audio::playEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
-	if (effectsOn && found != effects.end())
+	if (audioEffectsOn && found != effects.end())
 	{
 		found->second->play();
 	}
 }
-
-void SoundSystem::stopEffect(const std::string& effectName)
+void Audio::stopEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
-	if (effectsOn && found != effects.end())
+	if (audioEffectsOn && found != effects.end())
 	{
 		found->second->stop();
 	}
 }
+void Audio::turnEffectsOn() { audioEffectsOn = true; }
+void Audio::turnEffectsOff() { audioEffectsOn = false; }
+bool Audio::areEffectsOn() { return audioEffectsOn; }
 
-void SoundSystem::turnEffectsOn() { effectsOn = true; }
-void SoundSystem::turnEffectsOff() { effectsOn = false; }
-
-void SoundSystem::clearAllSounds()
+void Audio::clearAllSounds()
 {
 	music.clear();
 	effects.clear();

@@ -4,6 +4,8 @@
 #include "system_renderer.h"
 #include "system_resources.h"
 #include "system_sound.h"
+#include "system_resolution.h"
+#include "system_controller.h"
 #include <SFML/Graphics.hpp>
 #include <future>
 #include <iostream>
@@ -24,8 +26,6 @@ static RenderWindow* _window;
 float frametimes[256] = {};
 uint8_t ftc = 0;
 
-static bool attackButtonReleased = false;
-static bool defendButtonReleased = false;
 // LOADING SCREEN
 
 void Loading_update(float dt, const Scene* const scn) 
@@ -61,24 +61,38 @@ void Loading_render()
 // SCENE
 
 Scene::~Scene() { UnLoad(); }
-// QUESTION: WHAT DOES THIS DO?
+
 void Scene::LoadAsync() { _loaded_future = std::async(&Scene::Load, this); }
 
 void Scene::UnLoad()
 {
+	pausedEnts.list.clear();
 	ents.list.clear();
 	setLoaded(false);
 }
 
-void Scene::Update(const double& dt) { 
-	ents.update(dt); 
+void Scene::Update(const double& dt) 
+{ 
+	if (_paused)
+	{
+		pausedEnts.update(dt);
+	}
+	else
+	{
+		ents.update(dt);
+	} 
 }
 
-void Scene::Render() { 
+void Scene::Render() 
+{ 
 	ents.render(); 
+	if (_paused)
+	{
+		pausedEnts.render();
+	}
 }
 
-// QUESTION: WHAT DOES THIS DO?
+
 bool Scene::isLoaded() const
 {
 	std::lock_guard<std::mutex> lck(_loaded_mtx);
@@ -97,7 +111,16 @@ std::shared_ptr<Entity> Scene::makeEntity()
 	ents.list.push_back(e);
 	return std::move(e);
 }
-// QUESTION: WHAT DOES THIS DO?
+
+std::shared_ptr<Entity> Scene::makePausedEntity()
+{
+	auto e = make_shared<Entity>(this);
+	pausedEnts.list.push_back(e);
+	return std::move(e);
+}
+
+void Scene::setPause(bool pause) { _paused = pause; }
+
 void Scene::setLoaded(bool b) 
 {
 	std::lock_guard<std::mutex> lck(_loaded_mtx);
@@ -110,12 +133,14 @@ void Scene::setLoaded(bool b)
 
 void Engine::Start(unsigned int width, unsigned int height, const std::string& gameName, Scene* scn)
 {
-	RenderWindow window(VideoMode(width, height), gameName);
+	RenderWindow window(VideoMode(width, height), gameName, sf::Style::Close);
 	_gameName = gameName;
 	_window = &window;
 	Renderer::initialise(window);
 	Physics::initialise();
-	SoundSystem::initialise();
+	Audio::initialise();
+	Resolution::initialise();
+	Controller::initialise();
 	ChangeScene(scn);
 	while (window.isOpen())
 	{
@@ -126,22 +151,11 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 			{
 				window.close();
 			}
-			if ((event.type == Event::KeyReleased) && (event.key.code == Keyboard::Space))
+			// The controller will process the events relevant to it
+			if ((event.type == Event::KeyReleased) || (event.type == Event::MouseButtonReleased) || (event.type == Event::JoystickButtonReleased))
 			{
-				Physics::setCanDoubleJump(true);
+				Controller::processEvent(event);
 			}
-			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Left))
-			{
-				attackButtonReleased = true;
-			}
-			if ((event.type == Event::MouseButtonReleased) && (event.key.code == Mouse::Right))
-			{
-				defendButtonReleased = true;
-			}
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Escape))
-		{
-			window.close();
 		}
 		//window.clear();
 		window.clear(sf::Color(7,7,7)); //slightly adjust the background to match the background of the tiles
@@ -228,12 +242,6 @@ void Engine::ChangeScene(Scene* s)
 sf::Vector2u Engine::getWindowSize() { return _window->getSize(); }
 
 sf::RenderWindow& Engine::GetWindow() { return *_window; }
-
-bool Engine::isAttackButtonReleased() { return attackButtonReleased; }
-void Engine::setAttackButtonReleased(bool status) { attackButtonReleased = status; }
-
-bool Engine::isDefendButtonReleased() { return defendButtonReleased; }
-void Engine::setDefendButtonReleased(bool status) { defendButtonReleased = status; }
 
 // TIMING
 

@@ -310,14 +310,14 @@ void AirAttackAnimation::execute(Entity* owner, double dt) noexcept
 		animation->changeAnimation("Iddle");
 		_current_frame = 0;
 	}
-	else if (movement->isGrounded() && combat->isAttacking())
-	{
-		animation->changeAnimation("GroundAttack");
-		_current_frame = 0;
-	}
 	else if (movement->isGrounded() && (combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
 	{
 		animation->changeAnimation("CircularAttack");
+		_current_frame = 0;
+	}
+	else if (movement->isGrounded() && combat->isAttacking())
+	{
+		animation->changeAnimation("GroundAttack");
 		_current_frame = 0;
 	}
 	else if (combat->isDownAttack())
@@ -389,7 +389,12 @@ void DownAttackAnimation::execute(Entity* owner, double dt) noexcept
 		animation->changeAnimation("Hurt");
 		_current_frame = 0;
 	}
-	if (movement->isGrounded())
+	if (movement->isGrounded() && (combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
+	{
+		animation->changeAnimation("CircularAttack");
+		_current_frame = 0;
+	}
+	else if (movement->isGrounded())
 	{
 		animation->changeAnimation("SmasherDownAttack");
 		_current_frame = 0;
@@ -412,14 +417,14 @@ void SmasherDownAttackAnimation::execute(Entity* owner, double dt) noexcept
 		animation->changeAnimation("Iddle");
 		_current_frame = 0;
 	}
+	else if ((combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
+	{
+		animation->changeAnimation("CircularAttack");
+		_current_frame = 0;
+	}
 	else if (combat->isBasicAttack() && _current_frame == 0)
 	{
 		animation->changeAnimation("GroundAttack");
-		_current_frame = 0;
-	}
-	else if ((combat->isCircularAttackLeft() || combat->isCircularAttackRight()) && _current_frame == 0)
-	{
-		animation->changeAnimation("CircularAttack");
 		_current_frame = 0;
 	}
 	else if (combat->isHurt())
