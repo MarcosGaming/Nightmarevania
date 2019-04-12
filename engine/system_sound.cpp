@@ -7,10 +7,26 @@ static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> effects;
 static bool audioMusicOn;
 static bool audioEffectsOn;
 
-void Audio::initialise()
+void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 {
-	audioMusicOn = true;
-	audioEffectsOn = true;
+	// Set music or on off based on the setting stored
+	if (!musicSetting.empty() && musicSetting == "Off")
+	{
+		audioMusicOn = false;
+	}
+	else
+	{
+		audioMusicOn = true;
+	}
+	// Set effects or on off based on the setting stored
+	if (!effectsSetting.empty() && effectsSetting == "Off")
+	{
+		audioEffectsOn = false;
+	}
+	else
+	{
+		audioEffectsOn = true;
+	}
 }
 
 // Methods that handle the game music

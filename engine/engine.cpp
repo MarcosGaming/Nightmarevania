@@ -134,8 +134,8 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	Renderer::initialise(window);
 	Physics::initialise();
 	Saving::initialise();
-	Audio::initialise();
-	Resolution::initialise();
+	Audio::initialise(*Saving::getMusicSettingSaved(), *Saving::getEffectSettingSaved());
+	Resolution::initialise(*Saving::getResolutionSettingSaved(), *Saving::getFullscreenSettingSaved(), *Saving::getBorderlessSettingSaved());
 	Controller::initialise();
 	ChangeScene(scn);
 	while (window.isOpen())

@@ -16,16 +16,42 @@ static void ChangeResolution(int, int, bool);
 // Icon for the window
 static sf::Image Icon;
 
-void Resolution::initialise()
+void Resolution::initialise(std::string& resolutionSetting, std::string& fullScreenSetting, std::string& borderlessSetting)
 {
-	fullScreen = false;
-	borderless = false;
-	resolution1920x1080 = false;
-	resolution1600x900 = false;
-	resolution1280x720 = true;
-	resolution1024x576 = false;
+	// Load Icon
 	Icon.loadFromFile("res/img/Icon.png");
-	Engine::GetWindow().setIcon(Icon.getSize().x, Icon.getSize().y, Icon.getPixelsPtr());
+	// Turn fullscreen on or not based on setting saved
+	if (!fullScreenSetting.empty() && fullScreenSetting == "On")
+	{
+		turnFullScreenOn();
+		return;
+	}
+	// Set borderless based on setting saved
+	if (!borderlessSetting.empty() && borderlessSetting == "On")
+	{
+		borderless = true;
+	}
+	else
+	{
+		borderless = false;
+	}
+	// Set resolution based on setting saved
+	if (!resolutionSetting.empty() && resolutionSetting == "1920x1080")
+	{
+		changeTo1920x1080();
+	}
+	else if (!resolutionSetting.empty() && resolutionSetting == "1600x900")
+	{
+		changeTo1600x900();
+	}
+	else if (!resolutionSetting.empty() && resolutionSetting == "1024x576")
+	{
+		changeTo1024x576();
+	}
+	else
+	{
+		changeTo1280x720();
+	}
 }
 
 bool Resolution::isFullScreenOn() { return fullScreen; }
@@ -35,7 +61,7 @@ bool Resolution::isResolution1600x900On() { return resolution1600x900; }
 bool Resolution::isResolution1280x720On() { return resolution1280x720; }
 bool Resolution::isResolution1024x576On() { return resolution1024x576; }
 
-void Resolution::changeTo1920x1080(bool borderless)
+void Resolution::changeTo1920x1080()
 {
 	resolution1920x1080 = true;
 	resolution1600x900 = false;
@@ -44,7 +70,7 @@ void Resolution::changeTo1920x1080(bool borderless)
 	fullScreen = false;
 	ChangeResolution(1920, 1080, borderless);
 }
-void Resolution::changeTo1600x900(bool borderless)
+void Resolution::changeTo1600x900()
 {
 	resolution1920x1080 = false;
 	resolution1600x900 = true;
@@ -53,7 +79,7 @@ void Resolution::changeTo1600x900(bool borderless)
 	fullScreen = false;
 	ChangeResolution(1600, 900, borderless);
 }
-void Resolution::changeTo1280x720(bool borderless)
+void Resolution::changeTo1280x720()
 {
 	resolution1920x1080 = false;
 	resolution1600x900 = false;
@@ -62,7 +88,7 @@ void Resolution::changeTo1280x720(bool borderless)
 	fullScreen = false;
 	ChangeResolution(1280, 720, borderless);
 }
-void Resolution::changeTo1024x576(bool borderless)
+void Resolution::changeTo1024x576()
 {
 	resolution1920x1080 = false;
 	resolution1600x900 = false;

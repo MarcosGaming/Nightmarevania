@@ -185,28 +185,22 @@ void ResolutionButtonComponent::update(double dt)
 		_active = true;
 		_mediator->deactivateOtherResolutionButtons(this);
 		_mediator->deactivateFullScreen();
-		// Check if the window is currently borderless
-		bool borderless = false;
-		if (_mediator->isBorderlessActive())
-		{
-			borderless = true;
-		}
 		// Change to the corresponding resolution
 		if (_is1920x1080)
 		{
-			Resolution::changeTo1920x1080(borderless);
+			Resolution::changeTo1920x1080();
 		}
 		else if (_is1600x900)
 		{
-			Resolution::changeTo1600x900(borderless);
+			Resolution::changeTo1600x900();
 		}
 		else if (_is1280x720)
 		{
-			Resolution::changeTo1280x720(borderless);
+			Resolution::changeTo1280x720();
 		}
 		else if (_is1024x576)
 		{
-			Resolution::changeTo1024x576(borderless);
+			Resolution::changeTo1024x576();
 		}
 		PressedCooldown = 4.0f;
 	}

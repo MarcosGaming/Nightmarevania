@@ -20,7 +20,7 @@ void Saving::initialise()
 {
 	// Read file where the level and the settings is stored
 	std::string userpath = getenv("USERPROFILE");
-	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::out);
+	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::in);
 	// If the file is not empty 
 	if (saveFile.peek() != saveFile.eof())
 	{
@@ -59,19 +59,14 @@ void Saving::initialise()
 void Saving::saveLevel(std::string level) { levelSaved = level; }
 std::string* Saving::getLevelSaved() { return &levelSaved; }
 
-void Saving::saveMusicSetting(std::string music) { musicSettingSaved = music; }
 std::string* Saving::getMusicSettingSaved() { return &musicSettingSaved; }
 
-void Saving::saveEffectSetting(std::string effect) { effectsSettingSaved = effect; }
 std::string* Saving::getEffectSettingSaved() { return &effectsSettingSaved; }
 
-void Saving::saveResolutionSetting(std::string resolution) { resolutionSettingSaved = resolution; }
 std::string* Saving::getResolutionSettingSaved() { return &resolutionSettingSaved; }
 
-void Saving::saveFullscreenSetting(std::string fullscreen) { fullscreenSettingSaved = fullscreen; }
 std::string* Saving::getFullscreenSettingSaved() { return &fullscreenSettingSaved; }
 
-void Saving::saveBorderlessSetting(std::string borderless) { borderlessSettingSaved = borderless; }
 std::string* Saving::getBorderlessSettingSaved() { return &borderlessSettingSaved; }
 
 void Saving::saveSettingsInFile()
@@ -79,7 +74,7 @@ void Saving::saveSettingsInFile()
 	getSettingsFromSystem();
 	// Open the file and remove all the contents from it
 	std::string userpath = getenv("USERPROFILE");
-	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::out | std::fstream::app);
+	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::out | std::fstream::trunc);
 	// Add level to file
 	saveFile << levelSaved << std::endl;
 	// Add music setting to file 
@@ -130,13 +125,13 @@ static void getSettingsFromSystem()
 	{
 		resolutionSettingSaved = "1600x900";
 	}
-	else if (Resolution::isResolution1280x720On())
+	else if (Resolution::isResolution1024x576On())
 	{
-		resolutionSettingSaved = "1280x720";
+		resolutionSettingSaved = "1024x576";
 	}
 	else
 	{
-		resolutionSettingSaved = "1024x576";
+		resolutionSettingSaved = "1280x720";
 	}
 	// Set fullscreen setting to save
 	if (Resolution::isFullScreenOn())
