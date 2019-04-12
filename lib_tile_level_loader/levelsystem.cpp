@@ -43,8 +43,7 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{SPIKES1, sf::IntRect((2 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
 	{SPIKES2, sf::IntRect((3 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
 
-	{UDOOR, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR, sf::IntRect((0 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
+	{DOOR, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 
 	/*{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
 	{UDOOR2, sf::IntRect((3 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
@@ -189,21 +188,6 @@ void LevelSystem::buildSprites(bool optimise)
 			Tile t = getTile({ x, y });
 			if (t == EMPTY)
 			{
-				continue;
-			}
-			if (t == UDOOR) {
-				unique_ptr<Door> door = make_unique<Door>();
-				//door->setTexure(&foreground);
-				door->setLocked(false);
-				door->setPosition(getTilePosition({ x, y }));
-				continue;
-			}
-			if (t == LDOOR) {
-
-				unique_ptr<Door> door = make_unique<Door>();
-				//door->setTexure(&foreground);
-				door->setLocked(true);
-				door->setPosition(getTilePosition({ x, y }));
 				continue;
 			}
 			tps.push_back({ getTilePosition({x, y}), tls, getSprite(t) });

@@ -4,6 +4,7 @@
 #include "../components/cmp_player_physics.h"
 #include "../animation_states.h"
 #include "../components/cmp_player_combat.h"
+#include "../components/cmp_door.h"
 #include <iostream>
 #include <LevelSystem.h>
 //#include "../components/cmp_door.h"
@@ -121,6 +122,38 @@ void LevelOne::Load()
 
 
 	setLoaded(true);
+
+	//DOOR stuff
+	/*Vector2f doorPos = Vector2f();
+	bool doorExists = false;
+	if (ls::findTiles(ls::LDOOR) != vector<sf::Vector2ul>()) {
+		//if the found pos for LDOOR isn't the initialised value, then it exists so use that:
+		doorPos = ls::getTilePosition(ls::findTiles(ls::LDOOR)[0]);
+		doorExists = true;
+	}
+	else if (ls::findTiles(ls::UDOOR) != vector<sf::Vector2ul>()) {
+		//else, check for a UDOOR tile
+		doorPos = ls::getTilePosition(ls::findTiles(ls::UDOOR)[0]);
+		doorExists = true;
+	}*/
+
+	bool doorExists = false;
+	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) {
+		doorExists = true;
+	}
+
+	if (doorExists) { //if there actually is a pos, then a door tile exists so make the door
+		auto door = makeEntity();
+		//door->setPosition(ls::getTilePosition(ls::findTiles(ls::UDOOR)[0]));
+		auto doorCmp = door->addComponent<DoorComponent>(false, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		//auto doorCmp = door->addComponent<DoorComponent>();
+		//false for L1, but starts as true for L2 and stays true in L3
+		auto doorSprite = door->addComponent<SpriteComponent>();
+		doorSprite->setTexure(doorCmp->getTexture());
+		//doorSprite->getSprite().scale(sf::Vector2f(6.0f, 6.0f));
+		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);//doorSprite->getSprite().getTextureRect().height * 0.5f);
+		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}	
 }
 
 void LevelOne::UnLoad()

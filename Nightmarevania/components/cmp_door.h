@@ -1,39 +1,38 @@
 #pragma once
 
-//#include "ecm.h"
-#include "../lib_ecm/ecm.h"
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Shape.hpp>
+#include <../lib_ecm/ecm.h>
+#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics/Sprite.hpp>
+//#include <SFML/Graphics/Shape.hpp>
+//#include <SFML/Graphics/RectangleShape.hpp>
+//#include <memory>
 
 using namespace std;
 using namespace sf;
 
-class Door
+class DoorComponent : public Component
 {
 protected:
+//private:
 	bool _locked;
-	//shared_ptr<Sprite> _sprite;
-	//unique_ptr<sf::RectangleShape> _sprite;
-	shared_ptr <sf::RectangleShape> _sprite;
-	shared_ptr<Texture> _texture;
+	std::shared_ptr<sf::Sprite> _sprite;
+	//std::shared_ptr<sf::RectangleShape> _sprite;
+	//std::shared_ptr<sf::Texture> _texture;
 
 public:
-	//Door() = delete;
-	//explicit Door(Entity* p);
-	explicit Door();
-	//explicit Door(Entity * p, bool _locked, std::shared_ptr<sf::Texture> tex, Vector2f pos);
-	~Door() = default;
-
-	//void setTexure(std::shared_ptr<sf::Texture> tex);
-	void setPosition(Vector2f pos);
-	void createDoor(IntRect i);
-
 	
+	DoorComponent() = delete;
+	explicit DoorComponent(Entity * p, bool isLocked, Vector2f position);
+	//explicit DoorComponent(Entity* p, bool _isLocked);
+	//explicit DoorComponent(Entity* p);
 
-	//void update(double dt);
-	void render();
-	
-	bool isLocked() const;
-	void setLocked(bool _locked);
+	void update(double dt) override;
+	void render() override;
 
+	void setLocked(bool isLocked);
+	bool getLocked();
+	shared_ptr <sf::Texture> getTexture();
+	sf::IntRect getRect();
+	Vector2f getSize();
+	void changeDoor();
 };
