@@ -4,7 +4,7 @@
 
 namespace Controller
 {
-	void initialise();
+	void initialise(std::vector<std::string>&, std::vector<std::string>&);
 
 	const std::string MoveRightButton = "MoveRight";
 	const std::string MoveLeftButton = "MoveLeft";

@@ -2,7 +2,7 @@
 #include "system_controller.h"
 #include "system_sound.h"
 #include "system_resolution.h"
-#include <vector>
+#include "../lib_conversor/conversor.h"
 #include <fstream>
 
 static std::string levelSaved;
@@ -11,6 +11,8 @@ static std::string effectsSettingSaved;
 static std::string resolutionSettingSaved;
 static std::string fullscreenSettingSaved;
 static std::string borderlessSettingSaved;
+static std::vector<std::string> keysButtonsSaved;
+static std::vector<std::string> controllerButtonsSaved;
 
 static std::fstream saveFile;
 
@@ -49,6 +51,42 @@ void Saving::initialise()
 			case 5:
 				borderlessSettingSaved = line;
 				break;
+			case 6:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 7:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 8:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 9:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 10:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 11:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 12:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 13:
+				keysButtonsSaved.push_back(line);
+				break;
+			case 14:
+				controllerButtonsSaved.push_back(line);
+				break;
+			case 15:
+				controllerButtonsSaved.push_back(line);
+				break;
+			case 16:
+				controllerButtonsSaved.push_back(line);
+				break;
+			case 17:
+				controllerButtonsSaved.push_back(line);
+				break;
 			}
 			counter++;
 		}
@@ -69,8 +107,16 @@ std::string* Saving::getFullscreenSettingSaved() { return &fullscreenSettingSave
 
 std::string* Saving::getBorderlessSettingSaved() { return &borderlessSettingSaved; }
 
+std::vector<std::string>* Saving::getKeysButtonsSaved() { return &keysButtonsSaved; }
+
+std::vector<std::string>* Saving::getControllerButtonsSaved() { return &controllerButtonsSaved; }
+
 void Saving::saveSettingsInFile()
 {
+	// Clear vectors
+	keysButtonsSaved.clear();
+	controllerButtonsSaved.clear();
+	// Get settings from the differnet elements in the system
 	getSettingsFromSystem();
 	// Open the file and remove all the contents from it
 	std::string userpath = getenv("USERPROFILE");
@@ -87,6 +133,30 @@ void Saving::saveSettingsInFile()
 	saveFile << fullscreenSettingSaved << std::endl;
 	// Add borderless setting to file
 	saveFile << borderlessSettingSaved << std::endl;
+	// Add moveright action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[0] << std::endl;
+	// Add moveleft action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[1] << std::endl;
+	// Add jump action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[2] << std::endl;
+	// Add attack action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[3] << std::endl;
+	// Add defend action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[4] << std::endl;
+	// Add up attack action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[5] << std::endl;
+	// Add down attack action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[6] << std::endl;
+	// Add pause action corresponding to keyboard/mouse
+	saveFile << keysButtonsSaved[7] << std::endl;
+	// Add jump action corresponding to controller
+	saveFile << controllerButtonsSaved[0] << std::endl;
+	// Add attack action corresponding to controller
+	saveFile << controllerButtonsSaved[1] << std::endl;
+	// Add defend action corresponding to controller
+	saveFile << controllerButtonsSaved[2] << std::endl;
+	// Add pause action corresponding to controller
+	saveFile << controllerButtonsSaved[3] << std::endl;
 	// Close file
 	saveFile.close();
 }
@@ -94,7 +164,7 @@ void Saving::saveSettingsInFile()
 static void getSettingsFromSystem()
 {
 	// Set level safe to 0 if it is empty
-	if (levelSaved.empty())
+	if (levelSaved.empty() || levelSaved != "1" || levelSaved != "2" || levelSaved != "3")
 	{
 		levelSaved = "0";
 	}
@@ -151,4 +221,97 @@ static void getSettingsFromSystem()
 	{
 		borderlessSettingSaved = "Off";
 	}
+	// Moveright keyboard/mouse key/button to save
+	std::string string = Controller::MoveRightButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Moveleft keyboard/mouse key/button to save
+	string = Controller::MoveLeftButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Jump keyboard/mouse key/button to save
+	string = Controller::JumpButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Attack keyboard/mouse key/button to save
+	string = Controller::AttackButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Defend keyboard/mouse key/button to save
+	string = Controller::DefendButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Up attack keyboard/mouse key/button to save
+	string = Controller::UpAttackButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Down attack keyboard/mouse key/button to save
+	string = Controller::DownAttackButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Pause keyboard/mouse key/button to save
+	string = Controller::PauseButton;
+	if (Controller::getActionKey(string) != NULL)
+	{
+		keysButtonsSaved.push_back(Conversor::KeyboardKeyToString(*Controller::getActionKey(string)));
+	}
+	else
+	{
+		keysButtonsSaved.push_back(Conversor::MouseButtonToString(*Controller::getActionMouseButton(string)));
+	}
+	// Jump controller button to save
+	string = Controller::JumpButton;
+	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
+	// Attack controller button to save
+	string = Controller::AttackButton;
+	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
+	// Defend controller button to save
+	string = Controller::DefendButton;
+	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
+	// Pause controller button to save
+	string = Controller::PauseButton;
+	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
+
 }

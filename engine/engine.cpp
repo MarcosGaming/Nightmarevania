@@ -136,7 +136,7 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	Saving::initialise();
 	Audio::initialise(*Saving::getMusicSettingSaved(), *Saving::getEffectSettingSaved());
 	Resolution::initialise(*Saving::getResolutionSettingSaved(), *Saving::getFullscreenSettingSaved(), *Saving::getBorderlessSettingSaved());
-	Controller::initialise();
+	Controller::initialise(*Saving::getKeysButtonsSaved(), *Saving::getControllerButtonsSaved());
 	ChangeScene(scn);
 	while (window.isOpen())
 	{

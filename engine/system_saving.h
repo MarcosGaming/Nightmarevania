@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace Saving 
 {
@@ -17,6 +18,10 @@ namespace Saving
 	std::string* getFullscreenSettingSaved();
 
 	std::string* getBorderlessSettingSaved();
+
+	std::vector<std::string>* getKeysButtonsSaved();
+
+	std::vector<std::string>* getControllerButtonsSaved();
 
 	void saveSettingsInFile();
 };

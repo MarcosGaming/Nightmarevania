@@ -1,6 +1,7 @@
 #include "system_controller.h"
 #include "engine.h"
 #include <unordered_map>
+#include "../lib_conversor/conversor.h"
 
 static std::unordered_map<std::string, sf::Keyboard::Key> keyboard;
 static std::unordered_map<std::string, sf::Mouse::Button> mouse;
@@ -10,30 +11,112 @@ static bool attackButtonReleased;
 static bool defendButtonReleased;
 static bool jumpButtonReleased;
 
+// Function that maps the controls to the standard form
+static void setControlsToStandard();
+
 // Internal funcions that handle mapping
 static void mapActionToKeyboardKey(std::string, sf::Keyboard::Key);
 static void mapActionToMouseButton(std::string, sf::Mouse::Button);
 static void mapActionToControllerButton(std::string, int);
 
-void Controller::initialise()
+void Controller::initialise(std::vector<std::string>& keyMouseSettings, std::vector<std::string>& controllerSettings)
 {
+	// All actions begin being released
 	attackButtonReleased = true;
 	defendButtonReleased = true;
 	jumpButtonReleased = true;
-	// Standatd keyboard and mouse mapping
-	keyboard[MoveRightButton] = sf::Keyboard::D;
-	keyboard[MoveLeftButton] = sf::Keyboard::A;
-	keyboard[JumpButton] = sf::Keyboard::Space;
-	mouse[AttackButton] = sf::Mouse::Left;
-	mouse[DefendButton] = sf::Mouse::Right;
-	keyboard[UpAttackButton] = sf::Keyboard::W;
-	keyboard[DownAttackButton] = sf::Keyboard::S;
-	keyboard[PauseButton] = sf::Keyboard::Escape;
-	// Standard controller mapping
-	controller[JumpButton] = 0;
-	controller[AttackButton] = 2;
-	controller[DefendButton] = 1;
-	controller[PauseButton] = 7;
+	// If any of vectors is empty or if their size do not correspond with the amount of elements they should have perform standard mapping
+	if (keyMouseSettings.empty() || controllerSettings.empty() || keyMouseSettings.size() != 8 || controllerSettings.size() != 4)
+	{
+		setControlsToStandard();
+		return;
+	}
+	// Set keyboard/mouse mapping based on the keyMouseSettings saved
+	for (int i = 0; i < keyMouseSettings.size(); i++)
+	{
+		// The mapping follows this order: MoveRight,MoveLeft,Jump,Attack,Defend,UpAttack,DownAttack,Pause
+		std::string string;
+		switch (i)
+		{
+		case 0:
+			string = MoveRightButton;
+			break;
+		case 1:
+			string = MoveLeftButton;
+			break;
+		case 2:
+			string = JumpButton;
+			break;
+		case 3:
+			string = AttackButton;
+			break;
+		case 4:
+			string = DefendButton;
+			break;
+		case 5:
+			string = UpAttackButton;
+			break;
+		case 6:
+			string = DownAttackButton;
+			break;
+		case 7:
+			string = PauseButton;
+			break;
+		}
+		// Try to map the element in the vector to a keyboard key or to a mouse button
+		sf::Keyboard::Key key = Conversor::StringToKeyboardKey(keyMouseSettings[i]);
+		// If the key is mapped to unknown with the keyboard try with the mouse
+		if (key == sf::Keyboard::Unknown)
+		{
+			sf::Mouse::Button button = Conversor::StringToMouseButton(keyMouseSettings[i]);
+			// If button maps to button count perform standard mapping
+			if (button == sf::Mouse::Button::ButtonCount)
+			{
+				setControlsToStandard();
+				return;
+			}
+			else
+			{
+				mouse[string] = button;
+			}
+		}
+		else
+		{
+			keyboard[string] = key;
+		}
+	}
+	// Set controller mapping based on the controller settings saved
+	for (int i = 0; i < controllerSettings.size(); i++)
+	{
+		// The mapping follows this order: Jump,Attack,Defend,Pause
+		std::string string;
+		switch (i)
+		{
+		case 0:
+			string = JumpButton;
+			break;
+		case 1:
+			string = AttackButton;
+			break;
+		case 2:
+			string = DefendButton;
+			break;
+		case 3:
+			string = PauseButton;
+			break;
+		}
+		// If the integer retrieve from the conversion is 10 than perform standard mapping
+		int button = Conversor::StringToControllerButton(controllerSettings[i]);
+		if (button == 10)
+		{
+			setControlsToStandard();
+			return;
+		}
+		else
+		{
+			controller[string] = button;
+		}
+	}
 }
 
 bool Controller::isPressed(std::string action)
@@ -346,3 +429,21 @@ void mapActionToControllerButton(std::string action, int button)
 	controller[action] = button;
 }
 
+// Maps the controls to the standard form
+void setControlsToStandard()
+{
+	// Standatd keyboard and mouse mapping
+	keyboard[Controller::MoveRightButton] = sf::Keyboard::D;
+	keyboard[Controller::MoveLeftButton] = sf::Keyboard::A;
+	keyboard[Controller::JumpButton] = sf::Keyboard::Space;
+	mouse[Controller::AttackButton] = sf::Mouse::Left;
+	mouse[Controller::DefendButton] = sf::Mouse::Right;
+	keyboard[Controller::UpAttackButton] = sf::Keyboard::W;
+	keyboard[Controller::DownAttackButton] = sf::Keyboard::S;
+	keyboard[Controller::PauseButton] = sf::Keyboard::Escape;
+	// Standard controller mapping
+	controller[Controller::JumpButton] = 0;
+	controller[Controller::AttackButton] = 2;
+	controller[Controller::DefendButton] = 1;
+	controller[Controller::PauseButton] = 7;
+}
