@@ -31,9 +31,9 @@ public:
 
 	void setLocked(bool isLocked);
 	bool getLocked();
+
 	shared_ptr <sf::Texture> getTexture();
 	sf::IntRect getRect();
 	Vector2f getSize();
 	void setPlayer(shared_ptr<Entity> player);
-	//void changeDoor();
 };

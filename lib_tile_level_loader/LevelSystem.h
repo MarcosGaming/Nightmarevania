@@ -103,6 +103,8 @@ public:
 
 	static std::vector<sf::Vector2ul> findTiles(Tile);
 
+	static bool doesTileExist(LevelSystem::Tile type);
+
 	//static sf::Color getColor(Tile t);
 	static sf::IntRect getSprite(Tile t);
 

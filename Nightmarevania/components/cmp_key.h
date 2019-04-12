@@ -16,10 +16,6 @@ private:
 	bool _hasKey;
 	Vector2f radiusOffset = Vector2f(1.0f, 1.0f);
 
-protected:
-	
-	//std::shared_ptr<sf::Sprite> _sprite;
-
 public:
 	
 	KeyComponent() = delete;

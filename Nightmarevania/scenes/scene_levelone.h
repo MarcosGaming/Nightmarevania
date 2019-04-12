@@ -19,6 +19,6 @@ private:
 	sf::View followPlayer;
 	sf::Vector2f centrePoint;
 	float leftBoundary = 967.0f;
-	float rightBoundary = 12795.0f;
+	float rightBoundary = 102795.0f;
 };
 

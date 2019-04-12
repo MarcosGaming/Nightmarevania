@@ -6,18 +6,10 @@
 using namespace std;
 using namespace sf;
 
-//int tileSize = 32;
-//Vector2f doorSize = Vector2f(96.0f, 96.0f);
-sf::IntRect lockedImage;// = sf::IntRect((0 * tileSize), (7 * tileSize), (3 * tileSize), (3 * tileSize));
-sf::IntRect unlockedImage;// = sf::IntRect((3 * tileSize), (7 * tileSize), (3 * tileSize), (3 * tileSize));
+sf::IntRect lockedImage;
+sf::IntRect unlockedImage;
 
 shared_ptr<Entity> _player = NULL;
-sf::IntRect texRect;
-
-//bool _locked;
-//shared_ptr<sf::Sprite> _sprite;
-//shared_ptr<sf::Texture> _texture;
-//Vector2f _position = Vector2f(-1000,5000);
 
 //constructor:
 DoorComponent::DoorComponent(Entity * p, bool isLocked, Vector2f position) : Component(p) {
@@ -38,8 +30,10 @@ DoorComponent::DoorComponent(Entity * p, bool isLocked, Vector2f position) : Com
 
 void DoorComponent::update(double dt) {
 	
-	if ((_player != 0) && _player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
-		_locked = false;
+	if (_player != 0 && _player->GetCompatibleComponent<KeyComponent>().size() != 0) {
+		if (_player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) { //
+			_locked = false;
+		}
 	}
 }
 
@@ -47,11 +41,9 @@ void DoorComponent::render() {
 	
 	_sprite->setScale(sf::Vector2f(2.0f, 2.0f));
 	if (_locked) {
-		//texRect = lockedImage;
 		_sprite->setTextureRect(lockedImage);
 	}
 	else {
-		//texRect = unlockedImage;
 		_sprite->setTextureRect(unlockedImage);
 	}
 	Renderer::queue(_sprite.get());
@@ -84,7 +76,3 @@ Vector2f DoorComponent::getSize() {
 void DoorComponent::setPlayer(shared_ptr<Entity> player) {
 	_player = player;
 }
-
-/*void setPosition(Vector2f position) {
-	_position = position;
-}*/

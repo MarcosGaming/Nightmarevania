@@ -15,6 +15,7 @@ using namespace sf;
 sf::Vector2f curCentre; //debugging
 
 shared_ptr<Entity> door;
+bool keyExists = false;
 
 void LevelOne::Load()
 {
@@ -25,12 +26,13 @@ void LevelOne::Load()
 	ls::setOffset(Vector2f(0, ho));
 
 	//DOOR exists
-	bool doorExists = false;
+	/*bool doorExists = false;
 	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) {
 		doorExists = true;
-	}
+	}*/
 
-	if (doorExists) { //if there actually is a pos, then a door tile exists so make the door
+	//if (doorExists) {
+	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) { //if there actually is a pos, then a door tile exists so make the door
 		door = makeEntity();
 		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
 		//false for L1, but starts as true for L2 and stays true in L3
@@ -111,35 +113,15 @@ void LevelOne::Load()
 	
 		//KEY - level 2 only
 		door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
-		bool keyExists = false;
-		if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::KEY)[0]))) {
+		
+		/*if (ls::doesTileExist(ls::KEY)) {
 			keyExists = true;
-		}
+		}*/
 
-		if (keyExists) {
+		//if (keyExists) {
+		if (ls::doesTileExist(ls::KEY)) {
 			auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
 		}
-
-
-		//if (keyExists) { //if there actually is a pos, then a key tile exists so make the door
-			//auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
-
-
-
-			//key->setTexure(key->getTexture());
-			//key->getSprite().setOrigin(key->getSprite().getTextureRect().width * 0.5f, 0.0f);
-			//key->getSprite().setTextureRect(key->getRect());
-
-
-			//auto door = makeEntity();
-			//auto doorCmp = door->addComponent<DoorComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
-			//auto doorSprite = door->addComponent<SpriteComponent>();
-			//doorSprite->setTexure(doorCmp->getTexture());
-			//doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
-			//doorSprite->getSprite().setTextureRect(doorCmp->getRect());}
-
-
-		//}
 	}
 
 	// Add physics colliders to level tiles.
@@ -168,7 +150,7 @@ void LevelOne::Load()
 	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);//Engine::GetWindow().getView().getCenter();// = player->getPosition();
+	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);
 
 
 	setLoaded(true);
@@ -184,23 +166,21 @@ void LevelOne::UnLoad()
 
 void LevelOne::Update(const double& dt)
 {
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
+	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
 		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
-		//vector<shared_ptr<KeyComponent>> allKeys = player->GetCompatibleComponent<KeyComponent>();
-		//shared_ptr<KeyComponent> key = allKeys[0];
-		//key->setHeld(true);
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
 		centrePoint.x = player->getPosition().x;
 	}
 
-	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	//followPlayer.setCenter(sf::Vector2f(player->getPosition().x, screenSize.y/2)); //LEVEL1 - Only follows PC left and right, suitable for running through the corridor.
 	followPlayer.setCenter(centrePoint);
-	//Engine::GetWindow().setView(followPlayer);
+
+	if (ls::getTileAt(player->getPosition()) == ls::END) {
+		Engine::ChangeScene((Scene*)&levelTwo);
+	}
 
 	Scene::Update(dt);
 }

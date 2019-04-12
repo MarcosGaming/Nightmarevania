@@ -315,6 +315,19 @@ std::vector<sf::Vector2ul> LevelSystem::findTiles(LevelSystem::Tile type)
 	return v;
 }
 
+bool LevelSystem::doesTileExist(LevelSystem::Tile type)
+{
+	for (size_t i = 0; i < _width * _height; ++i)
+	{
+		if (_tiles[i] == type)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 LevelSystem::Tile LevelSystem::getTileAt(Vector2f v)
 {
 	auto a = v - _offset;
