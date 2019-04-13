@@ -17,6 +17,7 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) 
 	_groundspeed = 30.f;
 	_grounded = false;
 	_secondJump = false;
+	_canMove = true;
 	_body->SetSleepingAllowed(false);
 	_body->SetFixedRotation(true);
 	//Bullet items have higher-res collision detection
@@ -85,7 +86,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else
 	{
-		if (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton))
+		if (_canMove && (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton)))
 		{
 			// Moving Either Left or Right
 			if (Controller::isPressed(Controller::MoveRightButton))
@@ -107,7 +108,7 @@ void PlayerPhysicsComponent::update(double dt)
 
 		static bool impulseDown = false;
 		// Handle Jump
-		if (Controller::isPressed(Controller::JumpButton))
+		if (_canMove && Controller::isPressed(Controller::JumpButton))
 		{
 			_grounded = isGrounded();
 			if (_grounded)
@@ -200,4 +201,9 @@ bool PlayerPhysicsComponent::isGrounded() const
 bool PlayerPhysicsComponent::isSecondJump() const
 {
 	return _secondJump;
+}
+
+void PlayerPhysicsComponent::setCanMove(bool canMove)
+{
+	_canMove = canMove;
 }

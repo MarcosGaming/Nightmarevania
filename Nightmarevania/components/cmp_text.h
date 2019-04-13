@@ -38,3 +38,24 @@ public:
 
 	void setAction(std::string);
 };
+
+// Text used for the dialogue boxes
+class DialogueBoxComponent : public TextComponent
+{
+private:
+	std::string _completeText;
+	int _currentChar;
+	bool _finished;
+
+	std::weak_ptr<Entity> _player;
+
+public:
+	DialogueBoxComponent() = delete;
+	explicit DialogueBoxComponent(Entity*, const std::string& str = "");
+
+	void update(double) override;
+
+	void setCompleteText(const std::string&);
+
+	void setTextPosition(const sf::Vector2f&);
+};

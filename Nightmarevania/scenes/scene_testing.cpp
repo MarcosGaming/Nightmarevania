@@ -1,5 +1,6 @@
 #include "scene_testing.h"
 #include "../components/cmp_sprite.h"
+#include "../components/cmp_text.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
@@ -29,6 +30,9 @@ static shared_ptr<Texture> resume_tex;
 
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
+
+static shared_ptr<Entity> dialogue_box;
+
 
 void TestingScene::Load()
 {
@@ -343,6 +347,15 @@ void TestingScene::Load()
 		button->setHovered(sf::IntRect(0, 15, 117, 15));
 		button->setScene(&main_menu);
 		buttonsForController.push_back(button);
+	}
+
+	// Dialogue box
+	{
+		dialogue_box = makeEntity();
+		// Dialogue text component
+		auto text = dialogue_box->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
+		text->setTextPosition(Vector2f(200.0f, 300.0f));
 	}
 
 	setLoaded(true);
