@@ -6,6 +6,7 @@
 #include "system_sound.h"
 #include "system_resolution.h"
 #include "system_controller.h"
+#include "system_saving.h"
 #include <SFML/Graphics.hpp>
 #include <future>
 #include <iostream>
@@ -138,9 +139,10 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 	_window = &window;
 	Renderer::initialise(window);
 	Physics::initialise();
-	Audio::initialise();
-	Resolution::initialise();
-	Controller::initialise();
+	Saving::initialise();
+	Audio::initialise(*Saving::getMusicSettingSaved(), *Saving::getEffectSettingSaved());
+	Resolution::initialise(*Saving::getResolutionSettingSaved(), *Saving::getFullscreenSettingSaved(), *Saving::getBorderlessSettingSaved());
+	Controller::initialise(*Saving::getKeysButtonsSaved(), *Saving::getControllerButtonsSaved());
 	ChangeScene(scn);
 	while (window.isOpen())
 	{
@@ -168,6 +170,7 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 		_activeScene->UnLoad();
 		_activeScene = nullptr;
 	}
+	Saving::saveSettingsInFile();
 	window.close();
 	Physics::shutdown();
 	// Render::shutdown();

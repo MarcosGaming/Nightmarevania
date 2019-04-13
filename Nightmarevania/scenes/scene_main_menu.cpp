@@ -4,6 +4,7 @@
 #include "../game.h"
 #include <system_renderer.h>
 #include <system_sound.h>
+#include <system_saving.h>
 
 using namespace std;
 using namespace sf;
@@ -92,9 +93,25 @@ void MainMenuScene::Load()
 		button->setHovered(sf::IntRect(0, 37, 200, 37));
 		button->setPressed(sf::IntRect(0, 74, 200, 37));
 		// Active depends in having something stored in the save file
-		button->setActive(true);
-		// The scene is the one in the save file
-		button->setScene(&testing);
+		if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "1")
+		{
+			// Set scene to level 1
+			//button->setScene(&testing);
+		}
+		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "2")
+		{
+			// Set scene to level 2
+			//button->setScene(&testing);
+		}
+		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "3")
+		{
+			// Set scene to level 3
+			//button->setScene(&testing);
+		}
+		else
+		{
+			button->setActive(true);
+		}
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(button);
 	}

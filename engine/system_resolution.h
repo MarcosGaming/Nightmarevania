@@ -1,8 +1,9 @@
 #pragma once
+#include <string>
 
 namespace Resolution 
 {
-	void initialise();
+	void initialise(std::string&, std::string&, std::string&);
 
 	bool isFullScreenOn();
 	bool isBorderlessOn();
@@ -11,10 +12,10 @@ namespace Resolution
 	bool isResolution1280x720On();
 	bool isResolution1024x576On();
 	
-	void changeTo1920x1080(bool borderless);
-	void changeTo1600x900(bool borderless);
-	void changeTo1280x720(bool borderless);
-	void changeTo1024x576(bool borderless);
+	void changeTo1920x1080();
+	void changeTo1600x900();
+	void changeTo1280x720();
+	void changeTo1024x576();
 
 	void turnFullScreenOn();
 	void turnFullScreenOff();

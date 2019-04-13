@@ -9,4 +9,10 @@ namespace Conversor
 	std::string MouseButtonToString(sf::Mouse::Button);
 
 	std::string ControllerButtonToString(int);
+
+	sf::Keyboard::Key StringToKeyboardKey(std::string&);
+
+	sf::Mouse::Button StringToMouseButton(std::string&);
+
+	int StringToControllerButton(std::string&);
 }

@@ -5,7 +5,7 @@
 
 namespace Audio 
 {
-	void initialise();
+	void initialise(std::string&, std::string&);
 
 	void addMusic(const std::string&, std::shared_ptr<sf::Sound>);
 	void playMusic(const std::string&);
