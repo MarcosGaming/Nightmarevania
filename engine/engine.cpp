@@ -11,6 +11,7 @@
 #include <future>
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 
 using namespace sf;
 using namespace std;
@@ -56,6 +57,8 @@ void Loading_render()
 	Renderer::queue(&octagon);
 }
 
+
+
 // SCENE
 
 Scene::~Scene() { UnLoad(); }
@@ -89,6 +92,7 @@ void Scene::Render()
 		pausedEnts.render();
 	}
 }
+
 
 bool Scene::isLoaded() const
 {
@@ -124,6 +128,8 @@ void Scene::setLoaded(bool b)
    _loaded = b;
 }
 
+
+
 // ENGINE
 
 void Engine::Start(unsigned int width, unsigned int height, const std::string& gameName, Scene* scn)
@@ -153,7 +159,8 @@ void Engine::Start(unsigned int width, unsigned int height, const std::string& g
 				Controller::processEvent(event);
 			}
 		}
-		window.clear();
+		//window.clear();
+		window.clear(sf::Color(7,7,7)); //slightly adjust the background to match the background of the tiles
 		Update();
 		Render(window);
 		window.display();
