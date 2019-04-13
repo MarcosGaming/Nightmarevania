@@ -2,6 +2,7 @@
 #include "cmp_player_physics.h"
 #include "system_renderer.h"
 #include <system_controller.h>
+#include <system_sound.h>
 
 using namespace sf;
 using namespace std;
@@ -129,6 +130,7 @@ void PlayerCombatComponent::update(double dt)
 	// Player death
 	if (_healthTaken >= _maxHealth)
 	{
+		Audio::playEffect("player_death_effect");
 		_hurt = false;
 		_parent->setDeath(true);
 	}
@@ -206,6 +208,7 @@ void PlayerCombatComponent::hurtPlayer(int damage)
 {
 	if (_hurtCooldown <= 0.0f)
 	{
+		Audio::playEffect("player_damage_effect");
 		_hurt = true;
 		_healthTaken += damage;
 		_hurtCooldown = 1.0f;

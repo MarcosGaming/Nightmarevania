@@ -4,6 +4,7 @@
 #include <system_controller.h>
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;

@@ -1,11 +1,30 @@
 #include "system_sound.h"
 #include <unordered_map>
 
-static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> music;
-static std::unordered_map<std::string, std::shared_ptr<sf::Sound>> effects;
+static std::unordered_map<std::string, sf::Music*> music;
+static std::unordered_map<std::string, sf::Sound*> effects;
 
 static bool audioMusicOn;
 static bool audioEffectsOn;
+
+static sf::Music main_menu_music;
+static sf::Music level_3_music;
+
+static sf::SoundBuffer button_buffer;
+static sf::SoundBuffer player_damage_buffer;
+static sf::SoundBuffer player_death_buffer;
+static sf::SoundBuffer player_sword1_buffer;
+static sf::SoundBuffer player_sword2_buffer;
+static sf::SoundBuffer player_sword3_buffer;
+static sf::SoundBuffer player_sword4_buffer;
+
+static sf::Sound button_effect;
+static sf::Sound player_damage_effect;
+static sf::Sound player_death_effect;
+static sf::Sound player_sword1_effect;
+static sf::Sound player_sword2_effect;
+static sf::Sound player_sword3_effect;
+static sf::Sound player_sword4_effect;
 
 void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 {
@@ -27,17 +46,43 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	{
 		audioEffectsOn = true;
 	}
+	// Load all the music for the game
+	main_menu_music.openFromFile("res/sounds/main_menu_music.wav");
+	level_3_music.openFromFile("res/sounds/boss_music.wav");
+	// Store the music in the map
+	music["main_menu_music"] = &main_menu_music;
+	level_3_music.setVolume(50.0f);
+	music["level_3_music"] = &level_3_music;
+	// Load all the effects for the game
+	button_buffer.loadFromFile("res/sounds/button_effect.wav");
+	player_damage_buffer.loadFromFile("res/sounds/player_damage.wav");
+	player_death_buffer.loadFromFile("res/sounds/player_death.wav");
+	player_sword1_buffer.loadFromFile("res/sounds/player_sword.wav");
+	player_sword2_buffer.loadFromFile("res/sounds/player_sword2.wav");
+	player_sword3_buffer.loadFromFile("res/sounds/player_sword3.wav");
+	player_sword4_buffer.loadFromFile("res/sounds/player_sword4.wav");
+	// Store the effects in the map
+	button_effect.setBuffer(button_buffer);
+	effects["button_effect"] = &button_effect;
+	player_damage_effect.setBuffer(player_damage_buffer);
+	effects["player_damage_effect"] = &player_damage_effect;
+	player_death_effect.setBuffer(player_death_buffer);
+	effects["player_death_effect"] = &player_death_effect;
+	player_sword1_effect.setBuffer(player_sword1_buffer);
+	effects["player_sword_effect"] = &player_sword1_effect;
+	player_sword2_effect.setBuffer(player_sword2_buffer);
+	effects["player_sword2_effect"] = &player_sword2_effect;
+	player_sword3_effect.setBuffer(player_sword3_buffer);
+	effects["player_sword3_effect"] = &player_sword3_effect;
+	player_sword4_effect.setBuffer(player_sword4_buffer);
+	effects["player_sword4_effect"] = &player_sword4_effect;
+
 }
 
-// Methods that handle the game music
-void Audio::addMusic(const std::string& musicName, std::shared_ptr<sf::Sound> musicSound)
-{
-	music[musicName] = musicSound;
-}
 void Audio::playMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
-	if (audioMusicOn && found != music.end())
+	if (audioMusicOn && found != music.end() && found->second->getStatus() != sf::Music::Playing)
 	{
 		found->second->play();
 	}
@@ -45,9 +90,17 @@ void Audio::playMusic(const std::string& musicName)
 void Audio::stopMusic(const std::string& musicName)
 {
 	auto found = music.find(musicName);
-	if (audioMusicOn && found != music.end())
+	if (found != music.end())
 	{
 		found->second->stop();
+	}
+}
+void Audio::pauseMusic(const std::string& musicName)
+{
+	auto found = music.find(musicName);
+	if (audioMusicOn && found != music.end())
+	{
+		found->second->pause();
 	}
 }
 void Audio::turnMusicOn() { audioMusicOn = true; }
@@ -55,14 +108,10 @@ void Audio::turnMusicOff() { audioMusicOn = false; }
 bool Audio::isMusicOn() { return audioMusicOn; }
 
 // Methods that handle the game effects
-void Audio::addEffect(const std::string& effectName, std::shared_ptr<sf::Sound> effectSound)
-{
-	effects[effectName] = effectSound;
-}
 void Audio::playEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
-	if (audioEffectsOn && found != effects.end())
+	if (audioEffectsOn && found != effects.end() && found->second->getStatus() != sf::Sound::Playing)
 	{
 		found->second->play();
 	}

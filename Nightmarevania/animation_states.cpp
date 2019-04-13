@@ -3,6 +3,7 @@
 #include "components/cmp_player_combat.h"
 #include "maths.h"
 #include <SFML\Graphics.hpp>
+#include <system_sound.h>
 
 void IddleAnimation::execute(Entity* owner, double dt) noexcept
 {
@@ -230,6 +231,7 @@ void FallAnimation::execute(Entity* owner, double dt) noexcept
 
 void GroundAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
+	Audio::playEffect("player_sword_effect");
 	runFrames(owner, 0.08f);
 	auto combat = owner->get_components<PlayerCombatComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
@@ -264,6 +266,7 @@ void GroundAttackAnimation::execute(Entity* owner, double dt) noexcept
 
 void CircularAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
+	Audio::playEffect("player_sword3_effect");
 	runFrames(owner, 0.15f);
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto combat = owner->get_components<PlayerCombatComponent>()[0];
@@ -300,6 +303,7 @@ void CircularAttackAnimation::execute(Entity* owner, double dt) noexcept
 
 void AirAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
+	Audio::playEffect("player_sword_effect");
 	runFrames(owner, 0.1f);
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto combat = owner->get_components<PlayerCombatComponent>()[0];
@@ -340,6 +344,7 @@ void AirAttackAnimation::execute(Entity* owner, double dt) noexcept
 
 void UpAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
+	Audio::playEffect("player_sword2_effect");
 	runFrames(owner, 0.18f);
 	auto combat = owner->get_components<PlayerCombatComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
@@ -408,6 +413,7 @@ void DownAttackAnimation::execute(Entity* owner, double dt) noexcept
 }
 void SmasherDownAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
+	Audio::playEffect("player_sword4_effect");
 	runFrames(owner, 0.15f);
 	auto combat = owner->get_components<PlayerCombatComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
