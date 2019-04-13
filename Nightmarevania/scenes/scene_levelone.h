@@ -18,7 +18,8 @@ private:
 	sf::Vector2f screenSize;
 	sf::View followPlayer;
 	sf::Vector2f centrePoint;
-	float leftBoundary = 967.0f;
+	shared_ptr<Entity> door;
+	float leftBoundary = 640.0f;// 967.0f;
 	float rightBoundary = 12795.0f;
 };
 

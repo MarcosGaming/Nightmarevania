@@ -28,7 +28,7 @@ static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
 sf::Vector2f curCentre; //debugging
-shared_ptr<Entity> door;
+//shared_ptr<Entity> door;
 
 void LevelOne::Load()
 {
@@ -225,13 +225,7 @@ void LevelOne::Load()
 
 void LevelOne::Update(const double& dt)
 {
-	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
-		centrePoint.x = player->getPosition().x;
-	}
-
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
-	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(centrePoint);
+	
 
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
 		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
@@ -249,7 +243,13 @@ void LevelOne::Update(const double& dt)
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 	}
 
-	
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
+		centrePoint.x = player->getPosition().x;
+	}
+
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+	followPlayer.setCenter(centrePoint);
 
 	
 

@@ -1,38 +1,70 @@
 #include "scene_leveltwo.h"
-#include "../game.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
-#include "../animation_states.h"
+#include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
+#include "../animation_states.h"
+#include "../game.h"
 #include <iostream>
 #include <LevelSystem.h>
+#include <system_controller.h>
+#include <system_resolution.h>
+#include "../components/cmp_door.h"
+#include "../components/cmp_key.h"
 
 using namespace std;
 using namespace sf;
 
-//sf::View followPC;
+static shared_ptr<Entity> pause_background;
+static shared_ptr<Texture> pause_background_tex;
+
+static shared_ptr<Entity> returnToMenu_btn;
+static shared_ptr<Texture> returnToMenu_tex;
+
+static shared_ptr<Entity> resume_btn;
+static shared_ptr<Texture> resume_tex;
+
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
+
 //sf::Vector2f curCentre; //debugging
-/*sf::Vector2f screenSize;
-
-
-float leftBoundary = 967.0f;
-float rightBoundary = 2795.0f;
-float topBoundary = -470.0f;
-float bottomBoundary = 607.0f;
-sf::Vector2f centrePoint;*/
+//shared_ptr<Entity> door;
 
 void LevelTwo::Load()
 {
+	// Controller starts at button 0
+	buttonsCurrentIndex = 0;
+	// The scene is not paused at the beginning
+	_paused = false;
+	// Disable cursor
+	Engine::GetWindow().setMouseCursorVisible(false);
 	// Level file
 	ls::loadLevelFile("res/levels/level_two.txt", 60.0f);
 	// Tiles offset
-	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
+	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+
+	//DOOR exists
+	bool doorExists = false;
+	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) {
+		doorExists = true;
+	}
+
+	if (doorExists) { //if there actually is a pos, then a door tile exists so make the door
+		door = makeEntity();
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		//false for L1, but starts as true for L2 and stays true in L3
+		auto doorSprite = door->addComponent<SpriteComponent>();
+		doorSprite->setTexure(doorCmp->getTexture());
+		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
+		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}
+
 	// Adventurer textures
-	spriteSheet = make_shared<Texture>();
-	spriteSheet->loadFromFile("res/img/adventurer.png");
 	playerAnimations = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
+	spriteSheet = make_shared<Texture>();
+	spriteSheet->loadFromFile("res/img/adventurer.png");
 
 	// Player for levels 1 and 2
 	{
@@ -94,6 +126,17 @@ void LevelTwo::Load()
 		anim->changeAnimation("Iddle");
 
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
+
+		//KEY - level 2 only
+		door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+		bool keyExists = false;
+		if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::KEY)[0]))) {
+			keyExists = true;
+		}
+
+		if (keyExists) {
+			auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+		}
 	}
 
 	// Add physics colliders to level tiles.
@@ -119,50 +162,98 @@ void LevelTwo::Load()
 		}
 	}
 
-	//MOVING CAMERA STUFF
-	//for debugging:
-	//printf("(%f, %f)\n", player->getPosition().x, player->getPosition().y);
-	//curCentre = player->getPosition();
+	// Pause background
+	pause_background_tex = make_shared<Texture>();
+	pause_background_tex->loadFromFile("res/menus/pause_background.png");
+	{
+		pause_background = makePausedEntity();
+		pause_background->setPosition(Vector2f(GAMEX / 2.0f, GAMEY / 2.0f));
+		// Sprite
+		auto sprite = pause_background->addComponent<SpriteComponent>();
+		sprite->setTexure(pause_background_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 384, 224));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		float scaleX = (float)GAMEX / (sprite->getSprite().getTextureRect().width);
+		float scaleY = (float)GAMEY / (sprite->getSprite().getTextureRect().height);
+		sprite->getSprite().scale(scaleX, scaleY);
+	}
+	// Resume
+	resume_tex = make_shared<Texture>();
+	resume_tex->loadFromFile("res/menus/resume.png");
+	{
+		resume_btn = makePausedEntity();
+		resume_btn->setPosition(Vector2f((GAMEX / 2.0f) - (resume_tex->getSize().x / 2.0f) - 90.0f, 400.0f));
+		// sprite
+		auto sprite = resume_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(resume_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 60, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = resume_btn->addComponent<ResumeButton>();
+		button->setNormal(sf::IntRect(0, 0, 60, 15));
+		button->setHovered(sf::IntRect(0, 15, 60, 15));
+		button->setCurrentScene(this);
+		buttonsForController.push_back(button);
+	}
+	// Return to menu
+	returnToMenu_tex = make_shared<Texture>();
+	returnToMenu_tex->loadFromFile("res/menus/returnToMenu.png");
+	{
+		returnToMenu_btn = makePausedEntity();
+		returnToMenu_btn->setPosition(Vector2f((GAMEX / 2.0f) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, 500.0f));
+		// sprite
+		auto sprite = returnToMenu_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(returnToMenu_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 117, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = returnToMenu_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 117, 15));
+		button->setHovered(sf::IntRect(0, 15, 117, 15));
+		button->setScene(&main_menu);
+		buttonsForController.push_back(button);
+	}
 
+
+	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);//Engine::GetWindow().getView().getCenter();// = player->getPosition();
+	//curCentre = player->getPosition();
+	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);
 
 	setLoaded(true);
 }
 
-void LevelTwo::UnLoad()
-{
-	player.reset();
-	ls::unload();
-	Scene::UnLoad();
-}
-
 void LevelTwo::Update(const double& dt)
 {
-	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	
-	
-	
 
-	
-	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary){
+
+	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
+		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
+	}
+
+	// Pause game
+	if (Controller::isPressed(Controller::PauseButton))
+	{
+		// Enable cursor when game is paused
+		Engine::GetWindow().setMouseCursorVisible(true);
+		_paused = true;
+	}
+	if (_paused)
+	{
+		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
 		centrePoint.x = player->getPosition().x;
 	}
 
-	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary){
+	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) {
 		centrePoint.y = player->getPosition().y;
 	}
 
-	/*if (curCentre != followPlayer.getCenter()) {
-		printf("(%f, %f)\n", followPlayer.getCenter().x, followPlayer.getCenter().y);
-		curCentre = followPlayer.getCenter();
-	}*/
-
-
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(centrePoint); //LEVEL2 - Follows player in all directions
-	//Engine::GetWindow().setView(followPC);
+	followPlayer.setCenter(centrePoint);
 
 	Scene::Update(dt);
 }
@@ -180,5 +271,14 @@ void LevelTwo::Render()
 	* Engine::GetWindow().setView(followPlayer);
 	* ls::render(Engine::GetWindow());
 	*/
+
 	Scene::Render();
+}
+
+void LevelTwo::UnLoad()
+{
+	buttonsForController.clear();
+	player.reset();
+	ls::unload();
+	Scene::UnLoad();
 }

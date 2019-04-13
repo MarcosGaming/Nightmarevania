@@ -39,7 +39,7 @@ void KeyComponent::update(double dt) {
 	//	_parent->getPosition().x > (_position.x - radiusOffset.x) &&
 	//	_parent->getPosition().y < (_position.y + radiusOffset.y) &&
 	//	_parent->getPosition().y >(_position.y - radiusOffset.y) ) {
-	printf("%d", _hasKey);
+	//printf("%d", _hasKey);
 	/*if(_hasKey){
 		//_hasKey == true;
 		this->_parent->setVisible(false);
