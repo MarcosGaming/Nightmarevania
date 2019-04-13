@@ -74,6 +74,7 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 200, 42));
 		button->setHovered(sf::IntRect(0, 42, 200, 42));
 		button->setScene(&testing);
+		//button->setScene(&levelOne);
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(button);
 	}
@@ -96,17 +97,17 @@ void MainMenuScene::Load()
 		if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "1")
 		{
 			// Set scene to level 1
-			//button->setScene(&testing);
+			//button->setScene(&levelThree);
 		}
 		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "2")
 		{
 			// Set scene to level 2
-			//button->setScene(&testing);
+			//button->setScene(&levelTwo);
 		}
 		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "3")
 		{
 			// Set scene to level 3
-			//button->setScene(&testing);
+			//button->setScene(&levelThree);
 		}
 		else
 		{

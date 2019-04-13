@@ -8,6 +8,7 @@
 #include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
+#include <system_resolution.h>
 
 using namespace std;
 using namespace sf;
@@ -28,6 +29,10 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
+//DEBUGGING CAM
+sf::Vector2f screenSize;
+sf::View followPlayer;
+
 void TestingScene::Load()
 {
 	// Controller starts at button 0
@@ -39,7 +44,7 @@ void TestingScene::Load()
 	// Level file
 	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	// Tiles offset
-	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
+	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
@@ -351,6 +356,12 @@ void TestingScene::Load()
 		buttonsForController.push_back(button);
 	}
 
+
+
+	//CAM
+	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
+
+
 	setLoaded(true);
 }
 
@@ -367,21 +378,21 @@ void TestingScene::Update(const double& dt)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 	}
+
+
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+	followPlayer.setCenter(player->getPosition());
+
 	Scene::Update(dt);
 }
 
 void TestingScene::Render()
 {
+	Engine::GetWindow().setView(followPlayer);
+
 	ls::render(Engine::GetWindow());
 	Scene::Render();
-
-
-	//Rendering GUI separately
-	/*Engine::GetWindow().setView(Engine::GetWindow().getDefaultView());
-	for(auto s : GUI) {
-		Engine::GetWindow().draw(s);
-	}*/
-
 }
 
 void TestingScene::UnLoad()

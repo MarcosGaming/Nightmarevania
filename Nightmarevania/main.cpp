@@ -12,9 +12,9 @@ CreditsScene credits;
 
 int main() 
 {
-	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
 	//debugging:
-	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelOne);
+	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelOne);
 	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelTwo);
 	//Engine::Start(GAMEX, GAMEY, "Nightmarevania",&levelThree);
 	
