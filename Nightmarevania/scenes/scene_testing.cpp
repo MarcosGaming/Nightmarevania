@@ -1,11 +1,15 @@
 #include "scene_testing.h"
-#include "../game.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
-#include "../animation_states.h"
+#include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
+#include "../animation_states.h"
+#include "../game.h"
 #include <iostream>
 #include <LevelSystem.h>
+#include <system_controller.h>
+#include <system_resolution.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -14,12 +18,36 @@ using namespace sf;
 //shared_ptr<Texture> playerAnimations;
 //shared_ptr<Texture> combatIcons;
 
+static shared_ptr<Entity> pause_background;
+static shared_ptr<Texture> pause_background_tex;
+
+static shared_ptr<Entity> returnToMenu_btn;
+static shared_ptr<Texture> returnToMenu_tex;
+
+static shared_ptr<Entity> resume_btn;
+static shared_ptr<Texture> resume_tex;
+
+static vector<shared_ptr<ButtonComponent>> buttonsForController;
+static int buttonsCurrentIndex;
+
+//DEBUGGING CAM
+sf::Vector2f screenSize;
+sf::View followPlayer;
+
 void TestingScene::Load()
 {
+	// Stop menu music
+	Audio::stopMusic("main_menu_music");
+	// Controller starts at button 0
+	buttonsCurrentIndex = 0;
+	// The scene is not paused at the beginning
+	_paused = false;
+	// Disable cursor
+	Engine::GetWindow().setMouseCursorVisible(false);
 	// Level file
 	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	// Tiles offset
-	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
+	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
@@ -279,41 +307,112 @@ void TestingScene::Load()
 		}
 	}
 
+	// Pause background
+	pause_background_tex = make_shared<Texture>();
+	pause_background_tex->loadFromFile("res/menus/pause_background.png");
+	{
+		pause_background = makePausedEntity();
+		pause_background->setPosition(Vector2f(GAMEX / 2.0f, GAMEY / 2.0f));
+		// Sprite
+		auto sprite = pause_background->addComponent<SpriteComponent>();
+		sprite->setTexure(pause_background_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 384, 224));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		float scaleX = (float)GAMEX / (sprite->getSprite().getTextureRect().width);
+		float scaleY = (float)GAMEY / (sprite->getSprite().getTextureRect().height);
+		sprite->getSprite().scale(scaleX, scaleY);
+	}
+	// Resume
+	resume_tex = make_shared<Texture>();
+	resume_tex->loadFromFile("res/menus/resume.png");
+	{
+		resume_btn = makePausedEntity();
+		resume_btn->setPosition(Vector2f((GAMEX / 2.0f) - (resume_tex->getSize().x / 2.0f) - 90.0f, 400.0f));
+		// sprite
+		auto sprite = resume_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(resume_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 60, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = resume_btn->addComponent<ResumeButton>();
+		button->setNormal(sf::IntRect(0, 0, 60, 15));
+		button->setHovered(sf::IntRect(0, 15, 60, 15));
+		button->setCurrentScene(this);
+		buttonsForController.push_back(button);
+	}
+	// Return to menu
+	returnToMenu_tex = make_shared<Texture>();
+	returnToMenu_tex->loadFromFile("res/menus/returnToMenu.png");
+	{
+		returnToMenu_btn = makePausedEntity();
+		returnToMenu_btn->setPosition(Vector2f((GAMEX / 2.0f) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, 500.0f));
+		// sprite
+		auto sprite = returnToMenu_btn->addComponent<SpriteComponent>();
+		sprite->setTexure(returnToMenu_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 117, 15));
+		sprite->getSprite().scale(3.0f, 3.0f);
+		// button component
+		auto button = returnToMenu_btn->addComponent<ChangeSceneButtonComponent>();
+		button->setNormal(sf::IntRect(0, 0, 117, 15));
+		button->setHovered(sf::IntRect(0, 15, 117, 15));
+		button->setScene(&main_menu);
+		buttonsForController.push_back(button);
+	}
 
-	//TESTING FOR RENDERING GUI SEPARATELY
-	/*sf::Sprite healthBar;
-	healthBar.setTexture(*combatIcons);
-	healthBar.setTextureRect((IntRect(0, 0, 100, 37)));
-	healthBar.scale(Vector2f(5.0f, 5.0f));
-	healthBar.setOrigin(Vector2f(50.0f, 18.0f));
-	healthBar.setPosition(Vector2f(350.0f, 100.0f));
-	GUI.push_back(healthBar);*/
+
+
+	//CAM
+	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 
 
 	setLoaded(true);
 }
 
-void TestingScene::UnLoad()
-{
-	player.reset();
-	ls::unload();
-	Scene::UnLoad();
-}
 
 void TestingScene::Update(const double& dt)
 {
+	// Pause game
+	if (Controller::isPressed(Controller::PauseButton))
+	{
+		// Enable cursor when game is paused
+		Engine::GetWindow().setMouseCursorVisible(true);
+		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_3_music");
+	}
+	if (_paused)
+	{
+		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+
+
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+	followPlayer.setCenter(player->getPosition());
+
+	else
+	{
+		// Level 3 music
+		Audio::playMusic("level_3_music");
+	}
+
 	Scene::Update(dt);
 }
 
 void TestingScene::Render()
 {
+	Engine::GetWindow().setView(followPlayer);
+
 	ls::render(Engine::GetWindow());
 	Scene::Render();
-
-	//Rendering GUI separately
-	/*Engine::GetWindow().setView(Engine::GetWindow().getDefaultView());
-	for(auto s : GUI) {
-		Engine::GetWindow().draw(s);
-	}*/
-
 }
+
+void TestingScene::UnLoad()
+{
+	Audio::stopMusic("level_3_music");
+	buttonsForController.clear();
+	player.reset();
+	ls::unload();
+	Scene::UnLoad();
+}
+

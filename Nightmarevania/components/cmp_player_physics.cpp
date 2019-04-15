@@ -1,9 +1,10 @@
 #include "cmp_player_physics.h"
 #include "system_physics.h"
 #include "cmp_player_combat.h"
-#include <engine.h>
+#include <system_controller.h>
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -84,10 +85,10 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else
 	{
-		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::D))
+		if (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton))
 		{
 			// Moving Either Left or Right
-			if (Keyboard::isKeyPressed(Keyboard::D))
+			if (Controller::isPressed(Controller::MoveRightButton))
 			{
 				if (getVelocity().x < _maxVelocity.x)
 					impulse({ (float)(dt * _groundspeed), 0 });
@@ -106,7 +107,7 @@ void PlayerPhysicsComponent::update(double dt)
 
 		static bool impulseDown = false;
 		// Handle Jump
-		if (Keyboard::isKeyPressed(Keyboard::Space))
+		if (Controller::isPressed(Controller::JumpButton))
 		{
 			_grounded = isGrounded();
 			if (_grounded)
@@ -117,7 +118,7 @@ void PlayerPhysicsComponent::update(double dt)
 				impulseDown = false;
 			}
 			// Only double jump once after releasing space
-			else if (Physics::getCanDoubleJump() && !_secondJump)
+			else if (Controller::isJumpButtonReleased() && !_secondJump)
 			{
 				impulse(Vector2f(0, -6.8f + _body->GetLinearVelocity().y));
 				_secondJump = true;
@@ -148,7 +149,7 @@ void PlayerPhysicsComponent::update(double dt)
 	else
 	{
 		setFriction(0.1f);
-		Physics::setCanDoubleJump(false);
+		Controller::setJumpButtonReleased(false);
 		_secondJump = false;
 	}
 

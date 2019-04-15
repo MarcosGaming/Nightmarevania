@@ -72,7 +72,6 @@ Entity::~Entity()
 	while (deli != _components.size()) 
 	{
 		deli = _components.size();
-		// QUESTION SECOND PART OF THE REMOVE IF
 		_components.erase(remove_if(_components.begin(), _components.end(), [](auto& sp) { return (sp.use_count() <= 1); }), _components.end());
 	}
 
@@ -142,7 +141,6 @@ vector<shared_ptr<Entity>> EntityManager::find(const vector<string>& tags) const
 	for (auto& e : list) 
 	{
 		const auto tgs = e->_tags;
-		// WHAT DOES THE SECOND BIT MEANS?
 		if (any_of(tags.begin(), tags.end(), [&tgs](auto t) { return tgs.find(t) != tgs.end(); })) 
 		{
 			ret.push_back(e);
