@@ -4,22 +4,16 @@
 #include "../components/cmp_player_physics.h"
 #include "../animation_states.h"
 #include "../components/cmp_player_combat.h"
+#include "../components/cmp_door.h"
+#include "../components/cmp_key.h"
 #include <iostream>
 #include <LevelSystem.h>
 
 using namespace std;
 using namespace sf;
 
-//sf::View followPC;
-//sf::Vector2f curCentre; //debugging
-/*sf::Vector2f screenSize;
 
-
-float leftBoundary = 967.0f;
-float rightBoundary = 2795.0f;
-float topBoundary = -470.0f;
-float bottomBoundary = 607.0f;
-sf::Vector2f centrePoint;*/
+//bool keyExists = false;
 
 void LevelTwo::Load()
 {
@@ -28,6 +22,19 @@ void LevelTwo::Load()
 	// Tiles offset
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+
+	//DOOR
+	shared_ptr<Entity> door;
+	if (ls::doesTileExist(ls::DOOR)) {
+		door = makeEntity();
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		//false for L1, but starts as true for L2 and stays true in L3
+		auto doorSprite = door->addComponent<SpriteComponent>();
+		doorSprite->setTexure(doorCmp->getTexture());
+		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
+		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}
+
 	// Adventurer textures
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
@@ -94,6 +101,17 @@ void LevelTwo::Load()
 		anim->changeAnimation("Iddle");
 
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
+		
+		//KEY - level 2 only
+		if (ls::doesTileExist(ls::DOOR)) {
+			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+		}
+
+		//if (keyExists) {
+		if (ls::doesTileExist(ls::KEY)) {
+			auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+		}
+	
 	}
 
 	// Add physics colliders to level tiles.
@@ -141,7 +159,9 @@ void LevelTwo::Update(const double& dt)
 {
 	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	
-	
+	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
+		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
+	}
 	
 
 	
@@ -163,6 +183,10 @@ void LevelTwo::Update(const double& dt)
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint); //LEVEL2 - Follows player in all directions
 	//Engine::GetWindow().setView(followPC);
+
+	if (ls::getTileAt(player->getPosition()) == ls::END) {
+		Engine::ChangeScene((Scene*)&levelTwo);
+	}
 
 	Scene::Update(dt);
 }

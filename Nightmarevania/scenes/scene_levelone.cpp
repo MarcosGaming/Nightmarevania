@@ -14,8 +14,8 @@ using namespace sf;
 
 sf::Vector2f curCentre; //debugging
 
-shared_ptr<Entity> door;
-bool keyExists = false;
+//shared_ptr<Entity> door;
+//bool keyExists = false;
 
 void LevelOne::Load()
 {
@@ -25,14 +25,9 @@ void LevelOne::Load()
 	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 
-	//DOOR exists
-	/*bool doorExists = false;
-	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) {
-		doorExists = true;
-	}*/
-
-	//if (doorExists) {
-	if (ls::isOnGrid(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]))) { //if there actually is a pos, then a door tile exists so make the door
+	//DOOR
+	shared_ptr<Entity> door;
+	if (ls::doesTileExist(ls::DOOR)) {
 		door = makeEntity();
 		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
 		//false for L1, but starts as true for L2 and stays true in L3
@@ -112,11 +107,9 @@ void LevelOne::Load()
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	
 		//KEY - level 2 only
-		door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
-		
-		/*if (ls::doesTileExist(ls::KEY)) {
-			keyExists = true;
-		}*/
+		if (ls::doesTileExist(ls::DOOR)) {
+			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+		}
 
 		//if (keyExists) {
 		if (ls::doesTileExist(ls::KEY)) {
