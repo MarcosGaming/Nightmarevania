@@ -6,6 +6,9 @@ TestingScene testing;
 MainMenuScene main_menu;
 SettingsScene settings;
 CreditsScene credits;
+LevelOne levelOne;
+LevelTwo levelTwo;
+LevelThree levelThree;
 
 int main() 
 {

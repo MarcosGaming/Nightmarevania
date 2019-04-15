@@ -46,25 +46,7 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{DOOR, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 	{KEY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 
-	/*{UDOOR1, sf::IntRect((3 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR2, sf::IntRect((3 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR3, sf::IntRect((3 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR4, sf::IntRect((4 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR5, sf::IntRect((4 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR6, sf::IntRect((4 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR7, sf::IntRect((5 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR8, sf::IntRect((5 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{UDOOR9, sf::IntRect((5 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},*/
-
-	/*{LDOOR1, sf::IntRect((0 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR2, sf::IntRect((0 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR3, sf::IntRect((0 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR4, sf::IntRect((1 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR5, sf::IntRect((1 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR6, sf::IntRect((1 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR7, sf::IntRect((2 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR8, sf::IntRect((2 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{LDOOR9, sf::IntRect((2 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},*/
+	{ENEMY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 
 	{TORCHa, sf::IntRect((8 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
 	{TORCHb, sf::IntRect((8 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},

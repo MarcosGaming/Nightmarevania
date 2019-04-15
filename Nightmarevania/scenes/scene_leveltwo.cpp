@@ -3,8 +3,6 @@
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
-#include "../components/cmp_door.h"
-#include "../components/cmp_key.h"
 #include "../animation_states.h"
 #include "../game.h"
 #include <iostream>

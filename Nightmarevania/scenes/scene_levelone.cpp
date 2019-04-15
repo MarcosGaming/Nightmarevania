@@ -11,6 +11,7 @@
 #include <system_resolution.h>
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
+#include "../components/cmp_enemy_ai.h"
 
 using namespace std;
 using namespace sf;
@@ -43,7 +44,7 @@ void LevelOne::Load()
 	ls::setOffset(Vector2f(0, ho));
 
 	//DOOR
-	shared_ptr<Entity> door;
+	//shared_ptr<Entity> door;
 	if (ls::doesTileExist(ls::DOOR)) {
 		door = makeEntity();
 		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
@@ -132,6 +133,28 @@ void LevelOne::Load()
 		}
 	}
 
+	//GHOST
+	{
+		shared_ptr<Entity> ghost;
+		ghost = makeEntity();
+		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0])); //TODO add enemy to tile map
+		auto AIcmp = ghost->addComponent<GhostAIComponent>();
+		auto sprite = ghost->addComponent<SpriteComponent>();
+		shared_ptr<Texture> ghostSprites = make_shared<Texture>();
+		ghostSprites->loadFromFile("res/img/ghost_fly.png");
+		sprite->setTexure(ghostSprites);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
+		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		shared_ptr<DeathAnimationGround> ghostFly = make_shared<DeathAnimationGround>();
+		for (int i = 0; i < 7; i++)
+		{
+			ghostFly->addFrame(IntRect(71 * i, 0, 71, 58));
+		}
+		auto anim = ghost->addComponent<AnimationMachineComponent>();
+		anim->addAnimation("GhostFly", ghostFly);
+	}
+
 	// Add physics colliders to level tiles.
 	{
 		auto walls = ls::findTiles(ls::WALL);
@@ -208,9 +231,10 @@ void LevelOne::Load()
 	}
 
 
+
 	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	curCentre = player->getPosition();
+	//curCentre = player->getPosition();
 	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);
 
 	setLoaded(true);

@@ -1,16 +1,74 @@
-/*#pragma once
+#pragma once
 
-#include "cmp_actor_movement.h"
+#include "ecm.h"
+#include <SFML/Graphics/Sprite.hpp>
 
-class EnemyAIComponent : public ActorMovementComponent 
+using namespace std;
+
+class SkeletonAIComponent : public Component 
 {
 protected:
-  sf::Vector2f _direction;
+	bool _attacking;
+
+	bool _fakeDeath;
 
 public:
-  void update(double dt) override;
+	SkeletonAIComponent() = delete;
+	explicit SkeletonAIComponent(Entity* p);
 
-  explicit EnemyAIComponent(Entity* p);
+	virtual void update(double dt) override;
+	virtual void render() override;
 
-  EnemyAIComponent() = delete;
-};*/
+	bool isAttacking() const;
+	void setAttacking(bool);
+
+	bool isFakeDeath() const;
+	void setFakeDeath(bool);
+};
+
+class BossAIComponent : public SkeletonAIComponent
+{
+private:
+	int _healthTaken;
+	int _maxHealth;
+
+	bool _hurt;
+	bool _isIddle;
+
+	std::shared_ptr<sf::Texture> _healthBarTexture;
+	std::shared_ptr<sf::Sprite> _healthBarSprite;
+	std::vector<sf::IntRect> _healthBarIcons;
+
+public:
+	BossAIComponent() = delete;
+	explicit BossAIComponent(Entity* p);
+
+	void update(double dt) override final;
+	void render() override final;
+
+	bool isHurt()const;
+	void resetHurt();
+	void hurtEnemy(int);
+
+	void setIsIddle(bool);
+
+	void setHealthBarTexture(std::shared_ptr<sf::Texture>);
+	sf::Sprite& getHealthBarSprite() const;
+	void addHealthBarIcon(sf::IntRect);
+};
+
+class GhostAIComponent : public Component
+{
+protected:
+	//bool _isFiring; //not sure if this will be used yet
+	float _speed;
+	shared_ptr<Entity> _target;
+
+public:
+	GhostAIComponent() = delete;
+	explicit GhostAIComponent(Entity* p);
+
+	virtual void update(double dt) override;
+	void setTarget(shared_ptr<Entity> target);
+	virtual void render() override;
+};

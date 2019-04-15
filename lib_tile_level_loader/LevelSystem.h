@@ -19,13 +19,6 @@ public:
 
 	enum TILES
 	{
-		/*EMPTY = ' ',
-		START = 's',
-		END = 'e',
-		WALL = 'w',
-		ENEMY = 'n',
-		WAYPOINT = '+'*/
-
 		BG1 = 'r',
 		BG2 = 't',
 		BG3 = 'y',
@@ -49,25 +42,7 @@ public:
 		SPIKES2 = '$',
 		DOOR = '1',
 		KEY = '2',
-		/*UDOOR1 = '!',
-		UDOOR2 = '$',
-		UDOOR3 = '&',
-		UDOOR4 = '*',
-		UDOOR5 = '%',
-		UDOOR6 = '"',
-		UDOOR7 = '£',
-		UDOOR8 = '^',
-		UDOOR9 = '(',*/
-
-		/*LDOOR1 = '1',
-		LDOOR2 = '4',
-		LDOOR3 = '7',
-		LDOOR4 = '8',
-		LDOOR5 = '5',
-		LDOOR6 = '2',
-		LDOOR7 = '3',
-		LDOOR8 = '6',
-		LDOOR9 = '9',*/
+		ENEMY = '3',
 
 		TORCHa = 'z', //top
 		TORCHb = 'x', //middle
