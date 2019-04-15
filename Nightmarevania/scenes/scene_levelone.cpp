@@ -134,7 +134,7 @@ void LevelOne::Load()
 	}
 
 	//GHOST
-	/*{
+	{
 		shared_ptr<Entity> ghost;
 		ghost = makeEntity();
 		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0])); //TODO add enemy to tile map
@@ -153,7 +153,7 @@ void LevelOne::Load()
 		}
 		auto anim = ghost->addComponent<AnimationMachineComponent>();
 		anim->addAnimation("GhostFly", ghostFly);
-	}*/
+	}
 
 	// Add physics colliders to level tiles.
 	{
