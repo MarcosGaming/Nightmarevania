@@ -7,7 +7,6 @@
 #include <system_controller.h>
 
 static float PressedCooldown = 0.5;
-
 // Basic button
 ButtonComponent::ButtonComponent(Entity* p) : _active(false), _controllerHovered(false), _controllerPressed(false), _canHoverActive(false), Component(p) { }
 
@@ -114,12 +113,14 @@ void ChangeSceneButtonComponent::update(double dt)
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
 		{
+			Audio::playEffect("button_effect");
 			Engine::ChangeScene(_scene_to_change);
 			PressedCooldown = 0.5f;
 		}
 	}
 	else if (_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
 	{
+		Audio::playEffect("button_effect");
 		Engine::ChangeScene(_scene_to_change);
 		PressedCooldown = 1.0f;
 	}
@@ -138,11 +139,13 @@ void ExitButtonComponent::update(double dt)
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f)
 		{
+			Audio::playEffect("button_effect");
 			Engine::GetWindow().close();
 		}
 	}
 	else if (_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
 	{
+		Audio::playEffect("button_effect");
 		Engine::GetWindow().close();
 	}
 }
@@ -182,6 +185,7 @@ void ResolutionButtonComponent::update(double dt)
 	}
 	if (changeResolution)
 	{
+		Audio::playEffect("button_effect");
 		_active = true;
 		_mediator->deactivateOtherResolutionButtons(this);
 		_mediator->deactivateFullScreen();
@@ -224,6 +228,7 @@ void FullScreenButtonComponent::update(double dt)
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				Audio::playEffect("button_effect");
 				_active = true;
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->activateBorderless();
@@ -233,6 +238,7 @@ void FullScreenButtonComponent::update(double dt)
 		}
 		else if (_controllerPressed && _controllerHovered)
 		{
+			Audio::playEffect("button_effect");
 			_controllerPressed = false;
 			_active = true;
 			_mediator->deactivateAllResolutionButtons();
@@ -248,6 +254,7 @@ void FullScreenButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				Audio::playEffect("button_effect");
 				_active = false;
 				_mediator->deactivateAllResolutionButtons();
 				_mediator->deactivateBorderless();
@@ -260,6 +267,7 @@ void FullScreenButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (_controllerPressed)
 			{
+				Audio::playEffect("button_effect");
 				_controllerPressed = false;
 				_active = false;
 				_mediator->deactivateAllResolutionButtons();
@@ -293,6 +301,7 @@ void BorderlessButtonComponent::update(double dt)
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				Audio::playEffect("button_effect");
 				_active = true;
 				Resolution::turnBorderlessOn();
 				PressedCooldown = 2.5f;
@@ -300,6 +309,7 @@ void BorderlessButtonComponent::update(double dt)
 		}
 		else if (_controllerPressed && _controllerHovered)
 		{
+			Audio::playEffect("button_effect");
 			_controllerPressed = false;
 			_active = true;
 			Resolution::turnBorderlessOn();
@@ -313,6 +323,7 @@ void BorderlessButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				Audio::playEffect("button_effect");
 				_active = false;
 				_mediator->deactivateFullScreen();
 				Resolution::turnBorderlessOff();
@@ -324,6 +335,7 @@ void BorderlessButtonComponent::update(double dt)
 			sprite->getSprite().setTextureRect(_hoveredActive);
 			if (_controllerPressed)
 			{
+				Audio::playEffect("button_effect");
 				_controllerPressed = false;
 				_active = false;
 				_mediator->deactivateFullScreen();
@@ -408,6 +420,7 @@ void MusicsButtonComponent::update(double dt)
 		}
 		if (changeMusicStatus)
 		{
+			Audio::playEffect("button_effect");
 			_active = true;
 			if (_On)
 			{
@@ -451,6 +464,7 @@ void EffectsButtonComponent::update(double dt)
 		}
 		if (changeEffectsStatus)
 		{
+			Audio::playEffect("button_effect");
 			_active = true;
 			if (_On)
 			{
@@ -522,6 +536,7 @@ void ControlsButton::update(double dt)
 		{
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				Audio::playEffect("button_effect");
 				_active = true;
 				PressedCooldown = 2.5f;
 				return;
@@ -529,6 +544,7 @@ void ControlsButton::update(double dt)
 		}
 		else if (_controllerPressed && _controllerHovered)
 		{
+			Audio::playEffect("button_effect");
 			_active = true;
 			PressedCooldown = 2.5f;
 			return;
@@ -566,12 +582,14 @@ void ResumeButton::update(double dt)
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && PressedCooldown <= 0.0f && !_active)
 		{
+			Audio::playEffect("button_effect");
 			_currentScene->setPause(false);
 			PressedCooldown = 0.2f;
 		}
 	}
 	else if(_controllerPressed && _controllerHovered && PressedCooldown <= 0.0f)
 	{
+		Audio::playEffect("button_effect");
 		_controllerPressed = false;
 		_currentScene->setPause(false);
 		PressedCooldown = 0.2f;

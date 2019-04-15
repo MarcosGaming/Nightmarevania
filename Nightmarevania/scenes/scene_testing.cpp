@@ -9,6 +9,7 @@
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -35,6 +36,8 @@ sf::View followPlayer;
 
 void TestingScene::Load()
 {
+	// Stop menu music
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -365,6 +368,7 @@ void TestingScene::Load()
 	setLoaded(true);
 }
 
+
 void TestingScene::Update(const double& dt)
 {
 	// Pause game
@@ -373,6 +377,8 @@ void TestingScene::Update(const double& dt)
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_3_music");
 	}
 	if (_paused)
 	{
@@ -383,6 +389,12 @@ void TestingScene::Update(const double& dt)
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(player->getPosition());
+
+	else
+	{
+		// Level 3 music
+		Audio::playMusic("level_3_music");
+	}
 
 	Scene::Update(dt);
 }
@@ -397,6 +409,7 @@ void TestingScene::Render()
 
 void TestingScene::UnLoad()
 {
+	Audio::stopMusic("level_3_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();

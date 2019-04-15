@@ -30,6 +30,7 @@ static int buttonsCurrentIndex;
 
 void MainMenuScene::Load()
 {
+	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// Background
 	background_tex = make_shared<Texture>();
@@ -178,6 +179,15 @@ void MainMenuScene::Update(const double& dt)
 {
 	Scene::Update(dt);
 	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	// Main menu music
+	if (Audio::isMusicOn())
+	{
+		Audio::playMusic("main_menu_music");
+	}
+	else
+	{
+		Audio::stopMusic("main_menu_music");
+	}
 }
 
 void MainMenuScene::Render()
@@ -188,6 +198,5 @@ void MainMenuScene::Render()
 void MainMenuScene::UnLoad()
 {
 	buttonsForController.clear();
-	Audio::clearAllSounds();
 	Scene::UnLoad();
 }
