@@ -5,7 +5,7 @@
 #include <SFML\Graphics.hpp>
 #include <system_sound.h>
 
-void IddleAnimation::execute(Entity* owner, double dt) noexcept
+void IdleAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.3f);
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
@@ -64,7 +64,7 @@ void RunAnimation::execute(Entity* owner, double dt) noexcept
 	// Animation changes based on the character movement
 	if (std::abs(movement->getVelocity().x) < 0.1f)
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 	}
 	else if (movement->getVelocity().y > 0.1f)
 	{
@@ -200,7 +200,7 @@ void FallAnimation::execute(Entity* owner, double dt) noexcept
 	// Animation changes based on the character movement
 	if (movement->getVelocity().y > -0.1f)
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 	}
 	// Animation changes based on the combat component
 	if (!combat.empty())
@@ -238,7 +238,7 @@ void GroundAttackAnimation::execute(Entity* owner, double dt) noexcept
 	// Animation changes based on the combat component
 	if (!combat->isAttacking())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	else if (combat->isCircularAttackRight() || combat->isCircularAttackLeft())
@@ -275,7 +275,7 @@ void CircularAttackAnimation::execute(Entity* owner, double dt) noexcept
 	if (!combat->isAttacking())
 	{
 		movement->setVelocity(sf::Vector2f(0.0f, 0.0f));
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	if (combat->isBasicAttack() && _current_frame == 0)
@@ -311,7 +311,7 @@ void AirAttackAnimation::execute(Entity* owner, double dt) noexcept
 	// ANimation changes based on combat and wheter the character is on the ground or not
 	if (!combat->isAttacking())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	else if (movement->isGrounded() && (combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
@@ -351,7 +351,7 @@ void UpAttackAnimation::execute(Entity* owner, double dt) noexcept
 	// Animation changes based on the combat component
 	if (!combat->isAttacking())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	else if (combat->isBasicAttack() && _current_frame == 0)
@@ -386,7 +386,7 @@ void DownAttackAnimation::execute(Entity* owner, double dt) noexcept
 	// ANimation changes based on combat and wheter the character is on the ground or not
 	if (!combat->isAttacking())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	else if (combat->isHurt())
@@ -420,7 +420,7 @@ void SmasherDownAttackAnimation::execute(Entity* owner, double dt) noexcept
 	// ANimation changes based on combat 
 	if (!combat->isAttacking())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 	else if ((combat->isCircularAttackLeft() || combat->isCircularAttackRight()))
@@ -454,7 +454,7 @@ void DefendingAnimation::execute(Entity* owner, double dt) noexcept
 	// Animation changes based on combat
 	if (!combat->isDefending())
 	{
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 }
@@ -471,7 +471,7 @@ void HurtAnimation::execute(Entity* owner, double dt) noexcept
 		combat->resetHurt();
 		if (movement->isGrounded())
 		{
-			animation->changeAnimation("Iddle");
+			animation->changeAnimation("Idle");
 		}
 		else
 		{
@@ -520,7 +520,7 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 	{
 		owner->setAlive(false);
 		auto animation = owner->get_components<AnimationMachineComponent>()[0];
-		animation->changeAnimation("Iddle");
+		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
 }

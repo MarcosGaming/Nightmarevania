@@ -1,11 +1,11 @@
 #pragma once
 #include "components\cmp_animation_machine.h"
 
-// Iddle animation
-class IddleAnimation : public Animation
+// Idle animation
+class IdleAnimation : public Animation
 {
 public:
-	IddleAnimation() = default;
+	IdleAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 

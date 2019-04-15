@@ -68,10 +68,10 @@ void TestingScene::Load()
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
 		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
+		shared_ptr<IdleAnimation> idle = make_shared<IdleAnimation>();
 		for (int i = 0; i < 4; i++)
 		{
-			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
+			idle->addFrame(IntRect(50 * i, 0, 50, 37));
 		}
 		shared_ptr<RunAnimation> run = make_shared<RunAnimation>();
 		for (int i = 1; i < 7; i++)
@@ -106,14 +106,14 @@ void TestingScene::Load()
 		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
-		anim->addAnimation("Iddle", iddle);
+		anim->addAnimation("Idle", idle);
 		anim->addAnimation("Run", run);
 		anim->addAnimation("Jump", jump);
 		anim->addAnimation("Fall", fall);
 		anim->addAnimation("DoubleJump", doubleJump);
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
-		anim->changeAnimation("Iddle");
+		anim->changeAnimation("Idle");
 
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}*/
@@ -174,10 +174,10 @@ void TestingScene::Load()
 			combat->addDefendIcon(IntRect(50 * i, 37, 50, 37));
 		}
 		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
+		shared_ptr<IdleAnimation> idle = make_shared<IdleAnimation>();
 		for (int i = 0; i < 4; i++)
 		{
-			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
+			idle->addFrame(IntRect(50 * i, 0, 50, 37));
 		}
 		shared_ptr<RunAnimation> run = make_shared<RunAnimation>();
 		for (int i = 1; i < 7; i++)
@@ -264,7 +264,7 @@ void TestingScene::Load()
 		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
-		anim->addAnimation("Iddle", iddle);
+		anim->addAnimation("Idle", idle);
 		anim->addAnimation("Run", run);
 		anim->addAnimation("Jump", jump);
 		anim->addAnimation("Fall", fall);
@@ -279,7 +279,7 @@ void TestingScene::Load()
 		anim->addAnimation("SmasherDownAttack", smasherDownAttack);
 		anim->addAnimation("Defending", defending);
 		anim->addAnimation("Hurt", hurt);
-		anim->changeAnimation("Iddle");
+		anim->changeAnimation("Idle");
 		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}

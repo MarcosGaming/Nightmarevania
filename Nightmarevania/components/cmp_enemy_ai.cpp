@@ -16,7 +16,7 @@ void SkeletonAIComponent::setFakeDeath(bool fakeDeath) { _fakeDeath = fakeDeath;
 
 
 // The boss AI component is going to add a healthbar to the skeleton
-BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), _hurt(false), _isIddle(false), SkeletonAIComponent(p) {}
+BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), _hurt(false), _isIdle(false), SkeletonAIComponent(p) {}
 
 // Enemy dies when health taken equals max health
 void BossAIComponent::update(double dt)
@@ -38,15 +38,15 @@ bool BossAIComponent::isHurt()const { return _hurt; }
 void BossAIComponent::resetHurt() { _hurt = false; }
 void BossAIComponent::hurtEnemy(int damage)
 {
-	// The boss can only be hurt when is iddle
-	if (_isIddle)
+	// The boss can only be hurt when is idle
+	if (_isIdle)
 	{
 		_hurt = true;
 		_healthTaken += damage;
 	}
 }
 
-void BossAIComponent::setIsIddle(bool iddle) { _isIddle = iddle; }
+void BossAIComponent::setIsIdle(bool idle) { _isIdle = idle; }
 
 
 //Ghost for level 1
