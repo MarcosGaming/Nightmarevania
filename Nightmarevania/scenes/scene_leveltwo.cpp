@@ -27,7 +27,7 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-//sf::Vector2f curCentre; //debugging
+sf::Vector2f curCentre; //debugging
 //shared_ptr<Entity> door;
 
 void LevelTwo::Load()
@@ -217,7 +217,7 @@ void LevelTwo::Load()
 
 	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	//curCentre = player->getPosition();
+	curCentre = player->getPosition();
 	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);
 
 	setLoaded(true);
@@ -249,6 +249,12 @@ void LevelTwo::Update(const double& dt)
 
 	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) {
 		centrePoint.y = player->getPosition().y;
+	}
+
+	//debug:
+	if (player->getPosition() != curCentre) {
+		printf("(%f,%f)\n", player->getPosition().x, player->getPosition().y);
+		curCentre = player->getPosition();
 	}
 
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));

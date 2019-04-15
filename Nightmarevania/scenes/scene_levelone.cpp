@@ -27,7 +27,7 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-sf::Vector2f curCentre; //debugging
+//sf::Vector2f curCentre; //debugging
 //shared_ptr<Entity> door;
 
 void LevelOne::Load()

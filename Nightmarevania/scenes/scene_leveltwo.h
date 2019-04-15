@@ -19,9 +19,9 @@ private:
 	sf::View followPlayer;
 	sf::Vector2f centrePoint;
 	shared_ptr<Entity> door;
-	float leftBoundary = 0.0f;
-	float rightBoundary = 50795.0f;
-	float topBoundary = -470.0f;
+	float leftBoundary = 640.0f;
+	float rightBoundary = 3080;
+	float topBoundary = -960.0f;
 	float bottomBoundary = 360.0f;//607.0f;
 };
 
