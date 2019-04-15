@@ -8,6 +8,8 @@
 #include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
+#include <system_resolution.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -30,6 +32,8 @@ static int buttonsCurrentIndex;
 
 void TestingScene::Load()
 {
+	// Stop menu music
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -39,7 +43,7 @@ void TestingScene::Load()
 	// Level file
 	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	// Tiles offset
-	auto ho = Engine::getWindowSize().y - (ls::getHeight() * 60.0f);
+	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
@@ -354,6 +358,7 @@ void TestingScene::Load()
 	setLoaded(true);
 }
 
+
 void TestingScene::Update(const double& dt)
 {
 	// Pause game
@@ -362,10 +367,17 @@ void TestingScene::Update(const double& dt)
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_3_music");
 	}
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+	else
+	{
+		// Level 3 music
+		Audio::playMusic("level_3_music");
 	}
 	Scene::Update(dt);
 }
@@ -386,6 +398,7 @@ void TestingScene::Render()
 
 void TestingScene::UnLoad()
 {
+	Audio::stopMusic("level_3_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();

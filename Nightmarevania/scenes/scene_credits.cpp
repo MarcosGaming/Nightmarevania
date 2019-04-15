@@ -63,6 +63,15 @@ void CreditsScene::Update(const double& dt)
 {
 	Scene::Update(dt);
 	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	// Cretids music
+	if (Audio::isMusicOn())
+	{
+		Audio::playMusic("main_menu_music");
+	}
+	else
+	{
+		Audio::stopMusic("main_menu_music");
+	}
 }
 
 void CreditsScene::Render()
@@ -73,6 +82,5 @@ void CreditsScene::Render()
 void CreditsScene::UnLoad()
 {
 	buttonsForController.clear();
-	Audio::clearAllSounds();
 	Scene::UnLoad();
 }

@@ -607,6 +607,15 @@ void SettingsScene::Update(const double& dt)
 	{
 		observer_controls->setControllerActive(false);
 	}
+	// Settings music
+	if (Audio::isMusicOn())
+	{
+		Audio::playMusic("main_menu_music");
+	}
+	else
+	{
+		Audio::stopMusic("main_menu_music");
+	}
 }
 
 void SettingsScene::Render()
@@ -620,6 +629,5 @@ void SettingsScene::UnLoad()
 	mediator_resolution->UnLoad();
 	buttonsForController.clear();
 	mediator_sound->UnLoad();
-	Audio::clearAllSounds();
 	Scene::UnLoad();
 }
