@@ -144,30 +144,33 @@ void LevelOne::Load()
 		shared_ptr<Texture> ghostSprites = make_shared<Texture>();
 		ghostSprites->loadFromFile("res/img/ghost.png");
 		sprite->setTexure(ghostSprites);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 116));
-		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
-		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
-		auto animations = ghost->addComponent<AnimationMachineComponent>();
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 58));
+		sprite->getSprite().scale(sf::Vector2f(5.0f, 5.0f));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height);
+		auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 190.0f, 1000.0f);
+		
 		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();
-		for (int i = 1; i < 8; i++)
+		for (int i = 1; i < 7; i++)
 		{
 			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
 		}
-		animations->addAnimation("GhostTakeOff", ghostTakeOff);
+		
 
 		shared_ptr<GhostFlyingAnimation> ghostFly = make_shared<GhostFlyingAnimation>();
-		ghostTakeOff->addFrame(IntRect(71 * 6, 0, 71, 58));
-		animations->addAnimation("GhostFly", ghostFly);
+		ghostFly->addFrame(IntRect(71 * 6, 0, 71, 58));
+		
 
 		shared_ptr<GhostIdleAnimation> ghostIdle = make_shared<GhostIdleAnimation>();
 		for (int i = 0; i < 2; i++)
 		{
-			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
+			ghostIdle->addFrame(IntRect(71 * i, 0, 71, 58));
 		}
-		animations->addAnimation("GhostIdle", ghostIdle);
-		animations->changeAnimation("GhostIdle"); //why is this breaking?
 
-		//auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 1.0f, 200.0f);
+		auto animations = ghost->addComponent<AnimationMachineComponent>();
+		animations->addAnimation("GhostIdle", ghostIdle);
+		animations->addAnimation("GhostTakeOff", ghostTakeOff);
+		animations->addAnimation("GhostFly", ghostFly);
+		animations->changeAnimation("GhostIdle"); //why is this breaking?
 	}
 
 	// Add physics colliders to level tiles.

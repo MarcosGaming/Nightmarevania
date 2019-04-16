@@ -6,16 +6,16 @@ using namespace std;
 using namespace sf;
 
 //debugging
-float playerPosX = -1000.0f;
+/*float playerPosX = -1000.0f;
 float ghostPosX = -1000.0f;
-float dist = -1000.0f;
+float dist = -1000.0f;*/
 
 void AISteeringComponent::update(double dt) {
 	
 	isMoving = false;
 
 	//debugging:
-	if (playerPosX != _player->getPosition().x) {
+	/*if (playerPosX != _player->getPosition().x) {
 		playerPosX = _player->getPosition().x;
 		printf("player pos (x): %f\n", playerPosX);
 	}
@@ -26,7 +26,7 @@ void AISteeringComponent::update(double dt) {
 	if (dist != length(_parent->getPosition() - _player->getPosition())) {
 		dist = length(_parent->getPosition() - _player->getPosition());
 		printf("distance between ghost and player: %f\n", dist);
-	}
+	}*/
 	
 
 	// If target (player) is less than _distance pixels away, chase
@@ -34,7 +34,7 @@ void AISteeringComponent::update(double dt) {
 		auto output = _seek.getSteering();
 		move(output.direction * (float)dt);
 		isMoving = true;
-		printf("I should be moving\n");
+		//printf("I should be moving\n");
 	}
 }
 

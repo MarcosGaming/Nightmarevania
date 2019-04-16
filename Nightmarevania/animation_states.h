@@ -106,19 +106,26 @@ public:
 };
 
 //Animation for L1 ghost
-class GhostTakeOffAnimation : public Animation {
+class GhostAnimation : public Animation
+{
+public:
+	GhostAnimation() = default;
+	void runFrames(Entity* owner, float waitTime) override;
+};
+
+class GhostTakeOffAnimation : public GhostAnimation {
 public:
 	GhostTakeOffAnimation() = default;
 	void execute(Entity* owner, double dt) noexcept override;
 };
 
-class GhostFlyingAnimation : public Animation {
+class GhostFlyingAnimation : public GhostAnimation {
 public:
 	GhostFlyingAnimation() = default;
 	void execute(Entity* owner, double dt) noexcept override;
 };
 
-class GhostIdleAnimation : public Animation {
+class GhostIdleAnimation : public GhostAnimation {
 public:
 	GhostIdleAnimation() = default;
 	void execute(Entity* owner, double dt) noexcept override;
