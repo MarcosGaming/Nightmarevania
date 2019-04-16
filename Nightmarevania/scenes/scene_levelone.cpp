@@ -253,7 +253,7 @@ void LevelOne::Load()
 	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	//curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);
+	centrePoint = sf::Vector2f(leftBoundary, (screenSize.y / 2)-60.0f);
 
 	setLoaded(true);
 }

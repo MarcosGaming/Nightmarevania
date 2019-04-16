@@ -242,6 +242,10 @@ void Engine::ChangeScene(Scene* s)
 	}
 }
 
+Scene* Engine::getActiveScene() {
+	return Engine::_activeScene;
+}
+
 sf::Vector2u Engine::getWindowSize() { return _window->getSize(); }
 
 sf::RenderWindow& Engine::GetWindow() { return *_window; }

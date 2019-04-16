@@ -1,6 +1,7 @@
 #include "cmp_ai_steering.h"
 #include <SFML/Graphics.hpp>
 #include "engine.h"
+#include "../game.h"
 
 using namespace std;
 using namespace sf;
@@ -28,11 +29,32 @@ void AISteeringComponent::update(double dt) {
 		printf("distance between ghost and player: %f\n", dist);
 	}*/
 	
+	float curDist = length(_parent->getPosition() - _player->getPosition());
+	printf("%f\n", curDist);
 
-	// If target (player) is less than _distance pixels away, chase
-	if (length(_parent->getPosition() - _player->getPosition()) < _distance) {
+	//check if player should be dead:
+	if (curDist < 30.0f) { //the player is dead
+		//show player death then reset the scene
+		//Engine::ChangeScene(&levelOne); //this works here but should probably be in the player code somewhere after the death animation has played
+		printf("player should be dead...\n");
+	}
+
+
+	//if not, check if target (player) is less than _distance pixels away, chase
+	if (curDist < _distance) {
 		auto output = _seek.getSteering();
-		move(output.direction * (float)dt);
+		if (curDist > 400.0f) { //if the distance gets too great, increase the speed a little to make the ghost catch up
+			move(output.direction * (float)dt * 1.5f); //TODO create some sort of curve so that speed transitions are nicer
+		}
+		else if (curDist < 50.0f) { //else, if the ghost is REALLY close, slow it down a little to give the player a bit of a chance
+			move(output.direction * (float)dt * 0.75f);
+		}
+		else {
+			move(output.direction * (float)dt);
+		}
+
+		
+		
 		isMoving = true;
 		//printf("I should be moving\n");
 	}
