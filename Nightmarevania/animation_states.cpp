@@ -481,64 +481,6 @@ void HurtAnimation::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-//Different runFrames for ghost
-void GhostAnimation::runFrames(Entity* owner, float waitTime)
-{
-	auto sprite = owner->get_components<SpriteComponent>()[0];
-	// Set the frame
-	sprite->getSprite().setTextureRect(_frames[_current_frame]);
-	// Change frame
-	if (_clock.getElapsedTime().asSeconds() > waitTime)
-	{
-		_current_frame++;
-		_clock.restart();
-	}
-	if (_current_frame >= _frames.size())
-	{
-		_current_frame = 0;
-	}
-}
-
-void GhostIdleAnimation::execute(Entity* owner, double dt) noexcept {
-	runFrames(owner, 0.2f);
-
-	auto movement = owner->get_components<AISteeringComponent>()[0];
-	auto animation = owner->get_components<AnimationMachineComponent>()[0];
-
-	if (movement->getMovement())
-	{
-		animation->changeAnimation("GhostTakeOff");
-	}
-}
-
-void GhostTakeOffAnimation::execute(Entity* owner, double dt) noexcept {
-	runFrames(owner, 0.2f);
-	
-	auto movement = owner->get_components<AISteeringComponent>()[0];
-	auto animation = owner->get_components<AnimationMachineComponent>()[0];
-
-	if (!movement->getMovement())
-	{
-		animation->changeAnimation("GhostIdle");
-	}
-	else if (_current_frame >= (_frames.size()-1)) {
-		animation->changeAnimation("GhostFly");
-	}
-}
-
-void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
-	runFrames(owner, 0.2f);
-
-	auto movement = owner->get_components<AISteeringComponent>()[0];
-	auto animation = owner->get_components<AnimationMachineComponent>()[0];
-
-	if (!movement->getMovement())
-	{
-		animation->changeAnimation("GhostIdle");
-	}
-}
-
-
 // Death animations have a different runFrames method
 void DeathAnimation::runFrames(Entity* owner, float waitTime)
 {
@@ -581,5 +523,62 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 		auto animation = owner->get_components<AnimationMachineComponent>()[0];
 		animation->changeAnimation("Idle");
 		_current_frame = 0;
+	}
+}
+
+//Different runFrames for ghost
+void GhostAnimation::runFrames(Entity* owner, float waitTime)
+{
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+	if (_current_frame >= _frames.size())
+	{
+		_current_frame = 0;
+	}
+}
+
+void GhostIdleAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (movement->getMovement())
+	{
+		animation->changeAnimation("GhostTakeOff");
+	}
+}
+
+void GhostTakeOffAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (!movement->getMovement())
+	{
+		animation->changeAnimation("GhostIdle");
+	}
+	else if (_current_frame >= (_frames.size() - 1)) {
+		animation->changeAnimation("GhostFly");
+	}
+}
+
+void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (!movement->getMovement())
+	{
+		animation->changeAnimation("GhostIdle");
 	}
 }

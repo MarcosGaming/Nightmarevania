@@ -19,7 +19,6 @@ public:
 	void move(const sf::Vector2f&);
 	void move(float x, float y);
 	void render() override { }
-	//explicit AISteeringComponent(Entity * p, Entity * player, float speed, float distance);
 	explicit AISteeringComponent(Entity * p, Entity * player, float speed, float distance);
 	AISteeringComponent() = delete;
 	bool getMovement();

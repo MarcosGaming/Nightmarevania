@@ -38,16 +38,17 @@ void AISteeringComponent::update(double dt) {
 	}
 }
 
-//AISteeringComponent::AISteeringComponent(Entity* p, shared_ptr<Entity> player, float speed, float distance)
-//: _player(player.get()), _seek(Seek(p, player.get(), speed)), _distance(distance), Component(p) {}
 AISteeringComponent::AISteeringComponent(Entity* p, Entity* player, float speed, float distance)
 	: _player(player), _seek(Seek(p, player, speed)), _distance(distance), isMoving(false), Component(p) {}
 
 bool AISteeringComponent::validMove(const sf::Vector2f& pos) const {
-	if (pos.x < 0.0f || pos.x > Engine::GetWindow().getSize().x ||
+	//Whilst this will be good practice to have, in the case of the ghost, 
+	//it will never manage to make it outside the game boundaries 
+	//because the player won't either
+	/*if (pos.x < 0.0f || pos.x > Engine::GetWindow().getSize().x ||
 		pos.y < 0.0f || pos.y > Engine::GetWindow().getSize().y) {
 		return false;
-	}
+	}*/
 	return true;
 }
 
