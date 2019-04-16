@@ -4,6 +4,7 @@
 #include "maths.h"
 #include <SFML\Graphics.hpp>
 #include <system_sound.h>
+#include "components/cmp_ai_steering.h"
 
 void IdleAnimation::execute(Entity* owner, double dt) noexcept
 {
@@ -479,6 +480,46 @@ void HurtAnimation::execute(Entity* owner, double dt) noexcept
 		}
 	}
 }
+
+void GhostIdleAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (movement->getMovement())
+	{
+		animation->changeAnimation("GhostTakeOff");
+	}
+}
+
+void GhostTakeOffAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+	
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (!movement->getMovement())
+	{
+		animation->changeAnimation("GhostIdle");
+	}
+	else if (_current_frame >= _frames.size()) {
+		animation->changeAnimation("GhostFly");
+	}
+}
+
+void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
+	runFrames(owner, 0.2f);
+
+	auto movement = owner->get_components<AISteeringComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+
+	if (!movement->getMovement())
+	{
+		animation->changeAnimation("GhostIdle");
+	}
+}
+
 
 // Death animations have a different runFrames method
 void DeathAnimation::runFrames(Entity* owner, float waitTime)

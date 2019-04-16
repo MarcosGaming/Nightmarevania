@@ -24,9 +24,11 @@ class Seek : public SteeringBehaviour
 private:
 	Entity * _character;
 	Entity*  _target;
+	float _speed;
 
 public:
-	Seek() = default;
-	Seek(Entity* character, Entity* target) : _character(character), _target(target) {};
+	//Seek() = default;
+	Seek() = delete;
+	Seek(Entity* character, Entity* target, float speed) : _character(character), _target(target),  _speed(speed){};
 	SteeringOutput getSteering() const noexcept override;
 };

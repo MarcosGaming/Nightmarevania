@@ -12,6 +12,7 @@
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_ai_steering.h"
 
 using namespace std;
 using namespace sf;
@@ -141,18 +142,32 @@ void LevelOne::Load()
 		auto AIcmp = ghost->addComponent<GhostAIComponent>();
 		auto sprite = ghost->addComponent<SpriteComponent>();
 		shared_ptr<Texture> ghostSprites = make_shared<Texture>();
-		ghostSprites->loadFromFile("res/img/ghost_fly.png");
+		ghostSprites->loadFromFile("res/img/ghost.png");
 		sprite->setTexure(ghostSprites);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 116));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
-		shared_ptr<DeathAnimationGround> ghostFly = make_shared<DeathAnimationGround>();
-		for (int i = 0; i < 7; i++)
+		auto animations = ghost->addComponent<AnimationMachineComponent>();
+		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();
+		for (int i = 1; i < 8; i++)
 		{
-			ghostFly->addFrame(IntRect(71 * i, 0, 71, 58));
+			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
 		}
-		auto anim = ghost->addComponent<AnimationMachineComponent>();
-		anim->addAnimation("GhostFly", ghostFly);
+		animations->addAnimation("GhostTakeOff", ghostTakeOff);
+
+		shared_ptr<GhostFlyingAnimation> ghostFly = make_shared<GhostFlyingAnimation>();
+		ghostTakeOff->addFrame(IntRect(71 * 6, 0, 71, 58));
+		animations->addAnimation("GhostFly", ghostFly);
+
+		shared_ptr<GhostIdleAnimation> ghostIdle = make_shared<GhostIdleAnimation>();
+		for (int i = 0; i < 2; i++)
+		{
+			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
+		}
+		animations->addAnimation("GhostIdle", ghostIdle);
+		animations->changeAnimation("GhostIdle"); //why is this breaking?
+
+		//auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 1.0f, 200.0f);
 	}
 
 	// Add physics colliders to level tiles.

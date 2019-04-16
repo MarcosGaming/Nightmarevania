@@ -105,6 +105,25 @@ public:
 	void execute(Entity*, double) noexcept override;
 };
 
+//Animation for L1 ghost
+class GhostTakeOffAnimation : public Animation {
+public:
+	GhostTakeOffAnimation() = default;
+	void execute(Entity* owner, double dt) noexcept override;
+};
+
+class GhostFlyingAnimation : public Animation {
+public:
+	GhostFlyingAnimation() = default;
+	void execute(Entity* owner, double dt) noexcept override;
+};
+
+class GhostIdleAnimation : public Animation {
+public:
+	GhostIdleAnimation() = default;
+	void execute(Entity* owner, double dt) noexcept override;
+};
+
 // General death animation
 class DeathAnimation : public Animation
 {
@@ -128,3 +147,7 @@ public:
 	DeathAnimationGround() = default;
 	void execute(Entity*, double) noexcept override;
 };
+
+
+	
+	
