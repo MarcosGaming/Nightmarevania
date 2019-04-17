@@ -9,10 +9,10 @@ CreditsScene credits;
 LevelOne levelOne;
 LevelTwo levelTwo;
 LevelThree levelThree;
+EndingScene endingScene;
 
 int main() 
 {
 	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);
-
 	return 0;
 }

@@ -17,6 +17,7 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) 
 	_groundspeed = 30.f;
 	_grounded = false;
 	_secondJump = false;
+	_canMove = true;
 	_body->SetSleepingAllowed(false);
 	_body->SetFixedRotation(true);
 	//Bullet items have higher-res collision detection
@@ -85,7 +86,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else
 	{
-		if (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton))
+		if (_canMove && (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton)))
 		{
 			// Moving Either Left or Right
 			if (Controller::isPressed(Controller::MoveRightButton))
@@ -107,20 +108,20 @@ void PlayerPhysicsComponent::update(double dt)
 
 		static bool impulseDown = false;
 		// Handle Jump
-		if (Controller::isPressed(Controller::JumpButton))
+		if (_canMove && Controller::isPressed(Controller::JumpButton))
 		{
 			_grounded = isGrounded();
 			if (_grounded)
 			{
 				setVelocity(Vector2f(getVelocity().x, 0.f));
 				teleport(Vector2f(pos.x, pos.y - 2.0f));
-				impulse(Vector2f(0, -6.8f));
+				impulse(Vector2f(0, -7.2f));
 				impulseDown = false;
 			}
 			// Only double jump once after releasing space
 			else if (Controller::isJumpButtonReleased() && !_secondJump)
 			{
-				impulse(Vector2f(0, -6.8f + _body->GetLinearVelocity().y));
+				impulse(Vector2f(0, -7.2f + _body->GetLinearVelocity().y));
 				_secondJump = true;
 				impulseDown = false;
 			}
@@ -205,4 +206,9 @@ bool PlayerPhysicsComponent::isGrounded() const
 bool PlayerPhysicsComponent::isSecondJump() const
 {
 	return _secondJump;
+}
+
+void PlayerPhysicsComponent::setCanMove(bool canMove)
+{
+	_canMove = canMove;
 }

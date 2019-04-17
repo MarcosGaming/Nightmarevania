@@ -9,6 +9,7 @@ static bool audioEffectsOn;
 
 static sf::Music main_menu_music;
 static sf::Music level_3_music;
+static sf::Music mystic_music;
 
 static sf::SoundBuffer button_buffer;
 static sf::SoundBuffer player_damage_buffer;
@@ -17,6 +18,10 @@ static sf::SoundBuffer player_sword1_buffer;
 static sf::SoundBuffer player_sword2_buffer;
 static sf::SoundBuffer player_sword3_buffer;
 static sf::SoundBuffer player_sword4_buffer;
+static sf::SoundBuffer boss_death_buffer;
+static sf::SoundBuffer boss_hurt_buffer;
+static sf::SoundBuffer boss_attack_buffer;
+static sf::SoundBuffer boss_roar_buffer;
 
 static sf::Sound button_effect;
 static sf::Sound player_damage_effect;
@@ -25,6 +30,11 @@ static sf::Sound player_sword1_effect;
 static sf::Sound player_sword2_effect;
 static sf::Sound player_sword3_effect;
 static sf::Sound player_sword4_effect;
+static sf::Sound boss_death_effect;
+static sf::Sound boss_hurt_effect;
+static sf::Sound boss_attack_effect;
+static sf::Sound boss_roar_effect;
+
 
 void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 {
@@ -49,10 +59,12 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	// Load all the music for the game
 	main_menu_music.openFromFile("res/sounds/main_menu_music.wav");
 	level_3_music.openFromFile("res/sounds/boss_music.wav");
+	mystic_music.openFromFile("res/sounds/mystic_music.wav");
 	// Store the music in the map
 	music["main_menu_music"] = &main_menu_music;
 	level_3_music.setVolume(50.0f);
 	music["level_3_music"] = &level_3_music;
+	music["mystic_music"] = &mystic_music;
 	// Load all the effects for the game
 	button_buffer.loadFromFile("res/sounds/button_effect.wav");
 	player_damage_buffer.loadFromFile("res/sounds/player_damage.wav");
@@ -61,6 +73,10 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	player_sword2_buffer.loadFromFile("res/sounds/player_sword2.wav");
 	player_sword3_buffer.loadFromFile("res/sounds/player_sword3.wav");
 	player_sword4_buffer.loadFromFile("res/sounds/player_sword4.wav");
+	boss_death_buffer.loadFromFile("res/sounds/boss_death.wav");
+	boss_hurt_buffer.loadFromFile("res/sounds/boss_hurt.wav");
+	boss_attack_buffer.loadFromFile("res/sounds/boss_attack.wav");
+	boss_roar_buffer.loadFromFile("res/sounds/boss_roar.wav");
 	// Store the effects in the map
 	button_effect.setBuffer(button_buffer);
 	effects["button_effect"] = &button_effect;
@@ -76,7 +92,14 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	effects["player_sword3_effect"] = &player_sword3_effect;
 	player_sword4_effect.setBuffer(player_sword4_buffer);
 	effects["player_sword4_effect"] = &player_sword4_effect;
-
+	boss_death_effect.setBuffer(boss_death_buffer);
+	effects["boss_death_effect"] = &boss_death_effect;
+	boss_hurt_effect.setBuffer(boss_hurt_buffer);
+	effects["boss_hurt_effect"] = &boss_hurt_effect;
+	boss_attack_effect.setBuffer(boss_attack_buffer);
+	effects["boss_attack_effect"] = &boss_attack_effect;
+	boss_roar_effect.setBuffer(boss_roar_buffer);
+	effects["boss_roar_effect"] = &boss_roar_effect;
 }
 
 void Audio::playMusic(const std::string& musicName)

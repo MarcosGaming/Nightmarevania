@@ -12,6 +12,8 @@ protected:
 
   bool _secondJump;
 
+  bool _canMove;
+
 public:
   void update(double dt) override;
 
@@ -22,4 +24,6 @@ public:
   bool isSecondJump() const;
 
   bool isGrounded() const;
+
+  void setCanMove(bool);
 };

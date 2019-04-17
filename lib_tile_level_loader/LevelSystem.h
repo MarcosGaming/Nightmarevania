@@ -60,7 +60,8 @@ public:
 		START = 's',
 		EMPTY = ' ',
 		WALL = 'w',
-		FLOOR = 'f'
+		FLOOR = 'f',
+		ENEMY = 'n'
 
 	};
 

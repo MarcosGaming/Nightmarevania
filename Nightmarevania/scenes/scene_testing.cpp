@@ -1,5 +1,6 @@
 #include "scene_testing.h"
 #include "../components/cmp_sprite.h"
+#include "../components/cmp_text.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
@@ -14,9 +15,9 @@
 using namespace std;
 using namespace sf;
 
-//static shared_ptr<Entity> player;
-//shared_ptr<Texture> playerAnimations;
-//shared_ptr<Texture> combatIcons;
+static shared_ptr<Entity> player;
+shared_ptr<Texture> playerAnimations;
+shared_ptr<Texture> combatIcons;
 
 static shared_ptr<Entity> pause_background;
 static shared_ptr<Texture> pause_background_tex;
@@ -30,9 +31,8 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-//DEBUGGING CAM
-sf::Vector2f screenSize;
-sf::View followPlayer;
+static shared_ptr<Entity> dialogue_box;
+
 
 void TestingScene::Load()
 {
@@ -55,7 +55,7 @@ void TestingScene::Load()
 	//spriteSheet->loadFromFile("res/img/adventurer.png");
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	combatIcons->loadFromFile("res/img/combat_icons.png");
-
+	
 	// Player for levels 1 and 2
 	/*{
 		player = makeEntity();
@@ -114,7 +114,6 @@ void TestingScene::Load()
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Idle");
-
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}*/
 
@@ -295,16 +294,6 @@ void TestingScene::Load()
 			e->setPosition(pos);
 			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
 		}
-
-		auto floor = ls::findTiles(ls::FLOOR);
-		for (auto f : floor)
-		{
-			auto pos = ls::getTilePosition(f);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
-		}
 	}
 
 	// Pause background
@@ -359,11 +348,13 @@ void TestingScene::Load()
 		buttonsForController.push_back(button);
 	}
 
-
-
-	//CAM
-	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-
+	// Dialogue box
+	{
+		dialogue_box = makeEntity();
+		// Dialogue text component
+		auto text = dialogue_box->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
+	}
 
 	setLoaded(true);
 }
@@ -389,20 +380,15 @@ void TestingScene::Update(const double& dt)
 		// Level 3 music
 		Audio::playMusic("level_3_music");
 	}
-
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(player->getPosition());
-
-	
 
 	Scene::Update(dt);
 }
 
 void TestingScene::Render()
 {
-	Engine::GetWindow().setView(followPlayer);
-
 	ls::render(Engine::GetWindow());
 	Scene::Render();
 }

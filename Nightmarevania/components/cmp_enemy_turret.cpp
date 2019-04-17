@@ -1,6 +1,6 @@
 #include "cmp_enemy_turret.h"
 #include "cmp_bullet.h"
-#include "cmp_hurt_player.h"
+#include "cmp_hurt.h"
 #include "engine.h"
 #include <SFML/Graphics/CircleShape.hpp>
 using namespace std;
@@ -24,7 +24,7 @@ void EnemyTurretComponent::fire() const
 {
   auto bullet = _parent->scene->makeEntity();
   bullet->setPosition(_parent->getPosition());
-  bullet->addComponent<HurtComponent>();
+  bullet->addComponent<PlayerHurtComponent>();
   bullet->addComponent<BulletComponent>();
   auto s = bullet->addComponent<ShapeComponent>();
 

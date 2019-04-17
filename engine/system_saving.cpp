@@ -163,8 +163,8 @@ void Saving::saveSettingsInFile()
 
 static void getSettingsFromSystem()
 {
-	// Set level safe to 0 if it is empty
-	if (levelSaved.empty() || levelSaved != "1" || levelSaved != "2" || levelSaved != "3")
+	// Set level safe to 0 if it is empty or if does not corresponds to a level
+	if (levelSaved.empty() || (levelSaved != "1" && levelSaved != "2" && levelSaved != "3" && levelSaved != "4"))
 	{
 		levelSaved = "0";
 	}

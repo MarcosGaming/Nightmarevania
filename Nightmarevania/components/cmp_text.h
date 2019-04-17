@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <ecm.h>
+#include <functional>
 
 class TextComponent : public Component 
 {
@@ -37,4 +38,37 @@ public:
 	void setInitialPosition(sf::Vector2f);
 
 	void setAction(std::string);
+};
+
+// Text used for the dialogue boxes
+class DialogueBoxComponent : public TextComponent
+{
+private:
+	std::string _completeText;
+	int _currentChar;
+	bool _finished;
+
+	std::function<void()> _func;
+
+	double _dt;
+
+public:
+	DialogueBoxComponent() = delete;
+	explicit DialogueBoxComponent(Entity*, const std::string& str = "");
+
+	void update(double) override;
+
+	void setCompleteText(const std::string&);
+
+	void setFunction(std::function<void()>);
+
+	void swordDialogueUpdate();
+
+	void beginBattleDialogueUpdate(bool&);
+
+	void endBattleDialogueUpdate();
+
+	void endingDialogue();
+	
+	void theEndDialogue();
 };

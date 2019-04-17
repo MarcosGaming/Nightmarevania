@@ -1,9 +1,13 @@
 #include "cmp_text.h"
+#include "cmp_player_physics.h"
+#include "../game.h"
 #include <system_renderer.h>
 #include <system_resources.h>
 #include <system_controller.h>
+#include <system_sound.h>
 #include <conversor.h>
 #include <iostream>
+#include <engine.h>
 
 // Base text component
 void TextComponent::update(double dt) {}
@@ -74,4 +78,210 @@ void ControlsTextComponent::update(double dt)
 		}
 	}
 	_text.setPosition(sf::Vector2f(_initialPosition.x - (_text.getLocalBounds().width * 0.5f), _initialPosition.y));
+}
+
+// Text component for the dialogue boxes
+DialogueBoxComponent::DialogueBoxComponent(Entity* p, const std::string& str) : _currentChar(0), _finished(false),  TextComponent(p, str) 
+{ 
+	_text.setCharacterSize(20); 
+}
+
+void DialogueBoxComponent::update(double dt) 
+{
+	_dt = dt;
+	_func();
+}
+
+void DialogueBoxComponent::setCompleteText(const std::string& text)
+{
+	_completeText = text;
+}
+
+void DialogueBoxComponent::setFunction(std::function<void()> function) { _func = function; }
+
+// Function for sword dialogue
+void DialogueBoxComponent::swordDialogueUpdate()
+{
+	Audio::playMusic("mystic_music");
+	// While the dialogue box is active do not allow the player to move
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(false);
+	}
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float hideCountDown = 0.8f;
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		hideCountDown -= _dt;
+		if (hideCountDown <= 0.0f)
+		{
+			if (auto pl = player.lock())
+			{
+				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
+			}
+			_parent->setVisible(false);
+			finalCountDown -= _dt;
+			// Begin battle text starts
+			if (finalCountDown <= 0.0f)
+			{
+				_parent->setAlive(false);
+				_parent->scene->ents.find("BeginBattleText")[0]->setAlive(true);
+				Audio::stopMusic("mystic_music");
+				Audio::playEffect("boss_roar_effect");
+			}
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+// Function for final boss begin battle
+void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
+{
+	static float musicCountDown = 1.5f;
+	musicCountDown -= _dt;
+	if (musicCountDown <= 0.0f)
+	{
+		activateMusicInLevel = true;
+	}
+	// While the dialogue box is active do not allow the player to move
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(false);
+	}
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			if (auto pl = player.lock())
+			{
+				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
+			}
+			_parent->setAlive(false);
+			_parent->setVisible(false);
+			// Fight begins
+			_parent->scene->ents.find("Boss")[0]->setAlive(true);
+			_parent->scene->ents.find("Boss")[0]->setDeath(false);
+			musicCountDown = 1.5f;
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+// Function for final boss end battle
+void DialogueBoxComponent::endBattleDialogueUpdate()
+{
+	// While the dialogue box is active do not allow the player to move
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(false);
+	}
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			// Change to ending scene
+			Engine::ChangeScene(&endingScene);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+
+void DialogueBoxComponent::endingDialogue()
+{
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 3.0f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			_parent->setAlive(false);
+			_parent->setVisible(false);
+			// Activate the end dialogue
+			auto theEnd = _parent->scene->ents.find("TheEnd")[0];
+			theEnd->setAlive(true);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
+}
+
+void DialogueBoxComponent::theEndDialogue()
+{
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.3f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.3f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 3.0f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			_parent->setAlive(false);
+			_parent->setVisible(false);
+			// Change to main menu
+			Engine::ChangeScene(&main_menu);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
 }
