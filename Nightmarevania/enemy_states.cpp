@@ -16,12 +16,12 @@ void StationaryState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(true);
+		bossAI[0]->setIsIdle(true);
 	}
 }
 
 // Seek slow state
-SeekSlowState::SeekSlowState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get()) {}
+SeekSlowState::SeekSlowState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get(), 1.0f) {}
 void SeekSlowState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component
@@ -37,12 +37,12 @@ void SeekSlowState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(false);
+		bossAI[0]->setIsIdle(false);
 	}
 }
 
 // Seek fast state
-SeekFastState::SeekFastState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get()) {}
+SeekFastState::SeekFastState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get(), 1.0f) {}
 void SeekFastState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component
@@ -58,7 +58,7 @@ void SeekFastState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(false);
+		bossAI[0]->setIsIdle(false);
 	}
 }
 
@@ -75,7 +75,7 @@ void AttackState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(false);
+		bossAI[0]->setIsIdle(false);
 	}
 }
 
@@ -93,7 +93,7 @@ void DeathState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(false);
+		bossAI[0]->setIsIdle(false);
 	}
 	static bool played = false;
 	if (!played)
@@ -116,7 +116,7 @@ void ReviveState::execute(Entity* owner, double dt) noexcept
 	auto bossAI = owner->get_components<BossAIComponent>();
 	if (!bossAI.empty())
 	{
-		bossAI[0]->setIsIddle(false);
+		bossAI[0]->setIsIdle(false);
 	}
 }
 

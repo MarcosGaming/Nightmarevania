@@ -49,7 +49,7 @@ private:
 	int _maxHealth;
 
 	bool _hurt;
-	bool _isIddle;
+	bool _isIdle;
 
 	std::shared_ptr<sf::Texture> _healthBarTexture;
 	std::shared_ptr<sf::Sprite> _healthBarSprite;
@@ -68,7 +68,7 @@ public:
 	void resetHurt();
 	void hurtEnemy(int);
 
-	void setIsIddle(bool);
+	void setIsIdle(bool);
 
 	void setHealthBarTexture(std::shared_ptr<sf::Texture>);
 	sf::Sprite& getHealthBarSprite() const;

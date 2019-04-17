@@ -155,7 +155,7 @@ class GhostIdleAnimation : public GhostAnimation {
 public:
 	GhostIdleAnimation() = default;
 	void execute(Entity* owner, double dt) noexcept override;
-}
+};
 
 // Skeleton Animations
 

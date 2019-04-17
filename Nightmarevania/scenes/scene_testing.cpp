@@ -380,9 +380,9 @@ void TestingScene::Update(const double& dt)
 		// Level 3 music
 		Audio::playMusic("level_3_music");
 	}
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	/*followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(player->getPosition());
+	followPlayer.setCenter(player->getPosition());*/
 
 	Scene::Update(dt);
 }

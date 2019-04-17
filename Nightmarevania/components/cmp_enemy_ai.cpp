@@ -19,7 +19,7 @@ void SkeletonAIComponent::setDeath(bool death) { _death = death; }
 
 
 // The boss AI component is going to add a healthbar to the skeleton
-BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), _hurt(false), _isIddle(false), SkeletonAIComponent(p)
+BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), _hurt(false), _isIdle(false), SkeletonAIComponent(p)
 {
 	_healthBarTexture = std::make_shared<sf::Texture>();
 	_foregroundTexture = std::make_shared<sf::Texture>();
@@ -53,10 +53,6 @@ void BossAIComponent::render()
 	}
 }
 
-void BossAIComponent::setHealthBarTexture(std::shared_ptr<sf::Texture> tex) { _healthBarTexture = tex; }
-sf::Sprite& BossAIComponent::getHealthBarSprite() const { return *_healthBarSprite; }
-void BossAIComponent::addHealthBarIcon(sf::IntRect icon) { _healthBarIcons.push_back(icon); }
-
 bool BossAIComponent::isHurt()const { return _hurt; }
 void BossAIComponent::resetHurt() { _hurt = false; }
 void BossAIComponent::hurtEnemy(int damage)
@@ -65,7 +61,7 @@ void BossAIComponent::hurtEnemy(int damage)
 	if (hurtCoolDown <= 0.0f)
 	{
 		_hurt = true;
-		if (!_isIddle)
+		if (!_isIdle)
 		{
 			_healthTaken += 1;
 			hurtCoolDown = 0.4f;
