@@ -1,11 +1,13 @@
 #pragma once
 #include "components\cmp_animation_machine.h"
 
+// Player Animations
+
 // Iddle animation
-class IddleAnimation : public Animation
+class IdleAnimation : public Animation
 {
 public:
-	IddleAnimation() = default;
+	IdleAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 
@@ -126,5 +128,63 @@ class DeathAnimationGround : public DeathAnimation
 {
 public:
 	DeathAnimationGround() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Enemy Animations
+
+// Iddle animation
+class SkeletonIdleAnimation : public Animation
+{
+public:
+	SkeletonIdleAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Attack animation
+class SkeletonAttackAnimation : public Animation
+{
+public:
+	SkeletonAttackAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Slow walk animation
+class SkeletonSlowWalkAnimation : public Animation
+{
+public:
+	SkeletonSlowWalkAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Fast walk animation
+class SkeletonFastWalkAnimation : public Animation
+{
+public:
+	SkeletonFastWalkAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Hurt animation
+class SkeletonHurtAnimation : public Animation
+{
+public:
+	SkeletonHurtAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Die animation
+class SkeletonDeathAnimation : public DeathAnimation
+{
+public:
+	SkeletonDeathAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Revive animation
+class SkeletonReviveAnimation : public DeathAnimation
+{
+public:
+	SkeletonReviveAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };

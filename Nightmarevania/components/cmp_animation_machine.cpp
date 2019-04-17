@@ -28,7 +28,7 @@ void Animation::runFrames(Entity* owner, float waitTime)
 void Animation::setFacing(Entity* owner)
 {
 	auto sprite = owner->get_components<SpriteComponent>()[0];
-	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
+	auto movement = owner->GetCompatibleComponent<PhysicsComponent>()[0];
 	// Rotate sprite based on the character movement
 	if (movement->getVelocity().x > 0.5f && !owner->isFacingRight())
 	{

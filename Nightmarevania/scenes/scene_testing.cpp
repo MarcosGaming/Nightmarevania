@@ -68,7 +68,7 @@ void TestingScene::Load()
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
 		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
+		shared_ptr<IdleAnimation> iddle = make_shared<IdleAnimation>();
 		for (int i = 0; i < 4; i++)
 		{
 			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
@@ -174,7 +174,7 @@ void TestingScene::Load()
 			combat->addDefendIcon(IntRect(50 * i, 37, 50, 37));
 		}
 		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
+		shared_ptr<IdleAnimation> iddle = make_shared<IdleAnimation>();
 		for (int i = 0; i < 4; i++)
 		{
 			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
@@ -355,7 +355,6 @@ void TestingScene::Load()
 		// Dialogue text component
 		auto text = dialogue_box->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
-		text->setTextPosition(Vector2f(200.0f, 300.0f));
 	}
 
 	setLoaded(true);

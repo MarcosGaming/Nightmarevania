@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <ecm.h>
+#include <functional>
 
 class TextComponent : public Component 
 {
@@ -47,7 +48,9 @@ private:
 	int _currentChar;
 	bool _finished;
 
-	std::weak_ptr<Entity> _player;
+	std::function<void()> _func;
+
+	double _dt;
 
 public:
 	DialogueBoxComponent() = delete;
@@ -57,5 +60,11 @@ public:
 
 	void setCompleteText(const std::string&);
 
-	void setTextPosition(const sf::Vector2f&);
+	void setFunction(std::function<void()>);
+
+	void swordDialogueUpdate();
+
+	void beginBattleDialogueUpdate(bool&);
+
+	void endBattleDialogueUpdate();
 };

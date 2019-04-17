@@ -115,13 +115,13 @@ void PlayerPhysicsComponent::update(double dt)
 			{
 				setVelocity(Vector2f(getVelocity().x, 0.f));
 				teleport(Vector2f(pos.x, pos.y - 2.0f));
-				impulse(Vector2f(0, -6.8f));
+				impulse(Vector2f(0, -7.2f));
 				impulseDown = false;
 			}
 			// Only double jump once after releasing space
 			else if (Controller::isJumpButtonReleased() && !_secondJump)
 			{
-				impulse(Vector2f(0, -6.8f + _body->GetLinearVelocity().y));
+				impulse(Vector2f(0, -7.2f + _body->GetLinearVelocity().y));
 				_secondJump = true;
 				impulseDown = false;
 			}

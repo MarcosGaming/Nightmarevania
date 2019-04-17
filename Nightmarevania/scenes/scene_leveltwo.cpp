@@ -78,7 +78,7 @@ void LevelTwo::Load()
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
 		// Animations, each frame has a size of 50x37
-		shared_ptr<IddleAnimation> iddle = make_shared<IddleAnimation>();
+		shared_ptr<IdleAnimation> iddle = make_shared<IdleAnimation>();
 		for (int i = 0; i < 4; i++)
 		{
 			iddle->addFrame(IntRect(50 * i, 0, 50, 37));
