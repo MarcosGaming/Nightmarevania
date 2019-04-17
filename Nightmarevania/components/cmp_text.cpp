@@ -1,5 +1,6 @@
 #include "cmp_text.h"
 #include "cmp_player_physics.h"
+#include "../game.h"
 #include <system_renderer.h>
 #include <system_resources.h>
 #include <system_controller.h>
@@ -219,13 +220,68 @@ void DialogueBoxComponent::endBattleDialogueUpdate()
 		finalCountDown -= _dt;
 		if (finalCountDown <= 0.0f)
 		{
-			if (auto pl = player.lock())
-			{
-				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
-			}
-			_parent->setAlive(false);
-			_parent->setVisible(false);
+			// Change to ending scene
+			Engine::ChangeScene(&endingScene);
 		}
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+
+void DialogueBoxComponent::endingDialogue()
+{
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 3.0f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			_parent->setAlive(false);
+			_parent->setVisible(false);
+			// Activate the end dialogue
+			auto theEnd = _parent->scene->ents.find("TheEnd")[0];
+			theEnd->setAlive(true);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
+}
+
+void DialogueBoxComponent::theEndDialogue()
+{
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.3f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.3f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 3.0f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= _dt;
+		if (finalCountDown <= 0.0f)
+		{
+			_parent->setAlive(false);
+			_parent->setVisible(false);
+			// Change to main menu
+			Engine::ChangeScene(&main_menu);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
 }

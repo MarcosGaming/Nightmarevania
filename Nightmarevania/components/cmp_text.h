@@ -67,4 +67,8 @@ public:
 	void beginBattleDialogueUpdate(bool&);
 
 	void endBattleDialogueUpdate();
+
+	void endingDialogue();
+	
+	void theEndDialogue();
 };

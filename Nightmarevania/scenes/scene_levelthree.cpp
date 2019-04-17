@@ -388,6 +388,7 @@ void LevelThree::Load()
 		boss->setDeath(true);
 	}
 
+	// Hurt components reference some components of the other entities and that is why they are added here
 	{
 		// Player Hurt Component
 		player->addComponent<BossHurtComponent>();
@@ -599,6 +600,7 @@ void LevelThree::Update(const double& dt)
 		_paused = true;
 		// Pause music
 		Audio::pauseMusic("level_3_music");
+		Audio::pauseMusic("mystic_music");
 	}
 	if (_paused)
 	{
