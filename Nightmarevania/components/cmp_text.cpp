@@ -99,6 +99,34 @@ void DialogueBoxComponent::setCompleteText(const std::string& text)
 
 void DialogueBoxComponent::setFunction(std::function<void()> function) { _func = function; }
 
+// Function for the dialogue in the sword alone level
+void DialogueBoxComponent::levelSwordDialogueUpdate()
+{
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= _dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float hideCountDown = 1.5f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		hideCountDown -= _dt;
+		if (hideCountDown <= 0.0f)
+		{
+			_parent->setVisible(false);
+			_parent->setAlive(false);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+
 // Function for sword dialogue
 void DialogueBoxComponent::swordDialogueUpdate()
 {
@@ -227,7 +255,7 @@ void DialogueBoxComponent::endBattleDialogueUpdate()
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
 }
 
-void DialogueBoxComponent::endingDialogue()
+void DialogueBoxComponent::endingDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
@@ -257,7 +285,7 @@ void DialogueBoxComponent::endingDialogue()
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
 }
 
-void DialogueBoxComponent::theEndDialogue()
+void DialogueBoxComponent::theEndDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.3f;

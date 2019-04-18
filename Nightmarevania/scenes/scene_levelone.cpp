@@ -130,7 +130,7 @@ void LevelOne::Load()
 
 		//if (keyExists) {
 		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
 		}
 	}
 
@@ -262,7 +262,7 @@ void LevelOne::Update(const double& dt)
 {
 
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
-		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
+		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
 	}
 
 	// Pause game

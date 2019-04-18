@@ -62,13 +62,15 @@ public:
 
 	void setFunction(std::function<void()>);
 
+	void levelSwordDialogueUpdate();
+
 	void swordDialogueUpdate();
 
 	void beginBattleDialogueUpdate(bool&);
 
 	void endBattleDialogueUpdate();
 
-	void endingDialogue();
+	void endingDialogueUpdate();
 	
-	void theEndDialogue();
+	void theEndDialogueUpdate();
 };

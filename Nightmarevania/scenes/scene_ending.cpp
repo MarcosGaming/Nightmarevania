@@ -19,7 +19,7 @@ void EndingScene::Load()
 		// Dialogue text component
 		auto text = ending_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Mysterious Voice: Thank you for your efforts defeating Erebus, however Serah,\nI am afraid that your journey... has just begun.");
-		text->setFunction([&]() {text->endingDialogue(); });
+		text->setFunction([&]() {text->endingDialogueUpdate(); });
 	}
 	// The end text
 	{
@@ -29,7 +29,7 @@ void EndingScene::Load()
 		// Dialogue text component
 		auto text = the_end_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("The End ?");
-		text->setFunction([&]() {text->theEndDialogue(); });
+		text->setFunction([&]() {text->theEndDialogueUpdate(); });
 	}
 	setLoaded(true);
 }

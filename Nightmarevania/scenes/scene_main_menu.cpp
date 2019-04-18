@@ -30,6 +30,8 @@ static int buttonsCurrentIndex;
 
 void MainMenuScene::Load()
 {
+	// Stop music from sword level in case the player exited from there
+	Audio::stopMusic("mystic_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// Background
@@ -75,7 +77,7 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 200, 42));
 		button->setHovered(sf::IntRect(0, 42, 200, 42));
 		//button->setScene(&testing);
-		button->setScene(&levelThree);
+		button->setScene(&levelSword);
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(button);
 	}

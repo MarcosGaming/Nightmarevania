@@ -1,16 +1,16 @@
-#include "scene_leveltwo.h"
+#include "scene_levelsword.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
-#include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
+#include "../components/cmp_door.h"
+#include "../components/cmp_key.h"
+#include "../components/cmp_text.h"
 #include "../game.h"
-#include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
-#include "../components/cmp_door.h"
-#include "../components/cmp_key.h"
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -27,10 +27,12 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-sf::Vector2f curCentre; //debugging
+static shared_ptr<Entity> short_dialogue;
 
-void LevelTwo::Load()
+void LevelSword::Load()
 {
+	// Stop music from main menu in the case that we come from there
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -38,30 +40,28 @@ void LevelTwo::Load()
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
 	// Level file
-	ls::loadLevelFile("res/levels/level_two.txt", 60.0f);
+	ls::loadLevelFile("res/levels/level_sword.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
-
-	//DOOR
-	shared_ptr<Entity> door;
-	if (ls::doesTileExist(ls::DOOR)) {
-		door = makeEntity();
-		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
-		//false for L1, but starts as true for L2 and stays true in L3
-		auto doorSprite = door->addComponent<SpriteComponent>();
-		doorSprite->setTexure(doorCmp->getTexture());
-		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
-		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
-	}
-
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
 
-	// Player for levels 1 and 2
+	// Door
+	if (ls::doesTileExist(ls::DOOR))
+	{
+		door = makeEntity();
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		auto doorSprite = door->addComponent<SpriteComponent>();
+		doorSprite->setTexure(doorCmp->getTexture());
+		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
+		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}
+
+	// Player
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
@@ -119,20 +119,21 @@ void LevelTwo::Load()
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Idle");
-
+		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
-		
-		//KEY - level 2 only
-		if (ls::doesTileExist(ls::DOOR)) {
+		// Key component
+		if (ls::doesTileExist(ls::KEY)) 
+		{
+			auto key = player->addComponent<SwordKeyComponent>(false,ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+		}
+
+		// Set the player for the door component of the door entity
+		if (ls::doesTileExist(ls::DOOR))
+		{
 			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
-
-		//if (keyExists) {
-		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
-		}
-
 	}
+
 
 	// Add physics colliders to level tiles.
 	{
@@ -209,87 +210,62 @@ void LevelTwo::Load()
 		buttonsForController.push_back(button);
 	}
 
-
-	//MOVING CAMERA STUFF
-	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);
-
+	// End fight dialogue
+	{
+		short_dialogue = makeEntity();
+		short_dialogue->setAlive(true);
+		// Dialogue text component
+		auto text = short_dialogue->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Mysterious voice: Ahead awaits you the final challenge Serah. Grab the sword and recover\nthe strength of your ancestors, you will need it to defeat Erebus.");
+		text->setFunction([&]() {text->levelSwordDialogueUpdate(); });
+	}
 	setLoaded(true);
 }
 
-void LevelTwo::Update(const double& dt)
+void LevelSword::Update(const double& dt)
 {
-
-	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
-		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
-	}
-	
-
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
-		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
-	}
-
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
+		Audio::pauseMusic("mystic_music");
 	}
+	// Controller button navigation
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 	}
-
-	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
-		centrePoint.x = player->getPosition().x;
+	else
+	{
+		// Music for this level
+		Audio::playMusic("mystic_music");
 	}
-
-	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) {
-		centrePoint.y = player->getPosition().y;
+	// The player can proceed to the next level after picking up the sword key
+	if (ls::getTileAt(player->getPosition()) == ls::KEY && !player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
+	{
+		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
 	}
-
-	//debug:
-	if (player->getPosition() != curCentre) {
-		printf("(%f,%f)\n", player->getPosition().x, player->getPosition().y);
-		curCentre = player->getPosition();
-	}
-
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
-	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(centrePoint);
-
-	if (ls::getTileAt(player->getPosition()) == ls::END) {
-		Engine::ChangeScene((Scene*)&levelTwo);
+	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
+	{
+		Engine::ChangeScene((Scene*)&levelThree);
 	}
 
 	Scene::Update(dt);
 }
 
-void LevelTwo::Render()
+void LevelSword::Render()
 {
-	Engine::GetWindow().setView(followPlayer);
-	ls::render(Engine::GetWindow()); //render the enviro tiles
-	//TODO - render bg and fg seperately (in diff views)
-	/* Something like:
-	* sf::View background;
-	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
-	* Engine::GetWindow().setView(background);
-	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
-	* Engine::GetWindow().setView(followPlayer);
-	* ls::render(Engine::GetWindow());
-	*/
-
+	ls::render(Engine::GetWindow());
 	Scene::Render();
 }
 
-void LevelTwo::UnLoad()
+void LevelSword::UnLoad()
 {
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();
 	Scene::UnLoad();
 }
+

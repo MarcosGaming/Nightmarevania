@@ -38,9 +38,6 @@ static shared_ptr<Texture> returnToMenu_tex;
 static shared_ptr<Entity> resume_btn;
 static shared_ptr<Texture> resume_tex;
 
-static shared_ptr<Entity> sword_alone;
-static shared_ptr<Texture> sword_alone_tex;
-
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
@@ -79,20 +76,8 @@ void LevelThree::Load()
 	boss_healthbar->loadFromFile("res/img/boss_healthbar.png");
 	boss_foreground = make_shared<Texture>();
 	boss_foreground->loadFromFile("res/img/boss_foreground.png");
-	// Sword alone texture
-	sword_alone_tex = make_shared<Texture>();
-	sword_alone_tex->loadFromFile("res/img/sword_alone.png");
 	// Music does not start playing until the second dialogue has started
 	begin_fight_dialogue_musicOn = false;
-
-	// Sword
-	{
-		sword_alone = makeEntity();
-		sword_alone->setPosition(Vector2f(GAMEX * 0.45f, 540.0f));
-		auto sprite = sword_alone->addComponent<SpriteComponent>();
-		sprite->setTexure(sword_alone_tex);
-		sprite->getSprite().scale(Vector2f(2.0f, 2.0f));
-	}
 
 	// Player
 	{
