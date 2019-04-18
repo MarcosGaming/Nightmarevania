@@ -71,7 +71,7 @@ Entity::~Entity()
 	int deli = 0;
 	while (deli != _components.size()) 
 	{
-		deli = _components.size();
+		deli = (int)_components.size();
 		_components.erase(remove_if(_components.begin(), _components.end(), [](auto& sp) { return (sp.use_count() <= 1); }), _components.end());
 	}
 

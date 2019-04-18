@@ -104,7 +104,7 @@ void DialogueBoxComponent::levelSwordDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -117,7 +117,7 @@ void DialogueBoxComponent::levelSwordDialogueUpdate()
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		hideCountDown -= _dt;
+		hideCountDown -= (float)_dt;
 		if (hideCountDown <= 0.0f)
 		{
 			_parent->setVisible(false);
@@ -139,7 +139,7 @@ void DialogueBoxComponent::swordDialogueUpdate()
 	}
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -153,7 +153,7 @@ void DialogueBoxComponent::swordDialogueUpdate()
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		hideCountDown -= _dt;
+		hideCountDown -= (float)_dt;
 		if (hideCountDown <= 0.0f)
 		{
 			if (auto pl = player.lock())
@@ -161,7 +161,7 @@ void DialogueBoxComponent::swordDialogueUpdate()
 				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
 			}
 			_parent->setVisible(false);
-			finalCountDown -= _dt;
+			finalCountDown -= (float)_dt;
 			// Begin battle text starts
 			if (finalCountDown <= 0.0f)
 			{
@@ -178,7 +178,7 @@ void DialogueBoxComponent::swordDialogueUpdate()
 void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
 {
 	static float musicCountDown = 1.5f;
-	musicCountDown -= _dt;
+	musicCountDown -= (float)_dt;
 	if (musicCountDown <= 0.0f)
 	{
 		activateMusicInLevel = true;
@@ -191,7 +191,7 @@ void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
 	}
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -204,7 +204,7 @@ void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		finalCountDown -= _dt;
+		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
 			if (auto pl = player.lock())
@@ -232,7 +232,7 @@ void DialogueBoxComponent::endBattleDialogueUpdate()
 	}
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -245,7 +245,7 @@ void DialogueBoxComponent::endBattleDialogueUpdate()
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		finalCountDown -= _dt;
+		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
 			// Change to ending scene
@@ -259,7 +259,7 @@ void DialogueBoxComponent::endingDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -272,7 +272,7 @@ void DialogueBoxComponent::endingDialogueUpdate()
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		finalCountDown -= _dt;
+		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
 			_parent->setAlive(false);
@@ -289,7 +289,7 @@ void DialogueBoxComponent::theEndDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.3f;
-	stringCountDown -= _dt;
+	stringCountDown -= (float)_dt;
 	// Render the dialogue letter by letter.
 	if (stringCountDown <= 0.0f && !_finished)
 	{
@@ -302,7 +302,7 @@ void DialogueBoxComponent::theEndDialogueUpdate()
 	if (_currentChar > _completeText.size())
 	{
 		_finished = true;
-		finalCountDown -= _dt;
+		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
 			_parent->setAlive(false);

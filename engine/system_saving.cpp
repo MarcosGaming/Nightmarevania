@@ -24,7 +24,7 @@ void Saving::initialise()
 	std::string userpath = getenv("USERPROFILE");
 	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::in);
 	// If the file is not empty 
-	if (saveFile.peek() != saveFile.eof())
+	if (saveFile.peek() != EOF)
 	{
 		int counter = 0;
 		std::string line;

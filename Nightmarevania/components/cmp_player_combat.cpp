@@ -41,11 +41,11 @@ PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p)
 void PlayerCombatComponent::update(double dt) 
 {
 	// Cooldown decreases with delta time
-	_hurtCooldown -= dt;
-	_defendingCooldown -= dt;
-	_circularAttackCooldown -= dt;
-	_upAttackCooldown -= dt;
-	_downAttackCooldown -= dt;
+	_hurtCooldown -= (float)dt;
+	_defendingCooldown -= (float)dt;
+	_circularAttackCooldown -= (float)dt;
+	_upAttackCooldown -= (float)dt;
+	_downAttackCooldown -= (float)dt;
 	// Attacking behaviour
 	if (Controller::isPressed(Controller::AttackButton) && !_defending &&!_hurt)
 	{
@@ -110,7 +110,7 @@ void PlayerCombatComponent::update(double dt)
 	{
 		Controller::setDefendButtonReleased(false);
 		_defending = true;
-		_defendingTime -= dt;
+		_defendingTime -= (float)dt;
 		if (_defendingTime <= 0)
 		{
 			_defendingCooldown = 3.0f;

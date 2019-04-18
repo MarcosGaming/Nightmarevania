@@ -22,8 +22,8 @@ template <typename T> Vector2<T> normalize(const Vector2<T>& v) {
   double l = length(v);
 
   if (l != 0) {
-    vector.x = v.x / l;
-    vector.y = v.y / l;
+    vector.x = v.x / (float)l;
+    vector.y = v.y / (float)l;
   }
 
   return vector;

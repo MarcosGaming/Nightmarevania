@@ -64,7 +64,7 @@ std::shared_ptr<DecisionTreeNode> RandomMultiDecision::getBranch(Entity* owner)
 	// Set up random number generator
 	static std::random_device rd;
 	static std::default_random_engine e(rd());
-	static std::uniform_int_distribution<int> dist(0, _childNodes.size() -1);
+	static std::uniform_int_distribution<int> dist(0, (int)_childNodes.size() -1);
 	// Random choice
 	return _childNodes[dist(e)];
 }
@@ -73,7 +73,7 @@ std::shared_ptr<DecisionTreeNode> RandomMultiDecision::getBranch(Entity* owner)
 DecisionTreeComponent::DecisionTreeComponent(Entity* p, std::shared_ptr<DecisionTreeNode> decisionTree) : _decisionTree(decisionTree), _waitBeforeNextDecision(0.0f), Component(p) {}
 void DecisionTreeComponent::update(double dt)
 {
-	_waitBeforeNextDecision -= dt;
+	_waitBeforeNextDecision -= (float)dt;
 	if (_parent->isDead())
 	{
 		_waitBeforeNextDecision = 0.0f;

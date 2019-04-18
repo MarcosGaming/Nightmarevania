@@ -8,14 +8,14 @@ using namespace sf;
 
 void EnemyTurretComponent::update(double dt) 
 {
-  _firetime -= dt;
+  _firetime -= (float)dt;
   if (_firetime <= 0.f) 
   {
     fire();
     _firetime = 1.f;
   }
   static float angle = 0.f;
-  angle += 1.f * dt;
+  angle += 1.f * (float)dt;
 
   _parent->setRotation(180.f + sin(angle) * 45.f);
 }

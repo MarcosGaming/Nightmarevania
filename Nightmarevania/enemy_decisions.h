@@ -14,7 +14,7 @@ private:
 protected:
 	std::shared_ptr<DecisionTreeNode> getBranch(Entity* owner) override final
 	{
-		float dist = sf::length(owner->getPosition() - _player->getPosition());
+		float dist = (float)sf::length(owner->getPosition() - _player->getPosition());
 		if (dist < _distance)
 		{
 			return _trueNode;

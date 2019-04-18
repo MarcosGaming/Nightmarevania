@@ -25,7 +25,7 @@ void ButtonComponent::setCanHoverActive(bool status) { _canHoverActive = status;
 void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonComponent>>& buttons, int& index, const double& dt)
 {
 	static float coolDown = 0.2f;
-	coolDown -= dt;
+	coolDown -= (float)dt;
 	if (sf::Joystick::isConnected(0) && !buttons.empty())
 	{
 		if (sf::Joystick::isButtonPressed(0, 0) && PressedCooldown <= 0.0f)
@@ -58,7 +58,7 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 		// If the index is less than 0 set it to be the last element in the vector
 		if (index < 0)
 		{
-			index = buttons.size() - 1;
+			index = (int)buttons.size() - 1;
 		}
 		// If the index is greater than the vector size then set it to be the first element in the vector
 		else if (index > buttons.size() - 1)
@@ -79,7 +79,7 @@ void ButtonComponent::update(double dt)
 	// Control button selection freezes the game causing delta time to increase too much and affecting button selection
 	if (dt < 0.1)
 	{
-		PressedCooldown -= dt;
+		PressedCooldown -= (float)dt;
 	}
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));

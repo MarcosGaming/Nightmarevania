@@ -149,7 +149,7 @@ void LevelOne::Load()
 		sprite->setTexure(ghostSprites);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 58));
 		sprite->getSprite().scale(sf::Vector2f(5.0f, 5.0f));
-		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height);
+		sprite->getSprite().setOrigin((float)sprite->getSprite().getTextureRect().width * 0.5f, (float)sprite->getSprite().getTextureRect().height);
 		auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 190.0f, 1000.0f);
 		
 		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();

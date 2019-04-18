@@ -345,10 +345,10 @@ void SettingsScene::Load()
 		sprite->getSprite().scale(3.0f, 3.0f);
 		// Borderless button
 		auto borderlessButton = borderless_btn->addComponent<BorderlessButtonComponent>();
-		borderlessButton->setNormal(IntRect(0, 0, 80, 14.8));
-		borderlessButton->setHovered(IntRect(0, 15, 80, 14.8));
-		borderlessButton->setPressed(IntRect(0, 30, 80, 14.8));
-		borderlessButton->setHoveredActive(IntRect(0, 45, 80, 14.8));
+		borderlessButton->setNormal(IntRect(0, 0, 80, (int)14.8));
+		borderlessButton->setHovered(IntRect(0, 15, 80, (int)14.8));
+		borderlessButton->setPressed(IntRect(0, 30, 80, (int) 14.8));
+		borderlessButton->setHoveredActive(IntRect(0, 45, 80, (int)14.8));
 		borderlessButton->setCanHoverActive(true);
 		if (Resolution::isBorderlessOn())
 		{

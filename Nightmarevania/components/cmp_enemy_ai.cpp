@@ -30,7 +30,7 @@ BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), 
 void BossAIComponent::update(double dt)
 {
 	// Hurt cooldown needed to give some time between hits
-	hurtCoolDown -= dt;
+	hurtCoolDown -= (float)dt;
 	// Dies
 	if(_death)
 	{

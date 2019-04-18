@@ -32,12 +32,12 @@ PhysicsComponent::PhysicsComponent(Entity* p, bool dyn, const Vector2f& size) : 
     // Fixture properties
     // FixtureDef.density = _dynamic ? 10.f : 0.f;
     FixtureDef.friction = _dynamic ? 0.1f : 0.8f;
-    FixtureDef.restitution = .2;
+    FixtureDef.restitution = 0.2f;
     FixtureDef.shape = &Shape;
     // Add to body
     _fixture = _body->CreateFixture(&FixtureDef);
     //_fixture->SetRestitution(.9)
-    FixtureDef.restitution = .2;
+    FixtureDef.restitution = 0.2f;
   }
 
   // An ideal Pod/capusle shape should be used for hte player,
@@ -114,7 +114,7 @@ void PhysicsComponent::dampen(const sf::Vector2f& i)
 
 bool PhysicsComponent::isTouching(const PhysicsComponent& pc) const 
 {
-  b2Contact* bc;
+  b2Contact* bc = NULL;
   return isTouching(pc, bc);
 }
 
@@ -138,9 +138,9 @@ bool PhysicsComponent::isTouching(const PhysicsComponent& pc, b2Contact const* b
   return false;
 }
 
-std::vector<const b2Contact const*> PhysicsComponent::getTouching() const 
+std::vector<const b2Contact*> PhysicsComponent::getTouching() const 
 {
-  std::vector<const b2Contact const*> ret;
+  std::vector<const b2Contact*> ret;
 
   b2ContactEdge* edge = _body->GetContactList();
   while (edge != NULL) 

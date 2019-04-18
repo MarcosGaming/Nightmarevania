@@ -18,7 +18,7 @@ void PlayerHurtComponent::update(double dt)
 		auto combat = player->get_components<PlayerCombatComponent>()[0];
 		if (boss->isAttacking() && !combat->isDefending())
 		{
-			attackDelay -= dt;
+			attackDelay -= (float)dt;
 			if (attackDelay < 0.0f && length(player->getPosition() - _parent->getPosition()) < 180.0f)
 			{
 				combat->hurtPlayer(1);

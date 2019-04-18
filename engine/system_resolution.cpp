@@ -142,8 +142,8 @@ void Resolution::turnBorderlessOff()
 // Create FloatRect to fits Game into Screen while preserving aspect
 static sf::FloatRect CalculateViewport(const sf::Vector2u& screensize, const sf::Vector2u& gamesize)
 {
-	const sf::Vector2f screensf(screensize.x, screensize.y);
-	const sf::Vector2f gamesf(gamesize.x, gamesize.y);
+	const sf::Vector2f screensf((float)screensize.x, (float)screensize.y);
+	const sf::Vector2f gamesf((float)gamesize.x, (float)gamesize.y);
 	const float gameAspect = gamesf.x / gamesf.y;
 	const float screenAspect = screensf.x / screensf.y;
 	// Final size.x of game viewport in pixels
@@ -207,7 +207,7 @@ static void SetWindowView(int width, int height)
 	const sf::Vector2u gamesize(GAMEX, GAMEY);
 	// Set View as normal
 	Engine::GetWindow().setSize(screensize);
-	sf::FloatRect visibleArea(0.f, 0.f, gamesize.x, gamesize.y);
+	sf::FloatRect visibleArea(0.f, 0.f, (float)gamesize.x, (float)gamesize.y);
 	auto v = sf::View(visibleArea);
 	// Figure out how to scale and maintain aspect;
 	auto viewport = CalculateViewport(screensize, gamesize);
@@ -215,8 +215,8 @@ static void SetWindowView(int width, int height)
 	bool centered = true;
 	if (centered)
 	{
-		viewport.left = (1.0 - viewport.width) * 0.5;
-		viewport.top = (1.0 - viewport.height) * 0.5;
+		viewport.left = (1.0f - viewport.width) * 0.5f;
+		viewport.top = (1.0f - viewport.height) * 0.5f;
 	}
 	v.setViewport(viewport);
 	Engine::GetWindow().setView(v);

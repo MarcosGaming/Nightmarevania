@@ -26,7 +26,7 @@ void EnemyPhysicsComponent::update(double dt)
 	if (_canMove)
 	{
 		static float waitForImpulseUp = 0.2f;
-		waitForImpulseUp -= dt;
+		waitForImpulseUp -= (float)dt;
 		if (_slow)
 		{
 			if (getVelocity().x < _maxSlowVelocity.x)
