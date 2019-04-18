@@ -8,6 +8,8 @@ static bool audioMusicOn;
 static bool audioEffectsOn;
 
 static sf::Music main_menu_music;
+static sf::Music level_1_music;
+static sf::Music level_2_music;
 static sf::Music level_3_music;
 static sf::Music mystic_music;
 
@@ -22,6 +24,7 @@ static sf::SoundBuffer boss_death_buffer;
 static sf::SoundBuffer boss_hurt_buffer;
 static sf::SoundBuffer boss_attack_buffer;
 static sf::SoundBuffer boss_roar_buffer;
+static sf::SoundBuffer pick_up_buffer;
 
 static sf::Sound button_effect;
 static sf::Sound player_damage_effect;
@@ -34,6 +37,7 @@ static sf::Sound boss_death_effect;
 static sf::Sound boss_hurt_effect;
 static sf::Sound boss_attack_effect;
 static sf::Sound boss_roar_effect;
+static sf::Sound pick_up_effect;
 
 
 void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
@@ -58,11 +62,15 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	}
 	// Load all the music for the game
 	main_menu_music.openFromFile("res/sounds/main_menu_music.wav");
+	level_1_music.openFromFile("res/sounds/level1_music.wav");
+	level_2_music.openFromFile("res/sounds/level2_music.wav");
 	level_3_music.openFromFile("res/sounds/boss_music.wav");
 	mystic_music.openFromFile("res/sounds/mystic_music.wav");
 	// Store the music in the map
 	music["main_menu_music"] = &main_menu_music;
 	level_3_music.setVolume(50.0f);
+	music["level_1_music"] = &level_1_music;
+	music["level_2_music"] = &level_2_music;
 	music["level_3_music"] = &level_3_music;
 	music["mystic_music"] = &mystic_music;
 	// Load all the effects for the game
@@ -77,6 +85,7 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	boss_hurt_buffer.loadFromFile("res/sounds/boss_hurt.wav");
 	boss_attack_buffer.loadFromFile("res/sounds/boss_attack.wav");
 	boss_roar_buffer.loadFromFile("res/sounds/boss_roar.wav");
+	pick_up_buffer.loadFromFile("res/sounds/pick_up.wav");
 	// Store the effects in the map
 	button_effect.setBuffer(button_buffer);
 	effects["button_effect"] = &button_effect;
@@ -100,6 +109,8 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	effects["boss_attack_effect"] = &boss_attack_effect;
 	boss_roar_effect.setBuffer(boss_roar_buffer);
 	effects["boss_roar_effect"] = &boss_roar_effect;
+	pick_up_effect.setBuffer(pick_up_buffer);
+	effects["pick_up_effect"] = &pick_up_effect;
 }
 
 void Audio::playMusic(const std::string& musicName)

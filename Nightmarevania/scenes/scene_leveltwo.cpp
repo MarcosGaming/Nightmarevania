@@ -5,12 +5,13 @@
 #include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
 #include "../game.h"
+#include "../components/cmp_door.h"
+#include "../components/cmp_key.h"
 #include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
-#include "../components/cmp_door.h"
-#include "../components/cmp_key.h"
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -238,10 +239,15 @@ void LevelTwo::Update(const double& dt)
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
+		Audio::pauseMusic("level_2_music");
 	}
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+	else
+	{
+		Audio::playMusic("level_2_music");
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
@@ -288,6 +294,7 @@ void LevelTwo::Render()
 
 void LevelTwo::UnLoad()
 {
+	Audio::stopMusic("level_2_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();

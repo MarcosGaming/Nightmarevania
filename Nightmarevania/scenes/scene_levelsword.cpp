@@ -246,6 +246,7 @@ void LevelSword::Update(const double& dt)
 	if (ls::getTileAt(player->getPosition()) == ls::KEY && !player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
 	{
 		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
+		Audio::playEffect("pick_up_effect");
 	}
 	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
 	{

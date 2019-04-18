@@ -5,14 +5,15 @@
 #include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
 #include "../game.h"
-#include <iostream>
-#include <LevelSystem.h>
-#include <system_controller.h>
-#include <system_resolution.h>
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_ai_steering.h"
+#include <iostream>
+#include <LevelSystem.h>
+#include <system_controller.h>
+#include <system_resolution.h>
+#include <system_sound.h>
 
 using namespace std;
 using namespace sf;
@@ -32,6 +33,8 @@ static int buttonsCurrentIndex;
 
 void LevelOne::Load()
 {
+	// Stop music from main menu
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -271,10 +274,15 @@ void LevelOne::Update(const double& dt)
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
+		Audio::pauseMusic("level_1_music");
 	}
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+	else
+	{
+		Audio::playMusic("level_1_music");
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
@@ -311,6 +319,7 @@ void LevelOne::Render()
 
 void LevelOne::UnLoad()
 {
+	Audio::stopMusic("level_1_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();
