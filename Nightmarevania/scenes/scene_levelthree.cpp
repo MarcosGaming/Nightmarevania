@@ -13,7 +13,6 @@
 #include "../enemy_states.h"
 #include "../enemy_decisions.h"
 #include "../game.h"
-#include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
@@ -245,7 +244,7 @@ void LevelThree::Load()
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 	}
 
-	// Boss for level 3
+	// Boss
 	{
 		boss = makeEntity();
 		boss->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]));
@@ -368,7 +367,7 @@ void LevelThree::Load()
 		boss->addComponent<DecisionTreeComponent>(highHealthDecision);
 		// Physics component
 		auto physics = boss->addComponent<EnemyPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width *0.5f, sprite->getSprite().getTextureRect().height * 2.3f));
-		// Boss is not update until the dialogues have finished
+		// Boss is not updatec until the dialogues have finished
 		boss->setAlive(false);
 		boss->setDeath(true);
 	}
@@ -580,12 +579,12 @@ void LevelThree::Update(const double& dt)
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
-		// Enable cursor when game is paused
-		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
 		// Pause music
 		Audio::pauseMusic("level_3_music");
 		Audio::pauseMusic("mystic_music");
+		// Enable cursor when game is paused
+		Engine::GetWindow().setMouseCursorVisible(true);
 	}
 	if (_paused)
 	{
@@ -594,6 +593,8 @@ void LevelThree::Update(const double& dt)
 	else if(begin_fight_dialogue_musicOn)
 	{
 		Audio::playMusic("level_3_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(false);
 	}
 	if (!boss->isAlive() && !begin_fight_dialogue->isAlive() && !sword_dialogue->isAlive())
 	{

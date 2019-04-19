@@ -1,11 +1,11 @@
 #include "cmp_player_physics.h"
-#include "system_physics.h"
 #include "cmp_player_combat.h"
+#include "system_physics.h"
 #include "../game.h"
-#include <system_controller.h>
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
 #include <system_sound.h>
+#include <system_controller.h>
 #include <engine.h>
 
 using namespace std;
@@ -157,12 +157,8 @@ void PlayerPhysicsComponent::update(double dt)
 		_secondJump = false;
 	}
 
-	// Death testing
-	if (Keyboard::isKeyPressed(Keyboard::U) && !combat[0]->isDefending())
-	{
-		combat[0]->hurtPlayer(1);
-	}
-	else if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2) {
+	// Death 
+	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2) {
 		_parent->setDeath(true);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air

@@ -8,11 +8,9 @@ static bool resolution1920x1080;
 static bool resolution1600x900;
 static bool resolution1280x720;
 static bool resolution1024x576;
-
 // Functions to change screen resolution
 static void SetWindowView(int width, int height);
 static void ChangeResolution(int, int, bool);
-
 // Icon for the window
 static sf::Image Icon;
 

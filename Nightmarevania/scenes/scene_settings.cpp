@@ -7,11 +7,11 @@
 #include <system_sound.h>
 #include <system_resolution.h>
 #include <system_controller.h>
-#include <iostream>
 
 using namespace std;
 using namespace sf;
 
+// Background
 static shared_ptr<Entity> background;
 // Sound buttons
 static shared_ptr<Entity> music_on_btn;
@@ -36,7 +36,7 @@ static shared_ptr<Entity> down_attack_btn;
 static shared_ptr<Entity> pause_btn;
 // Return button
 static shared_ptr<Entity> goBack_btn;
-
+// Background texture
 static shared_ptr<Texture> background_tex;
 // Sound buttons textures
 static shared_ptr<Texture> on_tex;
@@ -89,18 +89,19 @@ void SettingsScene::Load()
 		float scaleY = (float) GAMEY / (sprite->getSprite().getTextureRect().height);
 		sprite->getSprite().scale(scaleX, scaleY);
 	}
+
+	// Mediator for sound buttons
+	mediator_sound = make_shared<MediatorSoundButtons>();
 	// On and Off textures
 	on_tex = make_shared<Texture>();
 	on_tex->loadFromFile("res/menus/on.png");
 	off_tex = make_shared<Texture>();
 	off_tex->loadFromFile("res/menus/off.png");
-	// Mediator for sound buttons
-	mediator_sound = make_shared<MediatorSoundButtons>();
 	// Music On
 	{
 		music_on_btn = makeEntity();
 		music_on_btn->setPosition(Vector2f(260.0f, 114.0f));
-		// sprite
+		// Sprite
 		auto sprite = music_on_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(on_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 25, 15));
@@ -125,7 +126,7 @@ void SettingsScene::Load()
 	{
 		music_off_btn = makeEntity();
 		music_off_btn->setPosition(Vector2f(410.0f, 110.0f));
-		// sprite
+		// Sprite
 		auto sprite = music_off_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(off_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 28, 15));
@@ -149,7 +150,7 @@ void SettingsScene::Load()
 	{
 		effects_on_btn = makeEntity();
 		effects_on_btn->setPosition(Vector2f(260.0f, 188.0f));
-		// sprite
+		// Sprite
 		auto sprite = effects_on_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(on_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 25, 15));
@@ -174,7 +175,7 @@ void SettingsScene::Load()
 	{
 		effects_off_btn = makeEntity();
 		effects_off_btn->setPosition(Vector2f(410.0f, 184.0f));
-		// sprite
+		// Sprite
 		auto sprite = effects_off_btn->addComponent<SpriteComponent>();
 		sprite->setTexure(off_tex);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 28, 15));
@@ -194,6 +195,7 @@ void SettingsScene::Load()
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(effectsButton);
 	}
+
 	// Mediator for resolution buttons
 	mediator_resolution = make_shared<MediatorResolutionButtons>();
 	// Resolution 1920x1080
@@ -360,6 +362,7 @@ void SettingsScene::Load()
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(borderlessButton);
 	}
+
 	// Observer for controls
 	observer_controls = make_shared<ObserverControls>();
 	// Move right / right attack

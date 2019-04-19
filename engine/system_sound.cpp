@@ -1,18 +1,19 @@
 #include "system_sound.h"
 #include <unordered_map>
 
+// Maps to store all the music and effects
 static std::unordered_map<std::string, sf::Music*> music;
 static std::unordered_map<std::string, sf::Sound*> effects;
-
+// Booleans that check wheter the music and effect are on or off
 static bool audioMusicOn;
 static bool audioEffectsOn;
-
+// Music
 static sf::Music main_menu_music;
 static sf::Music level_1_music;
 static sf::Music level_2_music;
 static sf::Music level_3_music;
 static sf::Music mystic_music;
-
+// Effects buffers
 static sf::SoundBuffer button_buffer;
 static sf::SoundBuffer player_damage_buffer;
 static sf::SoundBuffer player_death_buffer;
@@ -25,7 +26,7 @@ static sf::SoundBuffer boss_hurt_buffer;
 static sf::SoundBuffer boss_attack_buffer;
 static sf::SoundBuffer boss_roar_buffer;
 static sf::SoundBuffer pick_up_buffer;
-
+// Effects
 static sf::Sound button_effect;
 static sf::Sound player_damage_effect;
 static sf::Sound player_death_effect;
@@ -86,30 +87,31 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	boss_attack_buffer.loadFromFile("res/sounds/boss_attack.wav");
 	boss_roar_buffer.loadFromFile("res/sounds/boss_roar.wav");
 	pick_up_buffer.loadFromFile("res/sounds/pick_up.wav");
-	// Store the effects in the map
+	// Attach buffer to effects
 	button_effect.setBuffer(button_buffer);
-	effects["button_effect"] = &button_effect;
 	player_damage_effect.setBuffer(player_damage_buffer);
-	effects["player_damage_effect"] = &player_damage_effect;
 	player_death_effect.setBuffer(player_death_buffer);
-	effects["player_death_effect"] = &player_death_effect;
 	player_sword1_effect.setBuffer(player_sword1_buffer);
-	effects["player_sword_effect"] = &player_sword1_effect;
 	player_sword2_effect.setBuffer(player_sword2_buffer);
-	effects["player_sword2_effect"] = &player_sword2_effect;
 	player_sword3_effect.setBuffer(player_sword3_buffer);
-	effects["player_sword3_effect"] = &player_sword3_effect;
 	player_sword4_effect.setBuffer(player_sword4_buffer);
-	effects["player_sword4_effect"] = &player_sword4_effect;
 	boss_death_effect.setBuffer(boss_death_buffer);
-	effects["boss_death_effect"] = &boss_death_effect;
 	boss_hurt_effect.setBuffer(boss_hurt_buffer);
-	effects["boss_hurt_effect"] = &boss_hurt_effect;
 	boss_attack_effect.setBuffer(boss_attack_buffer);
-	effects["boss_attack_effect"] = &boss_attack_effect;
 	boss_roar_effect.setBuffer(boss_roar_buffer);
-	effects["boss_roar_effect"] = &boss_roar_effect;
 	pick_up_effect.setBuffer(pick_up_buffer);
+	// Store the effects in the map
+	effects["button_effect"] = &button_effect;
+	effects["player_damage_effect"] = &player_damage_effect;
+	effects["player_death_effect"] = &player_death_effect;
+	effects["player_sword_effect"] = &player_sword1_effect;
+	effects["player_sword2_effect"] = &player_sword2_effect;
+	effects["player_sword3_effect"] = &player_sword3_effect;
+	effects["player_sword4_effect"] = &player_sword4_effect;
+	effects["boss_death_effect"] = &boss_death_effect;
+	effects["boss_hurt_effect"] = &boss_hurt_effect;
+	effects["boss_attack_effect"] = &boss_attack_effect;
+	effects["boss_roar_effect"] = &boss_roar_effect;
 	effects["pick_up_effect"] = &pick_up_effect;
 }
 
@@ -137,11 +139,11 @@ void Audio::pauseMusic(const std::string& musicName)
 		found->second->pause();
 	}
 }
+
 void Audio::turnMusicOn() { audioMusicOn = true; }
 void Audio::turnMusicOff() { audioMusicOn = false; }
 bool Audio::isMusicOn() { return audioMusicOn; }
 
-// Methods that handle the game effects
 void Audio::playEffect(const std::string& effectName)
 {
 	auto found = effects.find(effectName);
@@ -158,6 +160,7 @@ void Audio::stopEffect(const std::string& effectName)
 		found->second->stop();
 	}
 }
+
 void Audio::turnEffectsOn() { audioEffectsOn = true; }
 void Audio::turnEffectsOff() { audioEffectsOn = false; }
 bool Audio::areEffectsOn() { return audioEffectsOn; }

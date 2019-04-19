@@ -13,6 +13,7 @@ EndingScene endingScene;
 LevelSword levelSword;
 LevelOutside levelOutside;
 
+// Game starts at main menu
 int main() 
 {
 	Engine::Start(GAMEX, GAMEY, "Nightmarevania",&main_menu);

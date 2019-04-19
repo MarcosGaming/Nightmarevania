@@ -11,6 +11,7 @@
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
+#include <system_saving.h>
 
 using namespace std;
 using namespace sf;
@@ -31,6 +32,8 @@ static shared_ptr<Entity> short_dialogue;
 
 void LevelSword::Load()
 {
+	// Save this level as the last one played
+	Saving::saveLevel("3");
 	// Stop music from main menu in the case that we come from there
 	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
@@ -99,16 +102,6 @@ void LevelSword::Load()
 			doubleJump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
 		}
 		doubleJump->addFrame(IntRect(0, 37 * 3, 50, 37));
-		shared_ptr<DeathAnimationFall> deathFall = make_shared<DeathAnimationFall>();
-		for (int i = 0; i < 3; i++)
-		{
-			deathFall->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
-		}
-		shared_ptr<DeathAnimationGround> deathGround = make_shared<DeathAnimationGround>();
-		for (int i = 2; i < 7; i++)
-		{
-			deathGround->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
-		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
 		anim->addAnimation("Idle", idle);
@@ -116,8 +109,6 @@ void LevelSword::Load()
 		anim->addAnimation("Jump", jump);
 		anim->addAnimation("Fall", fall);
 		anim->addAnimation("DoubleJump", doubleJump);
-		anim->addAnimation("DeathFall", deathFall);
-		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Idle");
 		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
@@ -126,14 +117,12 @@ void LevelSword::Load()
 		{
 			auto key = player->addComponent<SwordKeyComponent>(false,ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
 		}
-
 		// Set the player for the door component of the door entity
 		if (ls::doesTileExist(ls::DOOR))
 		{
 			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
 	}
-
 
 	// Add physics colliders to level tiles.
 	{
@@ -227,10 +216,11 @@ void LevelSword::Update(const double& dt)
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
+		_paused = true;
+		// Pause mucis
+		Audio::pauseMusic("mystic_music");
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
-		_paused = true;
-		Audio::pauseMusic("mystic_music");
 	}
 	// Controller button navigation
 	if (_paused)
@@ -241,6 +231,8 @@ void LevelSword::Update(const double& dt)
 	{
 		// Music for this level
 		Audio::playMusic("mystic_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(false);
 	}
 	// The player can proceed to the next level after picking up the sword key
 	if (ls::getTileAt(player->getPosition()) == ls::KEY && !player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
@@ -252,7 +244,6 @@ void LevelSword::Update(const double& dt)
 	{
 		Engine::ChangeScene((Scene*)&levelThree);
 	}
-
 	Scene::Update(dt);
 }
 

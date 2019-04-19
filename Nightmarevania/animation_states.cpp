@@ -3,14 +3,11 @@
 #include "components/cmp_player_combat.h"
 #include "components\cmp_enemy_ai.h"
 #include "components\cmp_enemy_physics .h"
-#include "maths.h"
-#include <SFML\Graphics.hpp>
-#include <system_sound.h>
 #include "components/cmp_ai_steering.h"
+#include <system_sound.h>
 
 
 // Player animations
-
 void IdleAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.3f);
@@ -530,8 +527,6 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 		_current_frame = 0;
 	}
 }
-
-// Get up animation
 void GetUpAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.1f);
@@ -602,8 +597,7 @@ void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
 	}
 }
 
-// Skeleton enemy animations
-
+// Skeleton animations
 void SkeletonIdleAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.15f);
@@ -730,7 +724,7 @@ void SkeletonReviveAnimation::execute(Entity* owner, double dt) noexcept
 }
 
 
-// Portal open animation
+// Portal open animation uses its own runframes
 void PortalOpenAnimation::runFrames(Entity* owner, float waitTime)
 {
 	if (_current_frame >= _frames.size())
@@ -757,7 +751,7 @@ void PortalOpenAnimation::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Portal static animation
+// Portal static animation uses its own runframes
 void PortalStaticAnimation::runFrames(Entity* owner, float waitTime)
 {
 	auto sprite = owner->get_components<SpriteComponent>()[0];

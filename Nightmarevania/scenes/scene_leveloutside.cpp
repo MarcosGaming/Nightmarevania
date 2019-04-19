@@ -9,6 +9,7 @@
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
+#include <system_saving.h>
 #include <conversor.h>
 
 using namespace std;
@@ -38,6 +39,8 @@ static shared_ptr<Entity> controls_dialogue;
 
 void LevelOutside::Load()
 {
+	// Save this level as the last one played
+	Saving::saveLevel("0");
 	// Stop music from main menu in the case that we come from there
 	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
@@ -103,7 +106,7 @@ void LevelOutside::Load()
 		anim->addAnimation("Open", portalOpen);
 		anim->addAnimation("Static", portalStatic);
 		anim->changeAnimation("Open");
-		// Portal is initially not going to be render and updated
+		// Portal is initially not going to be render or updated
 		portal->setVisible(false);
 		portal->setAlive(false);
 	}
@@ -249,7 +252,6 @@ void LevelOutside::Load()
 		text->setFunction([&]() {text->serahGetUpDialogueUpdate(); });
 		text->setTextSize(30);
 	}
-
 	// Mysterious voice intro dialogue
 	{
 		intro_dialogue = makeEntity();
@@ -260,7 +262,6 @@ void LevelOutside::Load()
 		text->setCompleteText("Mysterious voice: Serah... Erebus has transported you to the Netherworld during your nightmare.\nWe don't have much time left and he needs to be stopped. Cross the portal I have opened to get\nto his castle.");
 		text->setFunction([&]() {text->outsideLevelDialogueUpdate(); });
 	}
-
 	// End fight dialogue
 	{
 		controls_dialogue = makeEntity();
@@ -327,10 +328,11 @@ void LevelOutside::Update(const double& dt)
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
+		_paused = true;
+		// Pause the music
+		Audio::pauseMusic("mystic_music");
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
-		_paused = true;
-		Audio::pauseMusic("mystic_music");
 	}
 	// Controller button navigation
 	if (_paused)
@@ -341,8 +343,10 @@ void LevelOutside::Update(const double& dt)
 	{
 		// Music for this level
 		Audio::playMusic("mystic_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(false);
 	}
-	// Change scene to next level
+	// Change scene to next level whenthe player reaches the end tile
 	if (ls::getTileAt(player->getPosition()) == ls::END)
 	{
 		Engine::ChangeScene(&levelOne);

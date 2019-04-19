@@ -7,6 +7,7 @@
 using namespace std;
 using namespace sf;
 
+// Component that hurts the player (goes in the boss)
 PlayerHurtComponent::PlayerHurtComponent(Entity* p) : Component(p), _player(_parent->scene->ents.find("Player")[0]) {}
 
 void PlayerHurtComponent::update(double dt) 

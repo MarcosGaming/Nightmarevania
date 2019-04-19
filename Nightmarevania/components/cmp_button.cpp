@@ -7,6 +7,7 @@
 #include <system_controller.h>
 
 static float PressedCooldown = 0.5;
+
 // Basic button
 ButtonComponent::ButtonComponent(Entity* p) : _active(false), _controllerHovered(false), _controllerPressed(false), _canHoverActive(false), Component(p) { }
 
@@ -28,11 +29,13 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 	coolDown -= (float)dt;
 	if (sf::Joystick::isConnected(0) && !buttons.empty())
 	{
+		// Selection
 		if (sf::Joystick::isButtonPressed(0, 0) && PressedCooldown <= 0.0f)
 		{
 			buttons[index]->_controllerPressed = true;
 			PressedCooldown = 0.2f;
 		}
+		// Go down
 		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) > 70.0f && coolDown <= 0.0f)
 		{
 			buttons[index]->_controllerHovered = false;
@@ -44,6 +47,7 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 				index++;
 			}
 		}
+		// Go up
 		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) < -70.0f && coolDown <= 0.0f)
 		{
 			buttons[index]->_controllerHovered = false;
@@ -437,6 +441,7 @@ void MusicsButtonComponent::update(double dt)
 	}
 
 }
+
 // Button that handles turning the effects on/off
 EffectsButtonComponent::EffectsButtonComponent(Entity* p) : SoundButtonComponent(p) { }
 
@@ -529,7 +534,7 @@ void ControlsButton::update(double dt)
 
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-	// In the first just set active to true with the purpose of allowing the sprite to change
+	// In the first pass just set active to true with the purpose of allowing the sprite to change
 	if (!_active && PressedCooldown <= 0.0f)
 	{
 		if (sprite->getSprite().getGlobalBounds().contains(worldPos))

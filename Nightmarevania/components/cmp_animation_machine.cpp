@@ -1,7 +1,7 @@
 #include "cmp_animation_machine.h"
 #include "cmp_player_physics.h"
 
-// ANIMATION
+// Animation
 Animation::Animation() : _current_frame(0) {}
 
 void Animation::addFrame(sf::IntRect frame) { _frames.push_back(frame); }
@@ -42,7 +42,7 @@ void Animation::setFacing(Entity* owner)
 	}
 }
 
-// ANIMATION MACHINE COMPONENT
+// Animation machine component
 AnimationMachineComponent::AnimationMachineComponent(Entity* p) : _current_animation(nullptr), Component(p) {}
 
 void AnimationMachineComponent::update(double dt)

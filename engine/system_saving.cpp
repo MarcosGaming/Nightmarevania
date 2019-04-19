@@ -5,6 +5,7 @@
 #include "../lib_conversor/conversor.h"
 #include <fstream>
 
+// Settings saved
 static std::string levelSaved;
 static std::string musicSettingSaved;
 static std::string effectsSettingSaved;
@@ -13,9 +14,9 @@ static std::string fullscreenSettingSaved;
 static std::string borderlessSettingSaved;
 static std::vector<std::string> keysButtonsSaved;
 static std::vector<std::string> controllerButtonsSaved;
-
+// Save file
 static std::fstream saveFile;
-
+// Functions that is going to get which settings are set on the system before storing them in the file
 static void getSettingsFromSystem();
 
 void Saving::initialise()
@@ -313,5 +314,4 @@ static void getSettingsFromSystem()
 	// Pause controller button to save
 	string = Controller::PauseButton;
 	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
-
 }

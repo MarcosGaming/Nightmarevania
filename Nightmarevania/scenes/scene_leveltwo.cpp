@@ -12,6 +12,7 @@
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
+#include <system_saving.h>
 
 using namespace std;
 using namespace sf;
@@ -32,6 +33,8 @@ sf::Vector2f curCentre; //debugging
 
 void LevelTwo::Load()
 {
+	// Save this level as the last one played
+	Saving::saveLevel("2");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -62,7 +65,7 @@ void LevelTwo::Load()
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
 
-	// Player for levels 1 and 2
+	// Player 
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
@@ -236,10 +239,11 @@ void LevelTwo::Update(const double& dt)
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
+		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_2_music");
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
-		_paused = true;
-		Audio::pauseMusic("level_2_music");
 	}
 	if (_paused)
 	{
@@ -248,6 +252,8 @@ void LevelTwo::Update(const double& dt)
 	else
 	{
 		Audio::playMusic("level_2_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(true);
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {

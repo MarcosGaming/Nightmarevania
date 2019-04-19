@@ -14,6 +14,7 @@
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
+#include <system_saving.h>
 
 using namespace std;
 using namespace sf;
@@ -33,6 +34,8 @@ static int buttonsCurrentIndex;
 
 void LevelOne::Load()
 {
+	// Save this level as the last one played
+	Saving::saveLevel("1");
 	// Stop music from main menu
 	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
@@ -65,7 +68,7 @@ void LevelOne::Load()
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
 
-	// Player for levels 1 and 2
+	// Player
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
@@ -271,10 +274,12 @@ void LevelOne::Update(const double& dt)
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
+		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_1_music");
+		Audio::pauseMusic("mystic_music");
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
-		_paused = true;
-		Audio::pauseMusic("level_1_music");
 	}
 	if (_paused)
 	{
@@ -283,6 +288,8 @@ void LevelOne::Update(const double& dt)
 	else
 	{
 		Audio::playMusic("level_1_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(false);
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {

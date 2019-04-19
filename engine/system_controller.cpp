@@ -3,17 +3,16 @@
 #include <unordered_map>
 #include "../lib_conversor/conversor.h"
 
+// Maps to store the keys/buttons currently being used
 static std::unordered_map<std::string, sf::Keyboard::Key> keyboard;
 static std::unordered_map<std::string, sf::Mouse::Button> mouse;
 static std::unordered_map<std::string, int> controller;
-
+// Booleans that keep track of certain release events
 static bool attackButtonReleased;
 static bool defendButtonReleased;
 static bool jumpButtonReleased;
-
 // Function that maps the controls to the standard form
 static void setControlsToStandard();
-
 // Internal funcions that handle mapping
 static void mapActionToKeyboardKey(std::string, sf::Keyboard::Key);
 static void mapActionToMouseButton(std::string, sf::Mouse::Button);
@@ -34,7 +33,6 @@ void Controller::initialise(std::vector<std::string>& keyMouseSettings, std::vec
 	// Set keyboard/mouse mapping based on the keyMouseSettings saved
 	for (int i = 0; i < keyMouseSettings.size(); i++)
 	{
-		// The mapping follows this order: MoveRight,MoveLeft,Jump,Attack,Defend,UpAttack,DownAttack,Pause
 		std::string string;
 		switch (i)
 		{
@@ -88,7 +86,6 @@ void Controller::initialise(std::vector<std::string>& keyMouseSettings, std::vec
 	// Set controller mapping based on the controller settings saved
 	for (int i = 0; i < controllerSettings.size(); i++)
 	{
-		// The mapping follows this order: Jump,Attack,Defend,Pause
 		std::string string;
 		switch (i)
 		{
@@ -105,7 +102,7 @@ void Controller::initialise(std::vector<std::string>& keyMouseSettings, std::vec
 			string = PauseButton;
 			break;
 		}
-		// If the integer retrieve from the conversion is 10 than perform standard mapping
+		// If the integer retrieve from the conversion is 10 then perform standard mapping
 		int button = Conversor::StringToControllerButton(controllerSettings[i]);
 		if (button == 10)
 		{

@@ -3,7 +3,6 @@
 #include "components\cmp_enemy_ai.h"
 #include "system_sound.h"
 
-// Stationary state
 void StationaryState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component
@@ -20,7 +19,6 @@ void StationaryState::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Seek slow state
 SeekSlowState::SeekSlowState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get(), 1.0f) {}
 void SeekSlowState::execute(Entity* owner, double dt) noexcept
 {
@@ -41,7 +39,6 @@ void SeekSlowState::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Seek fast state
 SeekFastState::SeekFastState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player) : _steering(owner.get(), player.get(), 1.0f) {}
 void SeekFastState::execute(Entity* owner, double dt) noexcept
 {
@@ -62,7 +59,6 @@ void SeekFastState::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Attack state
 void AttackState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component
@@ -79,7 +75,6 @@ void AttackState::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Fake death state
 void DeathState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component
@@ -103,7 +98,6 @@ void DeathState::execute(Entity* owner, double dt) noexcept
 	}
 }
 
-// Revive state
 void ReviveState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component

@@ -30,7 +30,7 @@ static int buttonsCurrentIndex;
 
 void MainMenuScene::Load()
 {
-	// Stop music from sword level in case the player exited from there
+	// Stop music from sword level and outside level in case the player exited from there
 	Audio::stopMusic("mystic_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
@@ -76,7 +76,6 @@ void MainMenuScene::Load()
 		auto button = new_game_btn->addComponent<ChangeSceneButtonComponent>();
 		button->setNormal(sf::IntRect(0, 0, 200, 42));
 		button->setHovered(sf::IntRect(0, 42, 200, 42));
-		//button->setScene(&testing);
 		button->setScene(&levelOutside);
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(button);
@@ -110,7 +109,7 @@ void MainMenuScene::Load()
 		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "3")
 		{
 			// Set scene to sword level
-			//button->setScene(&levelThree);
+			button->setScene(&levelSword);
 		}
 		else if (!Saving::getLevelSaved()->empty() && *Saving::getLevelSaved() == "4")
 		{
