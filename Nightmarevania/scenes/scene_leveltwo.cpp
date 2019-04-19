@@ -268,7 +268,16 @@ void LevelTwo::Load()
 	//MOVING CAMERA STUFF
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, bottomBoundary);
+	centrePoint = sf::Vector2f(leftBoundary, topBoundary);
+
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
+		centrePoint.x = player->getPosition().x;
+	}
+
+	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) {
+		centrePoint.y = player->getPosition().y;
+	}
+	Engine::GetWindow().setView(followPlayer);
 
 	setLoaded(true);
 }

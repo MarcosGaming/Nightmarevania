@@ -21,7 +21,7 @@ private:
 	shared_ptr<Entity> door;
 	float leftBoundary = 640.0f;
 	float rightBoundary = 3080;
-	float topBoundary = -960.0f;
+	float topBoundary = -1060.0f;
 	float bottomBoundary = 360.0f;//607.0f;
 };
 
