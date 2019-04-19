@@ -128,6 +128,7 @@ void LevelOne::Load()
 		anim->changeAnimation("Idle");
 
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
+		physics->setRestitution(0.0f);
 
 		//KEY - level 2 only
 		if (ls::doesTileExist(ls::DOOR)) {
@@ -181,13 +182,11 @@ void LevelOne::Load()
 	// Add physics colliders to level tiles.
 	{
 		vector<Vector2f> checkedTiles;
-		//vector<Vector2f>::iterator it;
 
 		auto walls = ls::findTiles(ls::WALL);
 		for (auto w : walls)
 		{
 			auto pos = ls::getTilePosition(w);
-			//int totalPhysBoundary = 0;
 			int nextTile = 1;
 			float width = 60.0f;
 			float height = 60.0f;
@@ -214,20 +213,14 @@ void LevelOne::Load()
 				auto e = makeEntity();
 				e->setPosition(pos);
 				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
 			}
 		}
 
 		auto floor = ls::findTiles(ls::FLOOR);
 		for (auto f : floor)
 		{
-			/*auto pos = ls::getTilePosition(f);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));*/
-
 			auto pos = ls::getTilePosition(f);
-			//int totalPhysBoundary = 0;
 			int nextTile = 1;
 			float width = 60.0f;
 			float height = 60.0f;
@@ -254,6 +247,7 @@ void LevelOne::Load()
 				auto e = makeEntity();
 				e->setPosition(pos);
 				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
 			}
 		}
 	}
@@ -316,6 +310,8 @@ void LevelOne::Load()
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	//curCentre = player->getPosition();
 	centrePoint = sf::Vector2f(leftBoundary, (screenSize.y / 2)-60.0f);
+
+	player->GetCompatibleComponent<PlayerPhysicsComponent>()[0]->setRestitution(0.0f);
 
 	setLoaded(true);
 }

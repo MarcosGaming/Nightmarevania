@@ -110,8 +110,11 @@ void LevelSword::Load()
 		anim->addAnimation("Fall", fall);
 		anim->addAnimation("DoubleJump", doubleJump);
 		anim->changeAnimation("Idle");
+
 		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
+		physics->setRestitution(0.0f);
+
 		// Key component
 		if (ls::doesTileExist(ls::KEY)) 
 		{
@@ -126,24 +129,74 @@ void LevelSword::Load()
 
 	// Add physics colliders to level tiles.
 	{
+		vector<Vector2f> checkedTiles;
+
 		auto walls = ls::findTiles(ls::WALL);
 		for (auto w : walls)
 		{
 			auto pos = ls::getTilePosition(w);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::WALL || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
+			}
 		}
 
 		auto floor = ls::findTiles(ls::FLOOR);
 		for (auto f : floor)
 		{
 			auto pos = ls::getTilePosition(f);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::FLOOR || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
+			}
 		}
 	}
 

@@ -15,32 +15,12 @@ void AISteeringComponent::update(double dt) {
 	
 	isMoving = false;
 
-	//debugging:
-	/*if (playerPosX != _player->getPosition().x) {
-		playerPosX = _player->getPosition().x;
-		printf("player pos (x): %f\n", playerPosX);
-	}
-	if (ghostPosX != _parent->getPosition().x) {
-		ghostPosX = _parent->getPosition().x;
-		printf("ghost pos (x): %f\n", ghostPosX);
-	}
-	if (dist != length(_parent->getPosition() - _player->getPosition())) {
-		dist = length(_parent->getPosition() - _player->getPosition());
-		printf("distance between ghost and player: %f\n", dist);
-	}*/
-	
 	float curDist = length(_parent->getPosition() - _player->getPosition());
-	//printf("%f\n", curDist);
 
 	//check if player should be dead:
-	if (curDist < 30.0f) { //the player is dead
-		//isPlayerDead = true; //remove for debugging
-		//printf("player should be dead...\n");
+	if (curDist < 30.0f) {
+		isPlayerDead = true; //remove for debugging
 	}
-	else {
-		//isPlayerDead = false; //is this really needed...?
-	}
-
 
 	//if not, check if target (player) is less than _distance pixels away, chase
 	if (curDist < _distance) {

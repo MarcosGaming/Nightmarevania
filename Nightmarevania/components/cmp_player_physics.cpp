@@ -1,17 +1,12 @@
 #include "cmp_player_physics.h"
 #include "cmp_player_combat.h"
+#include "../Nightmarevania/game.h"
+#include "LevelSystem.h"
+#include "SFML/Window/Keyboard.hpp"
 #include "system_physics.h"
-#include "../game.h"
-#include <LevelSystem.h>
-#include <SFML/Window/Keyboard.hpp>
-#include <system_sound.h>
-<<<<<<< HEAD
+#include "system_sound.h"
+#include "system_controller.h"
 #include "engine.h"
-#include "../game.h"
-=======
-#include <system_controller.h>
-#include <engine.h>
->>>>>>> development
 
 using namespace std;
 using namespace sf;
@@ -126,7 +121,7 @@ void PlayerPhysicsComponent::update(double dt)
 			if (_grounded)
 			{
 				setVelocity(Vector2f(getVelocity().x, 0.f));
-				teleport(Vector2f(pos.x, pos.y - 2.0f));
+				//teleport(Vector2f(pos.x, pos.y - 2.0f));
 				impulse(Vector2f(0, -7.2f));
 				impulseDown = false;
 			}
@@ -157,7 +152,7 @@ void PlayerPhysicsComponent::update(double dt)
 		// Check to see if we have landed yet
 		_grounded = isGrounded();
 		// disable friction while jumping
-		setFriction(0.f);
+		setFriction(0.0f);
 	}
 	else
 	{

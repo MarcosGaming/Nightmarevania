@@ -32,12 +32,12 @@ PhysicsComponent::PhysicsComponent(Entity* p, bool dyn, const Vector2f& size) : 
     // Fixture properties
     // FixtureDef.density = _dynamic ? 10.f : 0.f;
     FixtureDef.friction = _dynamic ? 0.1f : 0.8f;
-    FixtureDef.restitution = 0.2f;
+    FixtureDef.restitution = 0.2f; //TODO body rest = 0.0? (prev: 0.2)
     FixtureDef.shape = &Shape;
     // Add to body
     _fixture = _body->CreateFixture(&FixtureDef);
     //_fixture->SetRestitution(.9)
-    FixtureDef.restitution = 0.2f;
+    FixtureDef.restitution = 0.2f; //TODO body rest = 0.0? (prev: 0.2)
   }
 
   // An ideal Pod/capusle shape should be used for hte player,
