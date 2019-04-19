@@ -42,12 +42,15 @@ void PlayerPhysicsComponent::update(double dt)
 		if (_parent->scene == &levelOne || _parent->scene == &levelTwo)
 		{
 			Engine::ChangeScene(&levelOutside);
+			return;
 		}
 		else
 		{
 			Engine::ChangeScene(&levelSword);
+			return;
 		}
 	}
+
 	// When the player is attacking the physics behave differently
 	if (!combat.empty() && combat[0]->isAttacking())
 	{
