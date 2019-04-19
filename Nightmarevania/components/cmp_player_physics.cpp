@@ -1,10 +1,12 @@
 #include "cmp_player_physics.h"
 #include "system_physics.h"
 #include "cmp_player_combat.h"
+#include "../game.h"
 #include <system_controller.h>
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
 #include <system_sound.h>
+#include <engine.h>
 
 using namespace std;
 using namespace sf;
@@ -30,15 +32,16 @@ void PlayerPhysicsComponent::update(double dt)
 
 	auto combat = _parent->get_components<PlayerCombatComponent>();
 
-	//Teleport to start if we fall off map or if is not alive
-	if (pos.y > ls::getHeight() * ls::getTileSize() || !_parent->isAlive())
+	// This works as what sets the alive state of the character is the animation which is updated before this
+	if (!_parent->isAlive())
 	{
-		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-		_parent->setAlive(true);
-		_parent->setDeath(false);
-		if (!combat.empty())
+		if (_parent->scene == &levelOne || _parent->scene == &levelTwo)
 		{
-			combat[0]->resetHealth();
+			Engine::ChangeScene(&levelOutside);
+		}
+		else
+		{
+			Engine::ChangeScene(&levelSword);
 		}
 	}
 	// When the player is attacking the physics behave differently
