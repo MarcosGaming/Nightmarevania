@@ -4,6 +4,14 @@
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
+#include "../components/cmp_enemy_physics .h"
+#include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_state_machine.h"
+#include "../components/cmp_decision_tree.h"
+#include "../components/cmp_ai_patrol.h"
+#include "../components/cmp_hurt.h"
+#include "../enemy_decisions.h"
+#include "../enemy_states.h"
 #include "../animation_states.h"
 #include "../game.h"
 #include <iostream>
@@ -15,9 +23,8 @@
 using namespace std;
 using namespace sf;
 
-static shared_ptr<Entity> player;
-shared_ptr<Texture> playerAnimations;
-shared_ptr<Texture> combatIcons;
+static shared_ptr<Entity> skeleton_soldier;
+static shared_ptr<Texture> skeleton_soldier_tex;
 
 static shared_ptr<Entity> pause_background;
 static shared_ptr<Texture> pause_background_tex;
@@ -30,8 +37,6 @@ static shared_ptr<Texture> resume_tex;
 
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
-
-static shared_ptr<Entity> dialogue_box;
 
 
 void TestingScene::Load()
@@ -52,18 +57,17 @@ void TestingScene::Load()
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	combatIcons = make_shared<Texture>();
-	//spriteSheet->loadFromFile("res/img/adventurer.png");
-	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
-	combatIcons->loadFromFile("res/img/combat_icons.png");
+	playerAnimations->loadFromFile("res/img/adventurer.png");
+	//playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	
-	// Player for levels 1 and 2
-	/*{
+	// Player
+	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -115,172 +119,84 @@ void TestingScene::Load()
 		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Idle");
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
-	}*/
+	}
 
-	// Player for level 3
+	// Skeleton soldier
+	skeleton_soldier_tex = make_shared<Texture>();
+	skeleton_soldier_tex->loadFromFile("res/img/skeleton_soldier.png");
 	{
-		player = makeEntity();
-		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-		player->addTag("Player");
+		skeleton_soldier = makeEntity();
+		auto position = ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]);
+		skeleton_soldier->setPosition(position);
 		// Sprite component
-		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(playerAnimations);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
+		auto sprite = skeleton_soldier->addComponent<SpriteComponent>();
+		sprite->setTexure(skeleton_soldier_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 24, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
-		// Combat component
-		auto combat = player->addComponent<PlayerCombatComponent>();
-		combat->setTexture(combatIcons);
-		// Health bar sprite
-		combat->getHealthBarSprite().setTextureRect((IntRect(0, 0, 100, 37)));
-		combat->getHealthBarSprite().scale(Vector2f(5.0f, 5.0f));
-		combat->getHealthBarSprite().setOrigin(Vector2f(50.0f, 18.0f));
-		combat->getHealthBarSprite().setPosition(Vector2f(350.0f, 100.0f));
+		// Animations
+		shared_ptr<SkeletonIdleAnimation> idle = make_shared<SkeletonIdleAnimation>();
 		for (int i = 0; i < 11; i++)
 		{
-			combat->addHealthBarIcon(IntRect(100 * i, 0, 100, 37));
+			idle->addFrame(IntRect(24 * i, 0, 24, 37));
 		}
-		// Circular attack sprite
-		combat->getCircularAttackSprite().setTextureRect((IntRect(50 * 2, 37, 50, 37)));
-		combat->getCircularAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
-		combat->getCircularAttackSprite().setPosition(Vector2f(240.0f, 160.0f));
-		for (int i = 2; i < 4; i++)
+		shared_ptr<SkeletonSlowWalkAnimation> walk = make_shared<SkeletonSlowWalkAnimation>();
+		for (int i = 0; i < 13; i++)
 		{
-			combat->addCircularAttackIcon(IntRect(50 * i, 37, 50, 37));
+			walk->addFrame(IntRect(22 * i, 37, 22, 37));
 		}
-		// Up attack sprite
-		combat->getUpAttackSprite().setTextureRect((IntRect(0, 37, 50, 37)));
-		combat->getUpAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
-		combat->getUpAttackSprite().setPosition(Vector2f(300.0f, 160.0f));
-		for (int i = 0; i < 2; i++)
+		shared_ptr<SkeletonAttackAnimation> attack = make_shared<SkeletonAttackAnimation>();
+		attack->setSoundFrame(7);
+		for (int i = 0; i < 18; i++)
 		{
-			combat->addUpAttackIcon(IntRect(50 * i, 37, 50, 37));
+			attack->addFrame(IntRect(43 * i, 37 * 2, 43, 37));
 		}
-		// Down attack sprite
-		combat->getDownAttackSprite().setTextureRect((IntRect(50 * 4, 37, 50, 37)));
-		combat->getDownAttackSprite().setOrigin(Vector2f(25.0f, 18.0f));
-		combat->getDownAttackSprite().setPosition(Vector2f(360.0f, 160.0f));
-		for (int i = 4; i < 6; i++)
+		shared_ptr<SkeletonFakeDeathAnimation> death = make_shared<SkeletonFakeDeathAnimation>();
+		for (int i = 1; i < 15; i++)
 		{
-			combat->addDownAttackIcon(IntRect(50 * i, 37, 50, 37));
+			death->addFrame(IntRect(33 * i, 37 * 3, 33, 37));
 		}
-		// Defend sprite
-		combat->getDefendSprite().setTextureRect((IntRect(50 * 8, 37, 50, 37)));
-		combat->getDefendSprite().setOrigin(Vector2f(25.0f, 18.0f));
-		combat->getDefendSprite().setPosition(Vector2f(420.0f, 160.0f));
-		for (int i = 8; i < 10; i++)
+		shared_ptr<SkeletonReviveAnimation> revive = make_shared<SkeletonReviveAnimation>();
+		for (int i = 14; i > 0; i--)
 		{
-			combat->addDefendIcon(IntRect(50 * i, 37, 50, 37));
-		}
-		// Animations, each frame has a size of 50x37
-		shared_ptr<IdleAnimation> idle = make_shared<IdleAnimation>();
-		for (int i = 0; i < 4; i++)
-		{
-			idle->addFrame(IntRect(50 * i, 0, 50, 37));
-		}
-		shared_ptr<RunAnimation> run = make_shared<RunAnimation>();
-		for (int i = 1; i < 7; i++)
-		{
-			run->addFrame(IntRect(50 * i, 37, 50, 37));
-		}
-		shared_ptr<JumpAnimation> jump = make_shared<JumpAnimation>();
-		for (int i = 1; i < 4; i++)
-		{
-			jump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
-		}
-		shared_ptr<FallAnimation> fall = make_shared<FallAnimation>();
-		for (int i = 1; i < 3; i++)
-		{
-			fall->addFrame(IntRect(50 * i, 37 * 3, 50, 37));
-		}
-		shared_ptr<DoubleJumpAnimation> doubleJump = make_shared<DoubleJumpAnimation>();
-		for (int i = 3; i < 7; i++)
-		{
-			doubleJump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
-		}
-		doubleJump->addFrame(IntRect(0, 37 * 3, 50, 37));
-		shared_ptr<DeathAnimationFall> deathFall = make_shared<DeathAnimationFall>();
-		for (int i = 0; i < 3; i++)
-		{
-			deathFall->addFrame(IntRect(50 * i, 37 * 16, 50, 37));
-		}
-		shared_ptr<DeathAnimationGround> deathGround = make_shared<DeathAnimationGround>();
-		for (int i = 2; i < 7; i++)
-		{
-			deathGround->addFrame(IntRect(50 * i, 37 * 16, 50, 37));
-		}
-		shared_ptr<GroundAttackAnimation> groundAttack = make_shared<GroundAttackAnimation>();
-		for (int i = 1; i < 7; i++)
-		{
-			groundAttack->addFrame(IntRect(50 * i, 37 * 6, 50, 37));
-		}
-		for (int i = 0; i < 4; i++)
-		{
-			groundAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
-		}
-		shared_ptr<CircularAttackAnimation> circularAttack = make_shared<CircularAttackAnimation>();
-		for (int i = 4; i < 7; i++)
-		{
-			circularAttack->addFrame(IntRect(50 * i, 37 * 7, 50, 37));
-		}
-		for (int i = 0; i < 3; i++)
-		{
-			circularAttack->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
-		}
-		shared_ptr<AirAttackAnimation> airAttack = make_shared<AirAttackAnimation>();
-		for (int i = 4; i < 7; i++)
-		{
-			airAttack->addFrame(IntRect(50 * i, 37 * 13, 50, 37));
-		}
-		for (int i = 0; i < 2; i++)
-		{
-			airAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
-		}
-		shared_ptr<UpAttackAnimation> upAttack = make_shared<UpAttackAnimation>();
-		for (int i = 1; i < 5; i++)
-		{
-			upAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
-		}
-		shared_ptr<DownAttackAnimation> downAttack = make_shared<DownAttackAnimation>();
-		for (int i = 5; i < 7; i++)
-		{
-			downAttack->addFrame(IntRect(50 * i, 37 * 14, 50, 37));
-		}
-		shared_ptr<SmasherDownAttackAnimation> smasherDownAttack = make_shared<SmasherDownAttackAnimation>();
-		for (int i = 0; i < 4; i++)
-		{
-			smasherDownAttack->addFrame(IntRect(50 * i, 37 * 15, 50, 37));
-		}
-		shared_ptr<DefendingAnimation> defending = make_shared<DefendingAnimation>();
-		for (int i = 3; i < 7; i++)
-		{
-			defending->addFrame(IntRect(50 * i, 37 * 8, 50, 37));
-		}
-		shared_ptr<HurtAnimation> hurt = make_shared<HurtAnimation>();
-		for (int i = 0; i < 2; i++)
-		{
-			hurt->addFrame(IntRect(50 * i, 37 * 17, 50, 37));
+			revive->addFrame(IntRect(33 * i, 37 * 3, 33, 37));
 		}
 		// Component that manages player animations
-		auto anim = player->addComponent<AnimationMachineComponent>();
+		auto anim = skeleton_soldier->addComponent<AnimationMachineComponent>();
 		anim->addAnimation("Idle", idle);
-		anim->addAnimation("Run", run);
-		anim->addAnimation("Jump", jump);
-		anim->addAnimation("Fall", fall);
-		anim->addAnimation("DoubleJump", doubleJump);
-		anim->addAnimation("DeathFall", deathFall);
-		anim->addAnimation("DeathGround", deathGround);
-		anim->addAnimation("GroundAttack", groundAttack);
-		anim->addAnimation("CircularAttack", circularAttack);
-		anim->addAnimation("AirAttack", airAttack);
-		anim->addAnimation("UpAttack", upAttack);
-		anim->addAnimation("DownAttack", downAttack);
-		anim->addAnimation("SmasherDownAttack", smasherDownAttack);
-		anim->addAnimation("Defending", defending);
-		anim->addAnimation("Hurt", hurt);
+		anim->addAnimation("WalkSlow", walk);
+		anim->addAnimation("Attack", attack);
+		anim->addAnimation("Death", death);
+		anim->addAnimation("Revive", revive);
 		anim->changeAnimation("Idle");
+		// AI component
+		auto AI = skeleton_soldier->addComponent<SkeletonAIComponent>();
+		// Patrol component
+		auto patrol = skeleton_soldier->addComponent<AIPatrolComponent>(position, position + sf::Vector2f(500.0f, 0.0f));
+		// State machine component
+		auto sm = skeleton_soldier->addComponent<StateMachineComponent>();
+		sm->addState("Stationary", make_shared<StationaryState>());
+		sm->addState("SeekSlow", make_shared<SeekLimitsState>(skeleton_soldier, player, position, position + sf::Vector2f(500.0f, 0.0f)));
+		sm->addState("Patrol", make_shared<PatrolState>());
+		sm->addState("Death", make_shared<FakeDeathState>());
+		sm->addState("Attack", make_shared<AttackState>());
+		sm->addState("Revive", make_shared<ReviveState>());
+		sm->changeState("Idle");
+		// Decision subtree 1
+		auto weightedDecisionSubtree1 = make_shared<WeightedBinaryDecision>(90, make_shared<ReviveDecision>(), make_shared<DeathDecision>());
+		// Decision subtree 2
+		auto distanceDecision1Subtree2 = make_shared<DistanceDecision>(player, 120, make_shared<AttackDecision>(), make_shared<SeekSlowDecision>());
+		auto weightedDecision1Subtree2 = make_shared<WeightedBinaryDecision>(70, make_shared<StationaryDecision>(), make_shared<DeathDecision>());
+		auto weightedDecision2Subtree2 = make_shared<WeightedBinaryDecision>(90, make_shared<PatrolDecision>(), weightedDecision1Subtree2);
+		auto distanceDecision2Subtree2 = make_shared<DistanceDecision>(player, 300, distanceDecision1Subtree2, weightedDecision2Subtree2);
+		// Complete tree
+		auto fakeDeathDecision = make_shared<FakeDeathDecision>(skeleton_soldier, weightedDecisionSubtree1, distanceDecision2Subtree2);
+		// Decision tree component
+		skeleton_soldier->addComponent<DecisionTreeComponent>(fakeDeathDecision);
 		// Physics component
-		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
+		auto physics = skeleton_soldier->addComponent<EnemyPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width, sprite->getSprite().getTextureRect().height * 2.8f));
+		// Player kill component
+		skeleton_soldier->addComponent<PlayerKillComponent>();
 	}
 
 	// Add physics colliders to level tiles.
@@ -348,14 +264,6 @@ void TestingScene::Load()
 		buttonsForController.push_back(button);
 	}
 
-	// Dialogue box
-	{
-		dialogue_box = makeEntity();
-		// Dialogue text component
-		auto text = dialogue_box->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
-	}
-
 	setLoaded(true);
 }
 
@@ -380,10 +288,11 @@ void TestingScene::Update(const double& dt)
 		// Level 3 music
 		Audio::playMusic("level_3_music");
 	}
-	/*followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
-	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(player->getPosition());*/
-
+	// Player death
+	if (!player->isAlive() && player->isDead())
+	{
+		Engine::ChangeScene(&levelOne);
+	}
 	Scene::Update(dt);
 }
 
@@ -398,6 +307,7 @@ void TestingScene::UnLoad()
 	Audio::stopMusic("level_3_music");
 	buttonsForController.clear();
 	player.reset();
+	skeleton_soldier.reset();
 	ls::unload();
 	Scene::UnLoad();
 }

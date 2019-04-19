@@ -9,3 +9,26 @@ SteeringOutput Seek::getSteering() const noexcept
 	steering.direction *= _speed;
 	return steering;
 }
+
+// Returns the direction of the point that needs to be visited next
+SteeringOutput Patrol::getSteering() const noexcept
+{
+	SteeringOutput steering;
+	// Direction of travel is going to be towards B
+	if (_wasLastPositionA)
+	{
+		steering.direction = normalize(_positionB - _character->getPosition());
+	}
+	// Direction of travel is going to be towards A
+	else
+	{
+		steering.direction = normalize(_positionA - _character->getPosition());
+	}
+	steering.rotation = 0.0f;
+	return steering;
+}
+
+void Patrol::setWasLastPositionA(const bool status)
+{
+	_wasLastPositionA = status;
+}

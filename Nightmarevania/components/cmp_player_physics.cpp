@@ -32,18 +32,6 @@ void PlayerPhysicsComponent::update(double dt)
 
 	auto combat = _parent->get_components<PlayerCombatComponent>();
 
-	// This works as what sets the alive state of the character is the animation which is updated before this
-	if (!_parent->isAlive())
-	{
-		if (_parent->scene == &levelOne || _parent->scene == &levelTwo)
-		{
-			Engine::ChangeScene(&levelOutside);
-		}
-		else
-		{
-			Engine::ChangeScene(&levelSword);
-		}
-	}
 	// When the player is attacking the physics behave differently
 	if (!combat.empty() && combat[0]->isAttacking())
 	{

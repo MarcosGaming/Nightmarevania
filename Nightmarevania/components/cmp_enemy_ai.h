@@ -10,8 +10,6 @@ class SkeletonAIComponent : public Component
 protected:
 	bool _attacking;
 
-	bool _death;
-
 public:
 	SkeletonAIComponent() = delete;
 	explicit SkeletonAIComponent(Entity* p);
@@ -21,9 +19,6 @@ public:
 
 	bool isAttacking() const;
 	void setAttacking(bool);
-
-	bool isDeath() const;
-	void setDeath(bool);
 };
 
 class GhostAIComponent : public Component

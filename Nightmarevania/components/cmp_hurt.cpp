@@ -49,3 +49,27 @@ void BossHurtComponent::update(double dt)
 		}
 	}
 }
+
+// Component that kill the player instantly
+PlayerKillComponent::PlayerKillComponent(Entity* p) : Component(p), _player(_parent->scene->ents.find("Player")[0]) {}
+
+void PlayerKillComponent::update(double dt)
+{
+	static float attackDelay = 0.5f;
+	if (auto player = _player.lock())
+	{
+		auto enemy = _parent->get_components<SkeletonAIComponent>()[0];
+		if (enemy->isAttacking())
+		{
+			attackDelay -= (float)dt;
+			if (attackDelay < 0.0f && length(player->getPosition() - _parent->getPosition()) < 110.0f)
+			{
+				player->setDeath(true);
+			}
+		}
+		else
+		{
+			attackDelay = 0.5f;
+		}
+	}
+}

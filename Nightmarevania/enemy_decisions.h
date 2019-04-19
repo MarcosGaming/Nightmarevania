@@ -55,10 +55,35 @@ public:
 		: _boss(boss), _health(health), BinaryDecision(trueNode, falseNode) { }
 };
 
+class FakeDeathDecision : public BinaryDecision
+{
+private:
+	std::shared_ptr<Entity> _skeletonSoldier;
+
+protected:
+	std::shared_ptr<DecisionTreeNode> getBranch(Entity* owner) override final
+	{
+		if (owner->isDead())
+		{
+			return _trueNode;
+		}
+		else
+		{
+			return _falseNode;
+		}
+	}
+
+public:
+	FakeDeathDecision(std::shared_ptr<Entity> skeletonSoldier, std::shared_ptr<DecisionTreeNode> trueNode, std::shared_ptr<DecisionTreeNode> falseNode)
+		: _skeletonSoldier(skeletonSoldier), BinaryDecision(trueNode, falseNode) { }
+};
+
 class DeathDecision : public DecisionTreeNode
 {
 	void makeDecision(Entity* owner) override final
 	{
+		auto decisionTree = owner->get_components<DecisionTreeComponent>();
+		decisionTree[0]->setWaitTime(3.0f);
 		auto sm = owner->get_components<StateMachineComponent>();
 		sm[0]->changeState("Death");
 	}
@@ -121,5 +146,17 @@ public:
 		decisionTree[0]->setWaitTime(2.0f);
 		auto sm = owner->get_components<StateMachineComponent>();
 		sm[0]->changeState("Revive");
+	}
+};
+
+class PatrolDecision : public DecisionTreeNode
+{
+public:
+	void makeDecision(Entity *owner) override final
+	{
+		auto decisionTree = owner->get_components<DecisionTreeComponent>();
+		decisionTree[0]->setWaitTime(1.0f);
+		auto sm = owner->get_components<StateMachineComponent>();
+		sm[0]->changeState("Patrol");
 	}
 };
