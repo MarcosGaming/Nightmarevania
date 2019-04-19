@@ -112,7 +112,7 @@ class DeathAnimation : public Animation
 {
 public:
 	DeathAnimation() = default;
-	void runFrames(Entity* owner, float waitTime) override;
+	void runFrames(Entity*, float) override;
 };
 
 // Death fall animation
@@ -128,6 +128,14 @@ class DeathAnimationGround : public DeathAnimation
 {
 public:
 	DeathAnimationGround() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Get up animation
+class GetUpAnimation : public DeathAnimation
+{
+public:
+	GetUpAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 
@@ -212,5 +220,23 @@ class SkeletonReviveAnimation : public DeathAnimation
 {
 public:
 	SkeletonReviveAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Open portal animation
+class PortalOpenAnimation : public Animation
+{
+public:
+	PortalOpenAnimation() = default;
+	void runFrames(Entity*, float) override;
+	void execute(Entity*, double) noexcept override;
+};
+
+// Static portal animation
+class PortalStaticAnimation : public Animation
+{
+public:
+	PortalStaticAnimation() = default;
+	void runFrames(Entity*, float) override;
 	void execute(Entity*, double) noexcept override;
 };

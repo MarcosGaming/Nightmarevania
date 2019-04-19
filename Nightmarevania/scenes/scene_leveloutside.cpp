@@ -1,22 +1,24 @@
-#include "scene_levelone.h"
+#include "scene_leveloutside.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_button.h"
-#include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
+#include "../components/cmp_text.h"
 #include "../game.h"
-#include "../components/cmp_door.h"
-#include "../components/cmp_key.h"
-#include "../components/cmp_enemy_ai.h"
-#include "../components/cmp_ai_steering.h"
-#include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
+#include <conversor.h>
 
 using namespace std;
 using namespace sf;
+
+static shared_ptr<Entity> background;
+static shared_ptr<Texture> background_tex;
+
+static shared_ptr<Entity> portal;
+static shared_ptr<Texture> portal_tex;
 
 static shared_ptr<Entity> pause_background;
 static shared_ptr<Texture> pause_background_tex;
@@ -30,10 +32,13 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
+static shared_ptr<Entity> serah_dialogue;
+static shared_ptr<Entity> intro_dialogue;
+static shared_ptr<Entity> controls_dialogue;
 
-void LevelOne::Load()
+void LevelOutside::Load()
 {
-	// Stop music from main menu
+	// Stop music from main menu in the case that we come from there
 	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
@@ -42,30 +47,68 @@ void LevelOne::Load()
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
 	// Level file
-	ls::loadLevelFile("res/levels/level_one.txt", 60.0f);
+	ls::loadLevelFile("res/levels/level_outside.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
-
-	//DOOR
-	//shared_ptr<Entity> door;
-	if (ls::doesTileExist(ls::DOOR)) {
-		door = makeEntity();
-		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
-		//false for L1, but starts as true for L2 and stays true in L3
-		auto doorSprite = door->addComponent<SpriteComponent>();
-		doorSprite->setTexure(doorCmp->getTexture());
-		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
-		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
-	}
-
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
 
-	// Player for levels 1 and 2
+	// Background
+	background_tex = make_shared<Texture>();
+	background_tex->loadFromFile("res/img/initial_level.png");
+	{
+		background = makeEntity();
+		background->setPosition(Vector2f(GAMEX / 2.0f, GAMEY / 2.0f));
+		background->addTag("Background");
+		// Sprite
+		auto sprite = background->addComponent<SpriteComponent>();
+		sprite->setTexure(background_tex);
+		sprite->getSprite().setOrigin(background_tex->getSize().x * 0.5f, background_tex->getSize().y * 0.5f);
+		float scaleX = (float)GAMEX / (background_tex->getSize().x);
+		float scaleY = (float)GAMEY / (background_tex->getSize().y);
+		sprite->getSprite().scale(scaleX, scaleY);
+	}
+
+	// Portal
+	portal_tex = make_shared<Texture>();
+	portal_tex->loadFromFile("res/img/portal.png");
+	{
+		portal = makeEntity();
+		portal->setPosition(ls::getTilePosition(ls::findTiles(ls::END)[0]));
+		portal->setPosition(Vector2f(portal->getPosition().x, portal->getPosition().y - 80.0f));
+		portal->addTag("Portal");
+		// Sprite component
+		auto sprite = portal->addComponent<SpriteComponent>();
+		sprite->setTexure(portal_tex);
+		sprite->getSprite().setTextureRect(IntRect(0, 64, 64, 64));
+		sprite->getSprite().scale(sf::Vector2f(-5.0f, 5.0f));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		// Animations
+		shared_ptr<PortalOpenAnimation> portalOpen = make_shared<PortalOpenAnimation>();
+		for (int i = 0; i < 8; i++)
+		{
+			portalOpen->addFrame(IntRect(64 * i, 64, 64, 64));
+		}
+		shared_ptr<PortalStaticAnimation> portalStatic = make_shared<PortalStaticAnimation>();
+		for (int i = 0; i < 8; i++)
+		{
+			portalStatic->addFrame(IntRect(64 * i, 0, 64, 64));
+		}
+		// Animation machine component
+		auto anim = portal->addComponent<AnimationMachineComponent>();
+		anim->addAnimation("Open", portalOpen);
+		anim->addAnimation("Static", portalStatic);
+		anim->changeAnimation("Open");
+		// Portal is initially not going to be render and updated
+		portal->setVisible(false);
+		portal->setAlive(false);
+	}
+
+	// Player
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
@@ -73,7 +116,7 @@ void LevelOne::Load()
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
 		sprite->setTexure(spriteSheet);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
+		sprite->getSprite().setTextureRect(IntRect(0, 37 * 12, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
 		// Animations, each frame has a size of 50x37
@@ -103,15 +146,10 @@ void LevelOne::Load()
 			doubleJump->addFrame(IntRect(50 * i, 37 * 2, 50, 37));
 		}
 		doubleJump->addFrame(IntRect(0, 37 * 3, 50, 37));
-		shared_ptr<DeathAnimationFall> deathFall = make_shared<DeathAnimationFall>();
-		for (int i = 0; i < 3; i++)
+		shared_ptr<GetUpAnimation> getUp = make_shared<GetUpAnimation>();
+		for (int i = 0; i < 7; i++)
 		{
-			deathFall->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
-		}
-		shared_ptr<DeathAnimationGround> deathGround = make_shared<DeathAnimationGround>();
-		for (int i = 2; i < 7; i++)
-		{
-			deathGround->addFrame(IntRect(50 * i, 37 * 11, 50, 37));
+			getUp->addFrame(IntRect(50 * i, 37 * 12, 50, 37));
 		}
 		// Component that manages player animations
 		auto anim = player->addComponent<AnimationMachineComponent>();
@@ -120,61 +158,12 @@ void LevelOne::Load()
 		anim->addAnimation("Jump", jump);
 		anim->addAnimation("Fall", fall);
 		anim->addAnimation("DoubleJump", doubleJump);
-		anim->addAnimation("DeathFall", deathFall);
-		anim->addAnimation("DeathGround", deathGround);
-		anim->changeAnimation("Idle");
-
+		anim->addAnimation("GetUp", getUp);
+		anim->changeAnimation("GetUp");
+		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
-
-		//KEY - level 2 only
-		if (ls::doesTileExist(ls::DOOR)) {
-			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
-		}
-
-		//if (keyExists) {
-		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
-		}
 	}
 
-	//GHOST
-	{
-		shared_ptr<Entity> ghost;
-		ghost = makeEntity();
-		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0])); //TODO add enemy to tile map
-		auto AIcmp = ghost->addComponent<GhostAIComponent>();
-		auto sprite = ghost->addComponent<SpriteComponent>();
-		shared_ptr<Texture> ghostSprites = make_shared<Texture>();
-		ghostSprites->loadFromFile("res/img/ghost.png");
-		sprite->setTexure(ghostSprites);
-		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 58));
-		sprite->getSprite().scale(sf::Vector2f(5.0f, 5.0f));
-		sprite->getSprite().setOrigin((float)sprite->getSprite().getTextureRect().width * 0.5f, (float)sprite->getSprite().getTextureRect().height);
-		auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 190.0f, 1000.0f);
-		
-		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();
-		for (int i = 1; i < 7; i++)
-		{
-			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
-		}
-		
-
-		shared_ptr<GhostFlyingAnimation> ghostFly = make_shared<GhostFlyingAnimation>();
-		ghostFly->addFrame(IntRect(71 * 6, 0, 71, 58));
-		
-
-		shared_ptr<GhostIdleAnimation> ghostIdle = make_shared<GhostIdleAnimation>();
-		for (int i = 0; i < 2; i++)
-		{
-			ghostIdle->addFrame(IntRect(71 * i, 0, 71, 58));
-		}
-
-		auto animations = ghost->addComponent<AnimationMachineComponent>();
-		animations->addAnimation("GhostIdle", ghostIdle);
-		animations->addAnimation("GhostTakeOff", ghostTakeOff);
-		animations->addAnimation("GhostFly", ghostFly);
-		animations->changeAnimation("GhostIdle"); //why is this breaking?
-	}
 
 	// Add physics colliders to level tiles.
 	{
@@ -251,81 +240,125 @@ void LevelOne::Load()
 		buttonsForController.push_back(button);
 	}
 
+	// Serah get up dialogue
+	{
+		serah_dialogue = makeEntity();
+		// Dialogue text component
+		auto text = serah_dialogue->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Serah: My head...Where... Where am I?.");
+		text->setFunction([&]() {text->serahGetUpDialogueUpdate(); });
+		text->setTextSize(30);
+	}
 
+	// Mysterious voice intro dialogue
+	{
+		intro_dialogue = makeEntity();
+		intro_dialogue->addTag("Intro");
+		intro_dialogue->setAlive(false);
+		// Dialogue text component
+		auto text = intro_dialogue->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Mysterious voice: Serah... Erebus has transported you to the Netherworld during your nightmare.\nWe don't have much time left and he needs to be stopped. Cross the portal I have opened to get\nto his castle.");
+		text->setFunction([&]() {text->outsideLevelDialogueUpdate(); });
+	}
 
-	//MOVING CAMERA STUFF
-	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	//curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, screenSize.y / 2);
-
+	// End fight dialogue
+	{
+		controls_dialogue = makeEntity();
+		controls_dialogue->addTag("ControlsDialogue");
+		controls_dialogue->setAlive(false);
+		// Dialogue text component
+		auto text = controls_dialogue->addComponent<DialogueBoxComponent>();
+		// Some text changes based on what controller is connected
+		string dialogue;
+		string jump = Controller::JumpButton;
+		// Dialogue when the joystick is connected
+		if (sf::Joystick::isConnected(0))
+		{
+			string jumpButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(jumpButton));
+			// Dialogue
+			dialogue = "Mysterious voice: Use the L.Stick to move," + jumpButton + " to perform a single jump\nand release it and press it again in the air to perform a double jump.";
+		}
+		// Dialogue when the mouse/keyboard are connected
+		else
+		{
+			// Jump button
+			string jumpButton;
+			if (Controller::getActionKey(jump) != NULL)
+			{
+				jumpButton = Conversor::KeyboardKeyToString(*Controller::getActionKey(jump));
+			}
+			else
+			{
+				jumpButton = Conversor::MouseButtonToString(*Controller::getActionMouseButton(jump));
+			}
+			// Right movement button
+			string right = Controller::MoveRightButton;
+			string moveRight;
+			if (Controller::getActionKey(right) != NULL)
+			{
+				moveRight = Conversor::KeyboardKeyToString(*Controller::getActionKey(right));
+			}
+			else
+			{
+				moveRight = Conversor::MouseButtonToString(*Controller::getActionMouseButton(right));
+			}
+			// Left movement button
+			string left = Controller::MoveLeftButton;
+			string moveLeft;
+			if (Controller::getActionKey(left) != NULL)
+			{
+				moveLeft = Conversor::KeyboardKeyToString(*Controller::getActionKey(left));
+			}
+			else
+			{
+				moveLeft = Conversor::MouseButtonToString(*Controller::getActionMouseButton(left));
+			}
+			// Dialogue
+			dialogue = "Mysterious voice: Use " + moveRight + " and " + moveLeft + " to move," + jumpButton + " to perform a single jump\nand release it and press it again in the air to perform a double jump.";
+		}
+		text->setCompleteText(dialogue);
+		text->setFunction([&]() {text->moveWhileDialogueUpdate(); });
+	}
 	setLoaded(true);
 }
 
-void LevelOne::Update(const double& dt)
+void LevelOutside::Update(const double& dt)
 {
-
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
-		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
-	}
-
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
 		_paused = true;
-		Audio::pauseMusic("level_1_music");
+		Audio::pauseMusic("mystic_music");
 	}
+	// Controller button navigation
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 	}
 	else
 	{
-		Audio::playMusic("level_1_music");
+		// Music for this level
+		Audio::playMusic("mystic_music");
 	}
-
-	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
-		centrePoint.x = player->getPosition().x;
+	// Change scene to next level
+	if (ls::getTileAt(player->getPosition()) == ls::END)
+	{
+		Engine::ChangeScene(&levelOne);
 	}
-
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, GAMEX, GAMEY));
-	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	followPlayer.setCenter(centrePoint);
-
-	if (ls::getTileAt(player->getPosition()) == ls::END) {
-		Engine::ChangeScene((Scene*)&levelTwo);
-	}
-
-	// Move pause menu
-	pause_background->setPosition(Vector2f(followPlayer.getCenter().x, followPlayer.getCenter().y));
-	resume_btn->setPosition(Vector2f((followPlayer.getCenter().x) - (resume_tex->getSize().x / 2.0f) - 90.0f, followPlayer.getCenter().y + 50.0f));
-	returnToMenu_btn->setPosition(Vector2f(((followPlayer.getCenter().x)) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, followPlayer.getCenter().y + 150.0f));
 
 	Scene::Update(dt);
 }
 
-void LevelOne::Render()
+void LevelOutside::Render()
 {
-	Engine::GetWindow().setView(followPlayer);
-	ls::render(Engine::GetWindow()); //render the enviro tiles
-	//TODO - render bg and fg seperately (in diff views)
-	/* Something like:
-	* sf::View background;
-	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
-	* Engine::GetWindow().setView(background);
-	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
-	* Engine::GetWindow().setView(followPlayer);
-	* ls::render(Engine::GetWindow());
-	*/
-
+	ls::render(Engine::GetWindow());
 	Scene::Render();
 }
 
-void LevelOne::UnLoad()
+void LevelOutside::UnLoad()
 {
-	Engine::GetWindow().setView(sf::View(sf::FloatRect(0.0f, 0.0f, GAMEX, GAMEY)));
-	Audio::stopMusic("level_1_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();

@@ -531,6 +531,19 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 	}
 }
 
+// Get up animation
+void GetUpAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
+	// Animation changes when it finishes
+	if (_current_frame >= _frames.size())
+	{
+		auto animation = owner->get_components<AnimationMachineComponent>()[0];
+		animation->changeAnimation("Idle");
+		_current_frame = 0;
+	}
+}
+
 
 //Different runFrames for ghost
 void GhostAnimation::runFrames(Entity* owner, float waitTime)
@@ -714,4 +727,54 @@ void SkeletonReviveAnimation::execute(Entity* owner, double dt) noexcept
 		animation->changeAnimation("Idle");
 		_current_frame = 0;
 	}
+}
+
+
+// Portal open animation
+void PortalOpenAnimation::runFrames(Entity* owner, float waitTime)
+{
+	if (_current_frame >= _frames.size())
+	{
+		return;
+	}
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+}
+void PortalOpenAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.15f);
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	if (_current_frame >= _frames.size())
+	{
+		animation->changeAnimation("Static");
+	}
+}
+
+// Portal static animation
+void PortalStaticAnimation::runFrames(Entity* owner, float waitTime)
+{
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+	if (_current_frame >= _frames.size())
+	{
+		_current_frame = 0;
+	}
+}
+void PortalStaticAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
 }

@@ -77,7 +77,7 @@ void MainMenuScene::Load()
 		button->setNormal(sf::IntRect(0, 0, 200, 42));
 		button->setHovered(sf::IntRect(0, 42, 200, 42));
 		//button->setScene(&testing);
-		button->setScene(&levelOne);
+		button->setScene(&levelOutside);
 		// Add button to the vector used when the controller is connected
 		buttonsForController.push_back(button);
 	}

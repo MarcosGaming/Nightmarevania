@@ -17,6 +17,8 @@ public:
 
   void SetText(const std::string& str);
 
+  void setTextSize(const int);
+
 protected:
   std::shared_ptr<sf::Font> _font;
   std::string _string;
@@ -62,7 +64,11 @@ public:
 
 	void setFunction(std::function<void()>);
 
-	void levelSwordDialogueUpdate();
+	void serahGetUpDialogueUpdate();
+
+	void outsideLevelDialogueUpdate();
+
+	void moveWhileDialogueUpdate();
 
 	void swordDialogueUpdate();
 

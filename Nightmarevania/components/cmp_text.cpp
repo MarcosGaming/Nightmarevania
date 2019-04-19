@@ -27,6 +27,11 @@ void TextComponent::SetText(const std::string& str)
   _text.setString(_string);
 }
 
+void TextComponent::setTextSize(const int size)
+{
+	_text.setCharacterSize(size);
+}
+
 // Text component for the controls
 ControlsTextComponent::ControlsTextComponent(Entity* p, const std::string& str) : TextComponent(p, str) { }
 
@@ -99,8 +104,79 @@ void DialogueBoxComponent::setCompleteText(const std::string& text)
 
 void DialogueBoxComponent::setFunction(std::function<void()> function) { _func = function; }
 
+// Serah dialogue after starting the game
+void DialogueBoxComponent::serahGetUpDialogueUpdate()
+{
+	// While the dialogue box is active do not update the player
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->setAlive(false);
+	}
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= (float)_dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= (float)_dt;
+		if (finalCountDown <= 0.0f)
+		{
+			if (auto pl = player.lock())
+			{
+				pl->setAlive(true);
+			}
+			_parent->setVisible(false);
+			_parent->setAlive(false);
+			_parent->scene->ents.find("Intro")[0]->setAlive(true);
+			_parent->scene->ents.find("Portal")[0]->setVisible(true);
+			_parent->scene->ents.find("Portal")[0]->setAlive(true);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+
+void DialogueBoxComponent::outsideLevelDialogueUpdate()
+{
+	// While the dialogue box is active do not allow the player to move
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= (float)_dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= (float)_dt;
+		if (finalCountDown <= 0.0f)
+		{
+			_parent->setVisible(false);
+			_parent->setAlive(false);
+			_parent->scene->ents.find("ControlsDialogue")[0]->setAlive(true);
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+}
+
 // Function for the dialogue in the sword alone level
-void DialogueBoxComponent::levelSwordDialogueUpdate()
+void DialogueBoxComponent::moveWhileDialogueUpdate()
 {
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
@@ -127,7 +203,7 @@ void DialogueBoxComponent::levelSwordDialogueUpdate()
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
 }
 
-// Function for sword dialogue
+// Function for sword of dawn dialogue
 void DialogueBoxComponent::swordDialogueUpdate()
 {
 	Audio::playMusic("mystic_music");

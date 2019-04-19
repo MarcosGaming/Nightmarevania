@@ -11,6 +11,7 @@ LevelTwo levelTwo;
 LevelThree levelThree;
 EndingScene endingScene;
 LevelSword levelSword;
+LevelOutside levelOutside;
 
 int main() 
 {

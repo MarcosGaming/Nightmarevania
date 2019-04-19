@@ -210,14 +210,14 @@ void LevelSword::Load()
 		buttonsForController.push_back(button);
 	}
 
-	// End fight dialogue
+	// Short dialogue dialogue
 	{
 		short_dialogue = makeEntity();
 		short_dialogue->setAlive(true);
 		// Dialogue text component
 		auto text = short_dialogue->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Mysterious voice: Ahead awaits you the final challenge Serah. Grab the sword and recover\nthe strength of your ancestors, you will need it to defeat Erebus.");
-		text->setFunction([&]() {text->levelSwordDialogueUpdate(); });
+		text->setCompleteText("Mysterious voice: Ahead awaits you the final challenge Serah. Grab the sword and reclaim\nthe strength of your ancestors, you will need it to defeat Erebus.");
+		text->setFunction([&]() {text->moveWhileDialogueUpdate(); });
 	}
 	setLoaded(true);
 }
