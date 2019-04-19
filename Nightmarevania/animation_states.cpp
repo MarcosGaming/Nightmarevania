@@ -13,6 +13,10 @@ void IdleAnimation::execute(Entity* owner, double dt) noexcept
 	auto combat = owner->get_components<PlayerCombatComponent>();
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// Animation changes based on the character movement
+	if (std::abs(movement->getVelocity().x) > 0.1f)
+	{
+		animation->changeAnimation("Run");
+	} else
 	if (movement->getVelocity().y > 0.1f)
 	{
 		animation->changeAnimation("Jump");
@@ -21,10 +25,10 @@ void IdleAnimation::execute(Entity* owner, double dt) noexcept
 	{
 		animation->changeAnimation("Fall");
 	}
-	else if (std::abs(movement->getVelocity().x) > 0.1f)
+	/*else if (std::abs(movement->getVelocity().x) > 0.1f)
 	{
 		animation->changeAnimation("Run");
-	}
+	}*/
 	// Animation changes based on the combat
 	if (!combat.empty())
 	{
@@ -572,7 +576,7 @@ void GhostTakeOffAnimation::execute(Entity* owner, double dt) noexcept {
 }
 
 void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
-	runFrames(owner, 0.2f);
+	runFrames(owner, 0.3f);
 
 	auto movement = owner->get_components<AISteeringComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];

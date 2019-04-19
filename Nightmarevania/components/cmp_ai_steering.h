@@ -13,6 +13,7 @@ protected:
 	Entity *_player;
 	bool validMove(const sf::Vector2f&) const;
 	bool isMoving;
+	bool isPlayerDead;
 
 public:
 	void update(double) override;
@@ -22,4 +23,5 @@ public:
 	explicit AISteeringComponent(Entity * p, Entity * player, float speed, float distance);
 	AISteeringComponent() = delete;
 	bool getMovement();
+	bool getPlayerDeath();
 };

@@ -5,10 +5,14 @@
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
 #include <system_sound.h>
+#include "engine.h"
+#include "../game.h"
 
 using namespace std;
 using namespace sf;
 using namespace Physics;
+
+Scene * curScene;
 
 PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) : PhysicsComponent(p, true, size) 
 {
@@ -28,6 +32,13 @@ void PlayerPhysicsComponent::update(double dt)
 	const auto pos = _parent->getPosition();
 
 	auto combat = _parent->get_components<PlayerCombatComponent>();
+
+	curScene = Engine::getActiveScene();
+	if (!_parent->isAlive()) {
+		_parent->setDeath(false);
+		//Engine::ChangeScene(&main_menu);
+		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0])); //debugging
+	}
 
 	//Teleport to start if we fall off map or if is not alive
 	if (pos.y > ls::getHeight() * ls::getTileSize() || !_parent->isAlive())

@@ -30,13 +30,15 @@ void AISteeringComponent::update(double dt) {
 	}*/
 	
 	float curDist = length(_parent->getPosition() - _player->getPosition());
-	printf("%f\n", curDist);
+	//printf("%f\n", curDist);
 
 	//check if player should be dead:
 	if (curDist < 30.0f) { //the player is dead
-		//show player death then reset the scene
-		//Engine::ChangeScene(&levelOne); //this works here but should probably be in the player code somewhere after the death animation has played
-		printf("player should be dead...\n");
+		//isPlayerDead = true; //remove for debugging
+		//printf("player should be dead...\n");
+	}
+	else {
+		//isPlayerDead = false; //is this really needed...?
 	}
 
 
@@ -61,12 +63,13 @@ void AISteeringComponent::update(double dt) {
 }
 
 AISteeringComponent::AISteeringComponent(Entity* p, Entity* player, float speed, float distance)
-	: _player(player), _seek(Seek(p, player, speed)), _distance(distance), isMoving(false), Component(p) {}
+	: _player(player), _seek(Seek(p, player, speed)), _distance(distance), isMoving(false), isPlayerDead(false) ,Component(p) {}
 
 bool AISteeringComponent::validMove(const sf::Vector2f& pos) const {
-	//Whilst this will be good practice to have, in the case of the ghost, 
-	//it will never manage to make it outside the game boundaries 
-	//because the player won't either
+	//Whilst this would be good practice to have, 
+	//in the case of the ghost, it's allowed outside the boundaries
+	//because we want to be able to move it off screen and 
+	//let it look non corporeal when it reaches boundaries
 	/*if (pos.x < 0.0f || pos.x > Engine::GetWindow().getSize().x ||
 		pos.y < 0.0f || pos.y > Engine::GetWindow().getSize().y) {
 		return false;
@@ -85,4 +88,8 @@ void AISteeringComponent::move(float x, float y) { move(Vector2f(x, y)); }
 
 bool AISteeringComponent::getMovement() {
 	return isMoving;
+}
+
+bool AISteeringComponent::getPlayerDeath() {
+	return isPlayerDead;
 }

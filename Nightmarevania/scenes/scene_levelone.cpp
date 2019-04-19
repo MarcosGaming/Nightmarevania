@@ -136,7 +136,7 @@ void LevelOne::Load()
 
 	//GHOST
 	{
-		shared_ptr<Entity> ghost;
+		//shared_ptr<Entity> ghost;
 		ghost = makeEntity();
 		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0])); //TODO add enemy to tile map
 		auto AIcmp = ghost->addComponent<GhostAIComponent>();
@@ -157,14 +157,13 @@ void LevelOne::Load()
 		
 
 		shared_ptr<GhostFlyingAnimation> ghostFly = make_shared<GhostFlyingAnimation>();
+		ghostFly->addFrame(IntRect(71 * 5, 0, 71, 58));
 		ghostFly->addFrame(IntRect(71 * 6, 0, 71, 58));
 		
 
 		shared_ptr<GhostIdleAnimation> ghostIdle = make_shared<GhostIdleAnimation>();
-		for (int i = 0; i < 2; i++)
-		{
-			ghostIdle->addFrame(IntRect(71 * i, 0, 71, 58));
-		}
+		ghostIdle->addFrame(IntRect(71 * 0, 0, 71, 58));
+		ghostIdle->addFrame(IntRect(71 * 1, 0, 71, 58));
 
 		auto animations = ghost->addComponent<AnimationMachineComponent>();
 		animations->addAnimation("GhostIdle", ghostIdle);
@@ -175,24 +174,81 @@ void LevelOne::Load()
 
 	// Add physics colliders to level tiles.
 	{
+		vector<Vector2f> checkedTiles;
+		//vector<Vector2f>::iterator it;
+
 		auto walls = ls::findTiles(ls::WALL);
 		for (auto w : walls)
 		{
 			auto pos = ls::getTilePosition(w);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+			//int totalPhysBoundary = 0;
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::WALL || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+			}
 		}
 
 		auto floor = ls::findTiles(ls::FLOOR);
 		for (auto f : floor)
 		{
-			auto pos = ls::getTilePosition(f);
+			/*auto pos = ls::getTilePosition(f);
 			pos += Vector2f(30.0f, 30.0f); //offset to center
 			auto e = makeEntity();
 			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));*/
+
+			auto pos = ls::getTilePosition(f);
+			//int totalPhysBoundary = 0;
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::FLOOR || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+			}
 		}
 	}
 
@@ -260,6 +316,10 @@ void LevelOne::Load()
 
 void LevelOne::Update(const double& dt)
 {
+	if (ghost->GetCompatibleComponent<AISteeringComponent>()[0]->getPlayerDeath()) {
+		player->setDeath(true);
+	}
+
 
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
 		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
@@ -285,7 +345,7 @@ void LevelOne::Update(const double& dt)
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
 
-	if (ls::getTileAt(player->getPosition()) == ls::END) {
+	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
 		Engine::ChangeScene((Scene*)&levelTwo);
 	}
 

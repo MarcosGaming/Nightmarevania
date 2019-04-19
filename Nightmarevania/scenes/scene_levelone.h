@@ -15,11 +15,12 @@ public:
 	void Render() override;
 
 private:
-	sf::Vector2f screenSize;
-	sf::View followPlayer;
-	sf::Vector2f centrePoint;
+	Vector2f screenSize;
+	View followPlayer;
+	Vector2f centrePoint;
 	shared_ptr<Entity> door;
-	float leftBoundary = 640.0f;// 967.0f;
-	float rightBoundary = 12795.0f;
+	shared_ptr<Entity> ghost;
+	float leftBoundary = 640.0f;
+	float rightBoundary = 21795.0f;
 };
 

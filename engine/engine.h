@@ -57,7 +57,8 @@ public:
 	Engine() = delete;
 	static void Start(unsigned int width, unsigned int height, const std::string& gameName, Scene* scn);
 	static void ChangeScene(Scene*);
-	Scene * getActiveScene();
+	static void ReloadScene(Scene*);
+	static Scene * getActiveScene();
 	static sf::RenderWindow& GetWindow();
 	static sf::Vector2u getWindowSize();
 	static void setVsync(bool b);
