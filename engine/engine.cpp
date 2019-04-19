@@ -9,7 +9,6 @@
 #include "system_saving.h"
 #include <SFML/Graphics.hpp>
 #include <future>
-#include <iostream>
 #include <stdexcept>
 #include <memory>
 
@@ -31,10 +30,8 @@ uint8_t ftc = 0;
 
 void Loading_update(float dt, const Scene* const scn) 
 {
-	//  cout << "Eng: Loading Screen\n";
 	if (scn->isLoaded()) 
 	{
-		cout << "Eng: Exiting Loading Screen\n";
 		loading = false;
 	} else 
 	{
@@ -44,14 +41,13 @@ void Loading_update(float dt, const Scene* const scn)
 }
 void Loading_render() 
 {
-	// cout << "Eng: Loading Screen Render\n";
 	static CircleShape octagon(80, 8);
 	octagon.setOrigin(80, 80);
 	octagon.setRotation(loadingspinner);
 	octagon.setPosition(Vcast<float>(Engine::getWindowSize()) * .5f);
-	octagon.setFillColor(Color(255,255,255,min(255.f,40.f*loadingTime)));
+	octagon.setFillColor(Color(255,255,255,(Uint8)min(255.f,40.f*loadingTime)));
 	static Text t("Loading", *Resources::get<sf::Font>("Roboto-Regular.ttf"));
-	t.setFillColor(Color(255,255,255,min(255.f,40.f*loadingTime)));
+	t.setFillColor(Color(255,255,255,(Uint8)min(255.f,40.f*loadingTime)));
 	t.setPosition(Vcast<float>(Engine::getWindowSize()) * Vector2f(0.4f,0.3f));
 	Renderer::queue(&t);
 	Renderer::queue(&octagon);
@@ -224,18 +220,16 @@ void Engine::setVsync(bool b) { _window->setVerticalSyncEnabled(b); }
 
 void Engine::ChangeScene(Scene* s)
 {
-	cout << "Eng: changing scene: " << s << endl;
 	auto old = _activeScene;
 	_activeScene = s;
 
 	if (old != nullptr)
 	{
-		old->UnLoad(); // todo: Unload Async
+		old->UnLoad();
 	}
 
 	if (!s->isLoaded())
 	{
-		cout << "Eng: Entering Loading Screen\n";
 		loadingTime = 0;
 		_activeScene->LoadAsync();
 		loading = true;

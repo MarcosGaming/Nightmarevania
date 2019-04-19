@@ -27,8 +27,8 @@ private:
 	float _speed;
 
 public:
-	//Seek() = default;
 	Seek() = delete;
 	Seek(Entity* character, Entity* target, float speed) : _character(character), _target(target),  _speed(speed){};
+
 	SteeringOutput getSteering() const noexcept override;
 };

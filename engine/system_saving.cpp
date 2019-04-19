@@ -5,6 +5,7 @@
 #include "../lib_conversor/conversor.h"
 #include <fstream>
 
+// Settings saved
 static std::string levelSaved;
 static std::string musicSettingSaved;
 static std::string effectsSettingSaved;
@@ -13,9 +14,9 @@ static std::string fullscreenSettingSaved;
 static std::string borderlessSettingSaved;
 static std::vector<std::string> keysButtonsSaved;
 static std::vector<std::string> controllerButtonsSaved;
-
+// Save file
 static std::fstream saveFile;
-
+// Functions that is going to get which settings are set on the system before storing them in the file
 static void getSettingsFromSystem();
 
 void Saving::initialise()
@@ -24,7 +25,7 @@ void Saving::initialise()
 	std::string userpath = getenv("USERPROFILE");
 	saveFile.open(userpath + "/Documents/NightmarevaniaSave.txt", std::fstream::in);
 	// If the file is not empty 
-	if (saveFile.peek() != saveFile.eof())
+	if (saveFile.peek() != EOF)
 	{
 		int counter = 0;
 		std::string line;
@@ -163,8 +164,8 @@ void Saving::saveSettingsInFile()
 
 static void getSettingsFromSystem()
 {
-	// Set level safe to 0 if it is empty
-	if (levelSaved.empty() || levelSaved != "1" || levelSaved != "2" || levelSaved != "3")
+	// Set level safe to 0 if it is empty or if does not corresponds to a level
+	if (levelSaved.empty() || (levelSaved != "1" && levelSaved != "2" && levelSaved != "3" && levelSaved != "4"))
 	{
 		levelSaved = "0";
 	}
@@ -313,5 +314,4 @@ static void getSettingsFromSystem()
 	// Pause controller button to save
 	string = Controller::PauseButton;
 	controllerButtonsSaved.push_back(Conversor::ControllerButtonToString(*Controller::getActionControllerButton(string)));
-
 }

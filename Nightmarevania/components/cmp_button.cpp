@@ -7,6 +7,7 @@
 #include <system_controller.h>
 
 static float PressedCooldown = 0.5;
+
 // Basic button
 ButtonComponent::ButtonComponent(Entity* p) : _active(false), _controllerHovered(false), _controllerPressed(false), _canHoverActive(false), Component(p) { }
 
@@ -25,14 +26,16 @@ void ButtonComponent::setCanHoverActive(bool status) { _canHoverActive = status;
 void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonComponent>>& buttons, int& index, const double& dt)
 {
 	static float coolDown = 0.2f;
-	coolDown -= dt;
+	coolDown -= (float)dt;
 	if (sf::Joystick::isConnected(0) && !buttons.empty())
 	{
+		// Selection
 		if (sf::Joystick::isButtonPressed(0, 0) && PressedCooldown <= 0.0f)
 		{
 			buttons[index]->_controllerPressed = true;
 			PressedCooldown = 0.2f;
 		}
+		// Go down
 		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) > 70.0f && coolDown <= 0.0f)
 		{
 			buttons[index]->_controllerHovered = false;
@@ -44,6 +47,7 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 				index++;
 			}
 		}
+		// Go up
 		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Y) < -70.0f && coolDown <= 0.0f)
 		{
 			buttons[index]->_controllerHovered = false;
@@ -58,7 +62,7 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 		// If the index is less than 0 set it to be the last element in the vector
 		if (index < 0)
 		{
-			index = buttons.size() - 1;
+			index = (int)buttons.size() - 1;
 		}
 		// If the index is greater than the vector size then set it to be the first element in the vector
 		else if (index > buttons.size() - 1)
@@ -79,7 +83,7 @@ void ButtonComponent::update(double dt)
 	// Control button selection freezes the game causing delta time to increase too much and affecting button selection
 	if (dt < 0.1)
 	{
-		PressedCooldown -= dt;
+		PressedCooldown -= (float)dt;
 	}
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
@@ -437,6 +441,7 @@ void MusicsButtonComponent::update(double dt)
 	}
 
 }
+
 // Button that handles turning the effects on/off
 EffectsButtonComponent::EffectsButtonComponent(Entity* p) : SoundButtonComponent(p) { }
 
@@ -529,7 +534,7 @@ void ControlsButton::update(double dt)
 
 	auto sprite = _parent->get_components<SpriteComponent>()[0];
 	sf::Vector2f worldPos = Engine::GetWindow().mapPixelToCoords(sf::Mouse::getPosition(Engine::GetWindow()));
-	// In the first just set active to true with the purpose of allowing the sprite to change
+	// In the first pass just set active to true with the purpose of allowing the sprite to change
 	if (!_active && PressedCooldown <= 0.0f)
 	{
 		if (sprite->getSprite().getGlobalBounds().contains(worldPos))

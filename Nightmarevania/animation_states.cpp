@@ -1,11 +1,13 @@
 #include "animation_states.h"
 #include "components\cmp_player_physics.h"
 #include "components/cmp_player_combat.h"
-#include "maths.h"
-#include <SFML\Graphics.hpp>
-#include <system_sound.h>
+#include "components\cmp_enemy_ai.h"
+#include "components\cmp_enemy_physics .h"
 #include "components/cmp_ai_steering.h"
+#include <system_sound.h>
 
+
+// Player animations
 void IdleAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.3f);
@@ -529,6 +531,18 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 		_current_frame = 0;
 	}
 }
+void GetUpAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
+	// Animation changes when it finishes
+	if (_current_frame >= _frames.size())
+	{
+		auto animation = owner->get_components<AnimationMachineComponent>()[0];
+		animation->changeAnimation("Idle");
+		_current_frame = 0;
+	}
+}
+
 
 //Different runFrames for ghost
 void GhostAnimation::runFrames(Entity* owner, float waitTime)
@@ -585,4 +599,180 @@ void GhostFlyingAnimation::execute(Entity* owner, double dt) noexcept {
 	{
 		animation->changeAnimation("GhostIdle");
 	}
+}
+
+// Skeleton animations
+void SkeletonIdleAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.15f);
+	auto AI = owner->GetCompatibleComponent<SkeletonAIComponent>()[0];
+	auto bossAI = owner->get_components<BossAIComponent>();
+	auto physics = owner->get_components<EnemyPhysicsComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// Animation changes based on AI state
+	if (owner->isDead())
+	{
+		animation->changeAnimation("Death");
+	}
+	else if (AI->isAttacking())
+	{
+		animation->changeAnimation("Attack");
+	}
+	// Animation changes based on boss AI
+	if (!bossAI.empty())
+	{
+		if (bossAI[0]->isHurt())
+		{
+			animation->changeAnimation("Hurt");
+		}
+	}
+	// Animation changes based on movement
+	if (physics->canMove())
+	{
+		if (physics->isSlowMove())
+		{
+			animation->changeAnimation("WalkSlow");
+		}
+		else
+		{
+			animation->changeAnimation("WalkFast");
+		}
+	}
+}
+
+void SkeletonAttackAnimation::execute(Entity* owner, double dt) noexcept
+{
+	if (_current_frame == 0)
+	{
+		// Sound
+		Audio::playEffect("boss_attack_effect");
+	}
+	runFrames(owner, 0.08f);
+	auto AI = owner->GetCompatibleComponent<SkeletonAIComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// Animation changes based on AI state
+	if (!AI->isAttacking())
+	{
+		animation->changeAnimation("Idle");
+		_current_frame = 0;
+	}
+}
+
+void SkeletonSlowWalkAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.18f);
+	auto physics = owner->get_components<EnemyPhysicsComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// Animation changes based on movement
+	if (!physics->canMove())
+	{
+		animation->changeAnimation("Idle");
+	}
+	else if (!physics->isSlowMove())
+	{
+		animation->changeAnimation("WalkFast");
+	}
+}
+
+void SkeletonFastWalkAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.08f);
+	auto physics = owner->get_components<EnemyPhysicsComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// Animation changes based on movement
+	if (!physics->canMove())
+	{
+		animation->changeAnimation("Idle");
+	}
+	else if (physics->isSlowMove())
+	{
+		animation->changeAnimation("WalkSlow");
+	}
+}
+
+void SkeletonHurtAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
+	auto bossAI = owner->get_components<BossAIComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// Animation changes when it finishes and depends on the movement
+	if (_current_frame == 0)
+	{
+		bossAI->resetHurt();
+		animation->changeAnimation("Idle");
+	}
+}
+
+void SkeletonDeathAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.15f);
+	auto AI = owner->GetCompatibleComponent<SkeletonAIComponent>()[0];
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// When the death animation finishes, stop updating the boss
+	if (_current_frame >= _frames.size())
+	{
+		owner->setAlive(false);
+		owner->setDeath(false);
+	}
+}
+
+void SkeletonReviveAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	if (_current_frame >= _frames.size())
+	{
+		animation->changeAnimation("Idle");
+		_current_frame = 0;
+	}
+}
+
+
+// Portal open animation uses its own runframes
+void PortalOpenAnimation::runFrames(Entity* owner, float waitTime)
+{
+	if (_current_frame >= _frames.size())
+	{
+		return;
+	}
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+}
+void PortalOpenAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.15f);
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	if (_current_frame >= _frames.size())
+	{
+		animation->changeAnimation("Static");
+	}
+}
+
+// Portal static animation uses its own runframes
+void PortalStaticAnimation::runFrames(Entity* owner, float waitTime)
+{
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+	if (_current_frame >= _frames.size())
+	{
+		_current_frame = 0;
+	}
+}
+void PortalStaticAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.1f);
 }

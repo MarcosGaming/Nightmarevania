@@ -61,7 +61,6 @@ public:
 		EMPTY = ' ',
 		WALL = 'w',
 		FLOOR = 'f'
-
 	};
 
 	static Tile getTile(sf::Vector2ul);

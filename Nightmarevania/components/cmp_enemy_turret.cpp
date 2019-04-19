@@ -1,6 +1,6 @@
 #include "cmp_enemy_turret.h"
 #include "cmp_bullet.h"
-#include "cmp_hurt_player.h"
+#include "cmp_hurt.h"
 #include "engine.h"
 #include <SFML/Graphics/CircleShape.hpp>
 using namespace std;
@@ -8,14 +8,14 @@ using namespace sf;
 
 void EnemyTurretComponent::update(double dt) 
 {
-  _firetime -= dt;
+  _firetime -= (float)dt;
   if (_firetime <= 0.f) 
   {
     fire();
     _firetime = 1.f;
   }
   static float angle = 0.f;
-  angle += 1.f * dt;
+  angle += 1.f * (float)dt;
 
   _parent->setRotation(180.f + sin(angle) * 45.f);
 }
@@ -24,7 +24,7 @@ void EnemyTurretComponent::fire() const
 {
   auto bullet = _parent->scene->makeEntity();
   bullet->setPosition(_parent->getPosition());
-  bullet->addComponent<HurtComponent>();
+  bullet->addComponent<PlayerHurtComponent>();
   bullet->addComponent<BulletComponent>();
   auto s = bullet->addComponent<ShapeComponent>();
 

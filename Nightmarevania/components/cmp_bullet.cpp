@@ -4,7 +4,7 @@ using namespace sf;
 
 void BulletComponent::update(double dt) 
 {
-  _lifetime -= dt;
+  _lifetime -= (float)dt;
   if (_lifetime <= 0.f) 
   {
     _parent->setForDelete();

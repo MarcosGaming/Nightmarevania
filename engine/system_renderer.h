@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-//#include "cmp_sprite.h"
 
 namespace Renderer 
 {

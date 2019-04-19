@@ -41,16 +41,16 @@ PlayerCombatComponent::PlayerCombatComponent(Entity* p) : Component(p)
 void PlayerCombatComponent::update(double dt) 
 {
 	// Cooldown decreases with delta time
-	_hurtCooldown -= dt;
-	_defendingCooldown -= dt;
-	_circularAttackCooldown -= dt;
-	_upAttackCooldown -= dt;
-	_downAttackCooldown -= dt;
+	_hurtCooldown -= (float)dt;
+	_defendingCooldown -= (float)dt;
+	_circularAttackCooldown -= (float)dt;
+	_upAttackCooldown -= (float)dt;
+	_downAttackCooldown -= (float)dt;
 	// Attacking behaviour
 	if (Controller::isPressed(Controller::AttackButton) && !_defending &&!_hurt)
 	{
 		Controller::setAttackButtonReleased(false);
-		_attackDamage = 1;
+		_attackDamage = 2;
 		_attacking = true;
 		_basicAttack = true;
 		_circularAttackRight = false;
@@ -62,7 +62,7 @@ void PlayerCombatComponent::update(double dt)
 		{
 			if (Controller::isPressed(Controller::UpAttackButton) && _upAttackCooldown <= 0.0f)
 			{
-				_attackDamage = 2;
+				_attackDamage = 3;
 				_basicAttack = false;
 				_upAttack = true;
 				_upAttackCooldown = 3.0f;
@@ -87,7 +87,7 @@ void PlayerCombatComponent::update(double dt)
 		{
 			if (Controller::isPressed(Controller::DownAttackButton) && _downAttackCooldown <= 0.0f)
 			{
-				_attackDamage = 5;
+				_attackDamage = 10;
 				_basicAttack = false;
 				_downAttack = true;
 				_downAttackCooldown = 5.0f;
@@ -110,20 +110,20 @@ void PlayerCombatComponent::update(double dt)
 	{
 		Controller::setDefendButtonReleased(false);
 		_defending = true;
-		_defendingTime -= dt;
+		_defendingTime -= (float)dt;
 		if (_defendingTime <= 0)
 		{
-			_defendingCooldown = 2.0f;
-			_defendingTime = 3.0f;
+			_defendingCooldown = 3.0f;
+			_defendingTime = 4.0f;
 			_defending = false;
 		}
 	}
 	else if(Controller::isDefendButtonReleased() || _hurt)
 	{
-		if (_defendingTime != 3.0f)
+		if (_defendingTime != 4.0f)
 		{
-			_defendingCooldown = 2.0f;
-			_defendingTime = 3.0f;
+			_defendingCooldown = 3.0f;
+			_defendingTime = 4.0f;
 		}
 		_defending = false;
 	}
@@ -206,7 +206,7 @@ bool PlayerCombatComponent::isHurt() const { return _hurt; }
 void PlayerCombatComponent::resetHurt() { _hurt = false; }
 void PlayerCombatComponent::hurtPlayer(int damage)
 {
-	if (_hurtCooldown <= 0.0f)
+	if (_hurtCooldown <= 0.0f && !_defending)
 	{
 		Audio::playEffect("player_damage_effect");
 		_hurt = true;

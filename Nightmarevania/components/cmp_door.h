@@ -18,6 +18,8 @@ private:
 	sf::IntRect lockedImage;
 	sf::IntRect unlockedImage;
 
+	std::weak_ptr<Entity> _player;
+
 protected:
 	
 
@@ -35,5 +37,5 @@ public:
 	shared_ptr <sf::Texture> getTexture();
 	sf::IntRect getRect();
 	Vector2f getSize();
-	void setPlayer(shared_ptr<Entity> player);
+	void setPlayer(std::shared_ptr<Entity> player);
 };

@@ -8,6 +8,6 @@ w                    w
 w                    w
 w                    w
 w                    w
-w                    w
-w s                  w
+wf                  fw
+w  s              3  w
 ffffffffffffffffffffff

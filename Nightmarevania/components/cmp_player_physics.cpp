@@ -1,12 +1,17 @@
 #include "cmp_player_physics.h"
-#include "system_physics.h"
 #include "cmp_player_combat.h"
-#include <system_controller.h>
+#include "system_physics.h"
+#include "../game.h"
 #include <LevelSystem.h>
 #include <SFML/Window/Keyboard.hpp>
 #include <system_sound.h>
+<<<<<<< HEAD
 #include "engine.h"
 #include "../game.h"
+=======
+#include <system_controller.h>
+#include <engine.h>
+>>>>>>> development
 
 using namespace std;
 using namespace sf;
@@ -21,6 +26,7 @@ PlayerPhysicsComponent::PlayerPhysicsComponent(Entity* p, const Vector2f& size) 
 	_groundspeed = 30.f;
 	_grounded = false;
 	_secondJump = false;
+	_canMove = true;
 	_body->SetSleepingAllowed(false);
 	_body->SetFixedRotation(true);
 	//Bullet items have higher-res collision detection
@@ -33,22 +39,18 @@ void PlayerPhysicsComponent::update(double dt)
 
 	auto combat = _parent->get_components<PlayerCombatComponent>();
 
-	curScene = Engine::getActiveScene();
-	if (!_parent->isAlive()) {
-		_parent->setDeath(false);
-		//Engine::ChangeScene(&main_menu);
-		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0])); //debugging
-	}
-
-	//Teleport to start if we fall off map or if is not alive
-	if (pos.y > ls::getHeight() * ls::getTileSize() || !_parent->isAlive())
+	// This works as what sets the alive state of the character is the animation which is updated before this
+	if (!_parent->isAlive())
 	{
-		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-		_parent->setAlive(true);
-		_parent->setDeath(false);
-		if (!combat.empty())
+		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0])); //debugging
+		
+		if (_parent->scene == &levelOne || _parent->scene == &levelTwo)
 		{
-			combat[0]->resetHealth();
+			Engine::ChangeScene(&levelOutside);
+		}
+		else
+		{
+			Engine::ChangeScene(&levelSword);
 		}
 	}
 	// When the player is attacking the physics behave differently
@@ -96,7 +98,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else
 	{
-		if (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton))
+		if (_canMove && (Controller::isPressed(Controller::MoveRightButton) || Controller::isPressed(Controller::MoveLeftButton)))
 		{
 			// Moving Either Left or Right
 			if (Controller::isPressed(Controller::MoveRightButton))
@@ -118,20 +120,20 @@ void PlayerPhysicsComponent::update(double dt)
 
 		static bool impulseDown = false;
 		// Handle Jump
-		if (Controller::isPressed(Controller::JumpButton))
+		if (_canMove && Controller::isPressed(Controller::JumpButton))
 		{
 			_grounded = isGrounded();
 			if (_grounded)
 			{
 				setVelocity(Vector2f(getVelocity().x, 0.f));
 				teleport(Vector2f(pos.x, pos.y - 2.0f));
-				impulse(Vector2f(0, -6.8f));
+				impulse(Vector2f(0, -7.2f));
 				impulseDown = false;
 			}
 			// Only double jump once after releasing space
 			else if (Controller::isJumpButtonReleased() && !_secondJump)
 			{
-				impulse(Vector2f(0, -6.8f + _body->GetLinearVelocity().y));
+				impulse(Vector2f(0, -7.2f + _body->GetLinearVelocity().y));
 				_secondJump = true;
 				impulseDown = false;
 			}
@@ -164,12 +166,8 @@ void PlayerPhysicsComponent::update(double dt)
 		_secondJump = false;
 	}
 
-	// Death testing
-	if (Keyboard::isKeyPressed(Keyboard::U) && !combat[0]->isDefending())
-	{
-		combat[0]->hurtPlayer(1);
-	}
-	else if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2) {
+	// Death 
+	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2) {
 		_parent->setDeath(true);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air
@@ -216,4 +214,9 @@ bool PlayerPhysicsComponent::isGrounded() const
 bool PlayerPhysicsComponent::isSecondJump() const
 {
 	return _secondJump;
+}
+
+void PlayerPhysicsComponent::setCanMove(bool canMove)
+{
+	_canMove = canMove;
 }

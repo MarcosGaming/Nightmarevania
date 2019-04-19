@@ -6,12 +6,7 @@
 using namespace std;
 using namespace sf;
 
-sf::IntRect lockedImage;
-sf::IntRect unlockedImage;
-
-shared_ptr<Entity> _player = NULL;
-
-//constructor:
+// Constructor:
 DoorComponent::DoorComponent(Entity * p, bool isLocked, Vector2f position) : Component(p) {
 	lockedImage = sf::IntRect((0 * tileSize), (7 * tileSize), (3 * tileSize), (3 * tileSize));
 	unlockedImage = sf::IntRect((3 * tileSize), (7 * tileSize), (3 * tileSize), (3 * tileSize));
@@ -29,10 +24,12 @@ DoorComponent::DoorComponent(Entity * p, bool isLocked, Vector2f position) : Com
 }
 
 void DoorComponent::update(double dt) {
-	
-	if (_player != 0 && _player->GetCompatibleComponent<KeyComponent>().size() != 0) {
-		if (_player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) { //
-			_locked = false;
+	if (auto pl = _player.lock())
+	{
+		if (pl != 0 && pl->GetCompatibleComponent<KeyComponent>().size() != 0) {
+			if (pl->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
+				_locked = false;
+			}
 		}
 	}
 }
@@ -73,6 +70,6 @@ Vector2f DoorComponent::getSize() {
 	return doorSize;
 }
 
-void DoorComponent::setPlayer(shared_ptr<Entity> player) {
+void DoorComponent::setPlayer(std::shared_ptr<Entity> player) {
 	_player = player;
 }

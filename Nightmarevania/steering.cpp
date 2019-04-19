@@ -1,7 +1,6 @@
 #include "steering.h"
 
-using namespace sf;
-
+// Returns the direction and rotation that needs to be used for the movement
 SteeringOutput Seek::getSteering() const noexcept
 {
 	SteeringOutput steering;

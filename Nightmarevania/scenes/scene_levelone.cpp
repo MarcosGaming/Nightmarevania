@@ -5,14 +5,16 @@
 #include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
 #include "../game.h"
-#include <iostream>
-#include <LevelSystem.h>
-#include <system_controller.h>
-#include <system_resolution.h>
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_ai_steering.h"
+#include <iostream>
+#include <LevelSystem.h>
+#include <system_controller.h>
+#include <system_resolution.h>
+#include <system_sound.h>
+#include <system_saving.h>
 
 using namespace std;
 using namespace sf;
@@ -32,6 +34,10 @@ static int buttonsCurrentIndex;
 
 void LevelOne::Load()
 {
+	// Save this level as the last one played
+	Saving::saveLevel("1");
+	// Stop music from main menu
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -62,7 +68,7 @@ void LevelOne::Load()
 	spriteSheet = make_shared<Texture>();
 	spriteSheet->loadFromFile("res/img/adventurer.png");
 
-	// Player for levels 1 and 2
+	// Player
 	{
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
@@ -130,7 +136,7 @@ void LevelOne::Load()
 
 		//if (keyExists) {
 		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<KeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
 		}
 	}
 
@@ -146,7 +152,7 @@ void LevelOne::Load()
 		sprite->setTexure(ghostSprites);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 58));
 		sprite->getSprite().scale(sf::Vector2f(5.0f, 5.0f));
-		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height);
+		sprite->getSprite().setOrigin((float)sprite->getSprite().getTextureRect().width * 0.5f, (float)sprite->getSprite().getTextureRect().height);
 		auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 190.0f, 1000.0f);
 		
 		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();
@@ -322,32 +328,46 @@ void LevelOne::Update(const double& dt)
 
 
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
-		player->GetCompatibleComponent<KeyComponent>()[0]->setHeld(true);
+		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
 	}
 
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
+		_paused = true;
+		// Pause music
+		Audio::pauseMusic("level_1_music");
+		Audio::pauseMusic("mystic_music");
 		// Enable cursor when game is paused
 		Engine::GetWindow().setMouseCursorVisible(true);
-		_paused = true;
 	}
 	if (_paused)
 	{
 		ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
+	}
+	else
+	{
+		Audio::playMusic("level_1_music");
+		// Disable cursor
+		Engine::GetWindow().setMouseCursorVisible(false);
 	}
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
 		centrePoint.x = player->getPosition().x;
 	}
 
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, GAMEX, GAMEY));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
 
 	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
 		Engine::ChangeScene((Scene*)&levelTwo);
 	}
+
+	// Move pause menu
+	pause_background->setPosition(Vector2f(followPlayer.getCenter().x, followPlayer.getCenter().y));
+	resume_btn->setPosition(Vector2f((followPlayer.getCenter().x) - (resume_tex->getSize().x / 2.0f) - 90.0f, followPlayer.getCenter().y + 50.0f));
+	returnToMenu_btn->setPosition(Vector2f(((followPlayer.getCenter().x)) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, followPlayer.getCenter().y + 150.0f));
 
 	Scene::Update(dt);
 }
@@ -371,6 +391,8 @@ void LevelOne::Render()
 
 void LevelOne::UnLoad()
 {
+	Engine::GetWindow().setView(sf::View(sf::FloatRect(0.0f, 0.0f, GAMEX, GAMEY)));
+	Audio::stopMusic("level_1_music");
 	buttonsForController.clear();
 	player.reset();
 	ls::unload();
