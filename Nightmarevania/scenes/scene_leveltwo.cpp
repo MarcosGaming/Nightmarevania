@@ -185,11 +185,13 @@ void LevelTwo::Load()
 			revive->addFrame(IntRect(33 * i, 37 * 3, 33, 37));
 		}
 
-		//auto waypointsA = ls::findTiles(ls::WAYPOINTA);
-		//auto waypointsB = ls::findTiles(ls::WAYPOINTB);
-		//int i = 0;
+		
+		int i = 0;
 		for (auto s : skeletons)
 		{
+			auto waypointsA = ls::findTiles(ls::WAYPOINTA);
+			auto waypointsB = ls::findTiles(ls::WAYPOINTB);
+
 			skeleton_soldier = makeEntity();
 			auto position = ls::getTilePosition(s);
 			skeleton_soldier->setPosition(position);
@@ -212,12 +214,13 @@ void LevelTwo::Load()
 			// AI component
 			auto AI = skeleton_soldier->addComponent<SkeletonAIComponent>();
 			// Patrol component
-			auto patrol = skeleton_soldier->addComponent<AIPatrolComponent>(position, position + sf::Vector2f(500.0f, 0.0f));
-			//auto patrol = skeleton_soldier->addComponent<AIPatrolComponent>(waypointsA[i], waypointsB[i]);
+			//auto patrol = skeleton_soldier->addComponent<AIPatrolComponent>(position, position + sf::Vector2f(500.0f, 0.0f));
+			auto patrol = skeleton_soldier->addComponent<AIPatrolComponent>(ls::getTilePosition(waypointsA[i]), ls::getTilePosition(waypointsB[i]));
 			// State machine component
 			auto sm = skeleton_soldier->addComponent<StateMachineComponent>();
 			sm->addState("Stationary", make_shared<StationaryState>());
-			sm->addState("SeekSlow", make_shared<SeekLimitsState>(skeleton_soldier, player, position, position + sf::Vector2f(500.0f, 0.0f)));
+			//sm->addState("SeekSlow", make_shared<SeekLimitsState>(skeleton_soldier, player, position, position + sf::Vector2f(500.0f, 0.0f)));
+			sm->addState("SeekSlow", make_shared<SeekLimitsState>(skeleton_soldier, player, ls::getTilePosition(waypointsA[i]), ls::getTilePosition(waypointsB[i])));
 			sm->addState("Patrol", make_shared<PatrolState>());
 			sm->addState("Death", make_shared<FakeDeathState>());
 			sm->addState("Attack", make_shared<AttackState>());
@@ -241,7 +244,7 @@ void LevelTwo::Load()
 			skeleton_soldier->addComponent<PlayerKillComponent>();
 
 			skeletonSoldiers.push_back(skeleton_soldier);
-			//i++;
+			i++;
 		}
 	}
 	
@@ -436,14 +439,14 @@ void LevelTwo::Update(const double& dt)
 	followPlayer.setCenter(centrePoint);
 
 	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
-		Engine::ChangeScene((Scene*)&levelTwo);
+		Engine::ChangeScene((Scene*)&levelSword);
 	}
 
 	// Player death
-	if (!player->isAlive() && player->isDead())
+	/*if (!player->isAlive() && player->isDead())
 	{
 		Engine::ChangeScene(&levelTwo);
-	}
+	}*/
 
 	Scene::Update(dt);
 }

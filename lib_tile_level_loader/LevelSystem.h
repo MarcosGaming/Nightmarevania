@@ -33,6 +33,9 @@ public:
 		CORNER4 = '=',
 		PLATFORM = 'p',*/
 
+		WAYPOINTA = 'a',
+		WAYPOINTB = 'b',
+
 		SPIKES1 = '^',
 		SPIKES2 = 'V',
 		SPIKES3 = 'v',

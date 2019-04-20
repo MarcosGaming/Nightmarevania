@@ -62,7 +62,8 @@ std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 	{BG17, sf::IntRect((9 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
 	{BG18, sf::IntRect((9 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},*/
 
-	
+	{WAYPOINTA, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{WAYPOINTB, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 
 	{DOOR, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 	{KEY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
