@@ -19,32 +19,30 @@ public:
 
 	enum TILES
 	{
-		BG1 = 'r',
-		BG2 = 't',
-		BG3 = 'y',
-		BG4 = 'u',
-		BG5 = 'i',
-		BG6 = 'o',
-		BG7 = 'p',
-		BG8 = '[',
-		BG9 = ']',
-		BG10 = 'd',
-		BG11 = 'v',
-		BG12 = 'g',
-		BG13 = 'h',
-		BG14 = 'j',
-		BG15 = 'k',
-		BG16 = 'l',
-		BG17 = ';',
-		BG18 = '#',
+		/*WALL1 = '1',
+		WALL2 = '2',
+		WALL3 = '3',
+		WALL4 = '4',
+		WALL5 = '5',
+		WALL6 = '6',
+		WALL7 = '7',
+		WALL8 = '8',
+		CORNER1 = '9',
+		CORNER2 = '0',
+		CORNER3 = '-',
+		CORNER4 = '=',
+		PLATFORM = 'p',*/
 
-		SPIKES1 = '!',
-		SPIKES2 = '$',
-		DOOR = '1',
-		KEY = '2',
-		ENEMY = '3',
+		SPIKES1 = '^',
+		SPIKES2 = 'V',
+		SPIKES3 = 'v',
+		SPIKES4 = '>',
+		SPIKES5 = '<',
+		DOOR = 'd',
+		KEY = 'k',
+		ENEMY = 'e',
 
-		TORCHa = 'z', //top
+		/*TORCHa = 'z', //top
 		TORCHb = 'x', //middle
 		TORCHc = 'c', //bottom
 
@@ -54,9 +52,9 @@ public:
 
 		COLUMN2a = ',', //top
 		COLUMN2b = '.', //middle
-		COLUMN2c = '/', //bottom
+		COLUMN2c = '/', //bottom*/
 
-		END = 'e',
+		END = '+',
 		START = 's',
 		EMPTY = ' ',
 		WALL = 'w',

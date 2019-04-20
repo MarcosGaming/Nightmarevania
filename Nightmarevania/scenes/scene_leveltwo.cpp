@@ -284,15 +284,8 @@ void LevelTwo::Load()
 
 void LevelTwo::Update(const double& dt)
 {
-
-	//sf::Vector2f size = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
-		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
-	}
-	
-
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
 		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
 	}
 
@@ -334,7 +327,7 @@ void LevelTwo::Update(const double& dt)
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
 
-	if (ls::getTileAt(player->getPosition()) == ls::END) {
+	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
 		Engine::ChangeScene((Scene*)&levelTwo);
 	}
 
