@@ -62,6 +62,7 @@ void SeekFastState::execute(Entity* owner, double dt) noexcept
 
 SeekLimitsState::SeekLimitsState(std::shared_ptr<Entity> owner, std::shared_ptr<Entity> player, sf::Vector2f pointA, sf::Vector2f pointB) 
 	: _steering(owner.get(), player.get(), 1.0f), _positionA(pointA), _positionB(pointB) {}
+
 void SeekLimitsState::execute(Entity* owner, double dt) noexcept
 {
 	// Physics component

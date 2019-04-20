@@ -64,7 +64,6 @@ void Entity::setVisible(bool _visible) { Entity::_visible = _visible; }
 bool Entity::isFacingRight() const { return _facingRight; }
 void Entity::setFacingRight(bool _facingRight) { Entity::_facingRight = _facingRight; }
 
-
 Entity::~Entity() 
 {
 	// Components can inter-depend on each other, so deleting them may take multiple passes. We Keep deleting components until we can't delete any more

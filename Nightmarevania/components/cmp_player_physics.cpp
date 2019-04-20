@@ -35,7 +35,7 @@ void PlayerPhysicsComponent::update(double dt)
 	auto combat = _parent->get_components<PlayerCombatComponent>();
 
 	// This works as what sets the alive state of the character is the animation which is updated before this
-	if (!_parent->isAlive())
+	/*if (!_parent->isAlive())
 	{
 		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0])); //debugging
 		
@@ -49,7 +49,7 @@ void PlayerPhysicsComponent::update(double dt)
 			Engine::ChangeScene(&levelSword);
 			return;
 		}
-	}
+	}*/
 
 
 	// When the player is attacking the physics behave differently
@@ -166,7 +166,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 
 	// Death 
-	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2) {
+	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2 || ls::getTileAt(pos) == ls::SPIKES3 || ls::getTileAt(pos) == ls::SPIKES4 || ls::getTileAt(pos) == ls::SPIKES5) {
 		_parent->setDeath(true);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air
