@@ -51,6 +51,7 @@ void PlayerPhysicsComponent::update(double dt)
 		}
 	}
 
+
 	// When the player is attacking the physics behave differently
 	if (!combat.empty() && combat[0]->isAttacking())
 	{

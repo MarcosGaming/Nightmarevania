@@ -74,10 +74,6 @@ DecisionTreeComponent::DecisionTreeComponent(Entity* p, std::shared_ptr<Decision
 void DecisionTreeComponent::update(double dt)
 {
 	_waitBeforeNextDecision -= (float)dt;
-	if (_parent->isDead())
-	{
-		_waitBeforeNextDecision = 0.0f;
-	}
 	if(_waitBeforeNextDecision <= 0.0f)
 	{
 		_decisionTree->makeDecision(_parent);

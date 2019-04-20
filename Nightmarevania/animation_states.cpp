@@ -522,13 +522,9 @@ void DeathAnimationFall::execute(Entity* owner, double dt) noexcept
 void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.2f);
-	// Animation changes when it finishes
 	if (_current_frame >= _frames.size())
 	{
 		owner->setAlive(false);
-		auto animation = owner->get_components<AnimationMachineComponent>()[0];
-		animation->changeAnimation("Idle");
-		_current_frame = 0;
 	}
 }
 void GetUpAnimation::execute(Entity* owner, double dt) noexcept
@@ -642,7 +638,7 @@ void SkeletonIdleAnimation::execute(Entity* owner, double dt) noexcept
 
 void SkeletonAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
-	if (_current_frame == 0)
+	if (_current_frame == _soundFrame)
 	{
 		// Sound
 		Audio::playEffect("boss_attack_effect");
@@ -706,8 +702,6 @@ void SkeletonHurtAnimation::execute(Entity* owner, double dt) noexcept
 void SkeletonDeathAnimation::execute(Entity* owner, double dt) noexcept
 {
 	runFrames(owner, 0.15f);
-	auto AI = owner->GetCompatibleComponent<SkeletonAIComponent>()[0];
-	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// When the death animation finishes, stop updating the boss
 	if (_current_frame >= _frames.size())
 	{
@@ -715,6 +709,19 @@ void SkeletonDeathAnimation::execute(Entity* owner, double dt) noexcept
 		owner->setDeath(false);
 	}
 }
+
+void SkeletonFakeDeathAnimation::execute(Entity* owner, double dt) noexcept
+{
+	runFrames(owner, 0.15f);
+	auto animation = owner->get_components<AnimationMachineComponent>()[0];
+	// When the death animation finishes, stop updating the boss
+	if (!owner->isDead())
+	{
+		animation->changeAnimation("Revive");
+		_current_frame = 0;
+	}
+}
+
 
 void SkeletonReviveAnimation::execute(Entity* owner, double dt) noexcept
 {

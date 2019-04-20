@@ -30,6 +30,25 @@ public:
 	void execute(Entity*, double) noexcept override;
 };
 
+class SeekLimitsState : public State
+{
+private:
+	Seek _steering;
+	sf::Vector2f _positionA;
+	sf::Vector2f _positionB;
+
+public:
+	SeekLimitsState(std::shared_ptr<Entity>, std::shared_ptr<Entity>, sf::Vector2f, sf::Vector2f);
+	void execute(Entity*, double) noexcept override;
+};
+
+class PatrolState : public State
+{
+public:
+	PatrolState() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
 class AttackState : public State
 {
 public:
@@ -41,6 +60,13 @@ class DeathState : public State
 {
 public:
 	DeathState() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+class FakeDeathState : public State
+{
+public:
+	FakeDeathState() = default;
 	void execute(Entity*, double) noexcept override;
 };
 

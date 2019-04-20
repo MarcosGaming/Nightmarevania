@@ -157,9 +157,13 @@ public:
 
 class SkeletonAttackAnimation : public Animation
 {
+private:
+	int _soundFrame;
 public:
-	SkeletonAttackAnimation() = default;
+	SkeletonAttackAnimation() : _soundFrame(0) {};
 	void execute(Entity*, double) noexcept override;
+
+	void setSoundFrame(int frame) { _soundFrame = frame; }
 };
 
 class SkeletonSlowWalkAnimation : public Animation
@@ -187,6 +191,13 @@ class SkeletonDeathAnimation : public DeathAnimation
 {
 public:
 	SkeletonDeathAnimation() = default;
+	void execute(Entity*, double) noexcept override;
+};
+
+class SkeletonFakeDeathAnimation : public DeathAnimation
+{
+public:
+	SkeletonFakeDeathAnimation() = default;
 	void execute(Entity*, double) noexcept override;
 };
 

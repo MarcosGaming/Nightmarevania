@@ -28,3 +28,15 @@ public:
 	void render() override {}
 };
 
+class PlayerKillComponent : public Component
+{
+protected:
+	std::weak_ptr<Entity> _player;
+
+public:
+	PlayerKillComponent() = delete;
+	explicit PlayerKillComponent(Entity* p);
+
+	void update(double dt) override;
+	void render() override {}
+};

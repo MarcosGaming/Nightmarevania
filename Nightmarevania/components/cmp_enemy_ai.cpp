@@ -6,17 +6,13 @@
 static float hurtCoolDown = 0.2f;
 
 // Base skeleton AI component
-SkeletonAIComponent::SkeletonAIComponent(Entity* p) : _attacking(false), _death(false), Component(p) {}
+SkeletonAIComponent::SkeletonAIComponent(Entity* p) : _attacking(false), Component(p) {}
 
 void SkeletonAIComponent::update(double dt) {}
 void SkeletonAIComponent::render() {}
 
 bool SkeletonAIComponent::isAttacking() const { return _attacking; }
 void SkeletonAIComponent::setAttacking(bool attacking) { _attacking = attacking; }
-
-bool SkeletonAIComponent::isDeath() const { return _death; }
-void SkeletonAIComponent::setDeath(bool death) { _death = death; }
-
 
 // The boss AI component is going to add a healthbar to the skeleton
 BossAIComponent::BossAIComponent(Entity* p) : _healthTaken(0), _maxHealth(100), _hurt(false), _isIdle(false), SkeletonAIComponent(p)
@@ -32,7 +28,7 @@ void BossAIComponent::update(double dt)
 	// Hurt cooldown needed to give some time between hits
 	hurtCoolDown -= (float)dt;
 	// Dies
-	if(_death)
+	if(_parent->isDead())
 	{
 		_hurt = false;
 	}

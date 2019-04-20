@@ -1,6 +1,7 @@
 #pragma once
 
 #include <engine.h>
+#include <math.h>
 
 struct SteeringOutput
 {
@@ -29,6 +30,24 @@ private:
 public:
 	Seek() = delete;
 	Seek(Entity* character, Entity* target, float speed) : _character(character), _target(target),  _speed(speed){};
+
+	SteeringOutput getSteering() const noexcept override;
+};
+
+class Patrol : public SteeringBehaviour
+{
+private:
+	Entity * _character;
+	sf::Vector2f _positionA;
+	sf::Vector2f _positionB;
+
+	bool _wasLastPositionA;
+
+public:
+	Patrol() = delete;
+	explicit Patrol(Entity* character, sf::Vector2f pointA, sf::Vector2f pointB) : _character(character), _positionA(pointA), _positionB(pointB), _wasLastPositionA(true) {};
+
+	void setWasLastPositionA(const bool);
 
 	SteeringOutput getSteering() const noexcept override;
 };
