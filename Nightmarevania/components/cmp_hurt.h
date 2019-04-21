@@ -32,6 +32,7 @@ class PlayerKillComponent : public Component
 {
 protected:
 	std::weak_ptr<Entity> _player;
+	float _attackDelay;
 
 public:
 	PlayerKillComponent() = delete;

@@ -163,7 +163,6 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize)
 	_width = w;
 	_height = h;
 	std::copy(temp_tiles.begin(), temp_tiles.end(), &_tiles[0]);
-	cout << "Level " << path << " Loaded. " << w << "x" << h << std::endl;
 	buildSprites();
 }
 
@@ -275,8 +274,6 @@ void LevelSystem::buildSprites(bool optimise)
 		s->setTextureRect(t.i);
 		_sprites.push_back(move(s));
 	}
-
-	cout << "Level with " << (_width * _height) << " Tiles, With " << nonempty << " Not Empty, using: " << _sprites.size() << " Sprites\n";
 }
 
 void LevelSystem::render(RenderWindow& window)
@@ -365,7 +362,6 @@ void LevelSystem::setOffset(const Vector2f& _offset)
 
 void LevelSystem::unload()
 {
-	cout << "LevelSystem unloading\n";
 	_sprites.clear();
 	_tiles.reset();
 	_width = 0;

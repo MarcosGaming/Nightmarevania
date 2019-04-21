@@ -49,9 +49,7 @@ void LevelSword::Load()
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
-	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
-	spriteSheet = make_shared<Texture>();
-	spriteSheet->loadFromFile("res/img/adventurer.png");
+	playerAnimations->loadFromFile("res/img/adventurer.png");
 
 	// Door
 	if (ls::doesTileExist(ls::DOOR))
@@ -71,7 +69,7 @@ void LevelSword::Load()
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -255,7 +253,7 @@ void LevelSword::Load()
 	// Short dialogue dialogue
 	{
 		short_dialogue = makeEntity();
-		short_dialogue->setAlive(true);
+		short_dialogue->setUpdatable(true);
 		// Dialogue text component
 		auto text = short_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Mysterious voice: Ahead awaits you the final challenge Serah. Grab the sword and reclaim\nthe strength of your ancestors, you will need it to defeat Erebus.");

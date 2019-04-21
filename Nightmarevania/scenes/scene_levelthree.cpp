@@ -18,6 +18,7 @@
 #include <system_resolution.h>
 #include <system_sound.h>
 #include <system_saving.h>
+#include <system_physics.h>
 #include <conversor.h>
 
 using namespace std;
@@ -48,6 +49,8 @@ static bool begin_fight_dialogue_musicOn;
 
 void LevelThree::Load()
 {
+	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
+	Physics::initialise();
 	// Save this level as the last one played
 	Saving::saveLevel("4");
 	// Stops music from main menu
@@ -83,7 +86,6 @@ void LevelThree::Load()
 		player = makeEntity();
 		player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 		player->addTag("Player");
-		player->GetCompatibleComponent<PlayerPhysicsComponent>()[0]->setRestitution(0.0f);
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
 		sprite->setTexure(playerAnimations);
@@ -371,7 +373,7 @@ void LevelThree::Load()
 		auto physics = boss->addComponent<EnemyPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width *0.5f, sprite->getSprite().getTextureRect().height * 2.3f));
 		physics->setRestitution(0.0f);
 		// Boss is not updatec until the dialogues have finished
-		boss->setAlive(false);
+		boss->setUpdatable(false);
 		boss->setDeath(true);
 	}
 
@@ -608,7 +610,7 @@ void LevelThree::Load()
 	{
 		begin_fight_dialogue = makeEntity();
 		begin_fight_dialogue->addTag("BeginBattleText");
-		begin_fight_dialogue->setAlive(false);
+		begin_fight_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = begin_fight_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Erebus: Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
@@ -617,7 +619,7 @@ void LevelThree::Load()
 	// End fight dialogue
 	{
 		end_fight_dialogue = makeEntity();
-		end_fight_dialogue->setAlive(false);
+		end_fight_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = end_fight_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Erebus: How... How can this be? I have been defeated by you? Next time...\nNext time I will make sure to end with your lineage once and for all.");
@@ -649,9 +651,15 @@ void LevelThree::Update(const double& dt)
 		// Disable cursor
 		Engine::GetWindow().setMouseCursorVisible(false);
 	}
-	if (!boss->isAlive() && !begin_fight_dialogue->isAlive() && !sword_dialogue->isAlive())
+	// Boss death starts dialogue
+	if (!boss->isUpdatable() && !begin_fight_dialogue->isUpdatable() && !sword_dialogue->isUpdatable())
 	{
-		end_fight_dialogue->setAlive(true);
+		end_fight_dialogue->setUpdatable(true);
+	}
+	// Player death
+	if (!player->isUpdatable() && player->isDead())
+	{
+		Engine::ChangeScene(&levelThree);
 	}
 	Scene::Update(dt);
 }

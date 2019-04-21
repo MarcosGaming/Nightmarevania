@@ -15,6 +15,7 @@
 #include <system_resolution.h>
 #include <system_sound.h>
 #include <system_saving.h>
+#include <system_physics.h>
 
 using namespace std;
 using namespace sf;
@@ -34,6 +35,8 @@ static int buttonsCurrentIndex;
 
 void LevelOne::Load()
 {
+	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
+	Physics::initialise();
 	// Save this level as the last one played
 	Saving::saveLevel("1");
 	// Stop music from main menu
@@ -65,8 +68,6 @@ void LevelOne::Load()
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
-	spriteSheet = make_shared<Texture>();
-	spriteSheet->loadFromFile("res/img/adventurer.png");
 
 	// Player
 	{
@@ -75,7 +76,7 @@ void LevelOne::Load()
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -356,8 +357,14 @@ void LevelOne::Update(const double& dt)
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
 
-	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
-		Engine::ChangeScene((Scene*)&levelTwo);
+
+	// Player death
+	if (!player->isUpdatable() && player->isDead())
+	{
+		Engine::ChangeScene(&levelOne);
+	}
+	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
+		Engine::ChangeScene(&levelTwo);
 	}
 
 	// Move pause menu

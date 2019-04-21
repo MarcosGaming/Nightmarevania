@@ -25,7 +25,7 @@ void EndingScene::Load()
 	{
 		the_end_dialogue = makeEntity();
 		the_end_dialogue->addTag("TheEnd");
-		the_end_dialogue->setAlive(false);
+		the_end_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = the_end_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("The End ?");

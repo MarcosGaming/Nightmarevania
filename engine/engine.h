@@ -32,10 +32,8 @@ public:
 	EntityManager ents;
 	EntityManager pausedEnts;
 
-	//static std::shared_ptr<Entity> player;
 	std::shared_ptr<Entity> player;
-	std::shared_ptr<sf::Texture> playerAnimations;
-	std::shared_ptr<Texture> spriteSheet;
+	std::shared_ptr<Texture> playerAnimations;
 	std::shared_ptr<Texture> combatIcons;
 
 protected:
@@ -46,9 +44,6 @@ private:
 	mutable bool _loaded;
 	mutable std::future<void> _loaded_future;
 	mutable std::mutex _loaded_mtx;
-
-
-	
 };
 
 class Engine 

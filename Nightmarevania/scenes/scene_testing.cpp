@@ -292,7 +292,7 @@ void TestingScene::Update(const double& dt)
 		Audio::playMusic("level_3_music");
 	}
 	// Player death
-	if (!player->isAlive() && player->isDead())
+	if (!player->isUpdatable() && player->isDead())
 	{
 		Engine::ChangeScene(&levelOne);
 	}

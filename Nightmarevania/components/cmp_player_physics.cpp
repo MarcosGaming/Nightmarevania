@@ -34,24 +34,6 @@ void PlayerPhysicsComponent::update(double dt)
 
 	auto combat = _parent->get_components<PlayerCombatComponent>();
 
-	// This works as what sets the alive state of the character is the animation which is updated before this
-	/*if (!_parent->isAlive())
-	{
-		teleport(ls::getTilePosition(ls::findTiles(ls::START)[0])); //debugging
-		
-		if (_parent->scene == &levelOne || _parent->scene == &levelTwo)
-		{
-			Engine::ChangeScene(&levelOutside);
-			return;
-		}
-		else
-		{
-			Engine::ChangeScene(&levelSword);
-			return;
-		}
-	}*/
-
-
 	// When the player is attacking the physics behave differently
 	if (!combat.empty() && combat[0]->isAttacking())
 	{
@@ -125,7 +107,6 @@ void PlayerPhysicsComponent::update(double dt)
 			if (_grounded)
 			{
 				setVelocity(Vector2f(getVelocity().x, 0.f));
-				//teleport(Vector2f(pos.x, pos.y - 2.0f));
 				impulse(Vector2f(0, -7.2f));
 				impulseDown = false;
 			}
@@ -160,7 +141,7 @@ void PlayerPhysicsComponent::update(double dt)
 	}
 	else
 	{
-		setFriction(0.1f);
+		setFriction(0.2f);
 		Controller::setJumpButtonReleased(false);
 		_secondJump = false;
 	}
@@ -173,12 +154,10 @@ void PlayerPhysicsComponent::update(double dt)
 	if (_parent->isDead() && isGrounded())
 	{
 		setVelocity(Vector2f(0.0f, 0.0f));
-		//teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 	}
 	else if (_parent->isDead() && !isGrounded())
 	{
 		setVelocity(Vector2f(0.0f, getVelocity().y));
-		//teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
 	}
 
 	PhysicsComponent::update(dt);

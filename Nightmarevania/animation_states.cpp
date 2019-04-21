@@ -15,11 +15,11 @@ void IdleAnimation::execute(Entity* owner, double dt) noexcept
 	auto combat = owner->get_components<PlayerCombatComponent>();
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// Animation changes based on the character movement
-	if (std::abs(movement->getVelocity().x) > 0.1f)
+	if (std::abs(movement->getVelocity().x) > 5.0f)
 	{
 		animation->changeAnimation("Run");
-	} else
-	if (movement->getVelocity().y > 0.1f)
+	} 
+	else if (movement->getVelocity().y > 0.1f)
 	{
 		animation->changeAnimation("Jump");
 	}
@@ -27,10 +27,6 @@ void IdleAnimation::execute(Entity* owner, double dt) noexcept
 	{
 		animation->changeAnimation("Fall");
 	}
-	/*else if (std::abs(movement->getVelocity().x) > 0.1f)
-	{
-		animation->changeAnimation("Run");
-	}*/
 	// Animation changes based on the combat
 	if (!combat.empty())
 	{
@@ -69,7 +65,7 @@ void RunAnimation::execute(Entity* owner, double dt) noexcept
 	auto combat = owner->get_components<PlayerCombatComponent>();
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];
 	// Animation changes based on the character movement
-	if (std::abs(movement->getVelocity().x) < 0.1f)
+	if (std::abs(movement->getVelocity().x) < 5.0f)
 	{
 		animation->changeAnimation("Idle");
 	}
@@ -524,7 +520,7 @@ void DeathAnimationGround::execute(Entity* owner, double dt) noexcept
 	runFrames(owner, 0.2f);
 	if (_current_frame >= _frames.size())
 	{
-		owner->setAlive(false);
+		owner->setUpdatable(false);
 	}
 }
 void GetUpAnimation::execute(Entity* owner, double dt) noexcept
@@ -636,6 +632,35 @@ void SkeletonIdleAnimation::execute(Entity* owner, double dt) noexcept
 	}
 }
 
+void SkeletonAttackAnimation::runFrames(Entity* owner, float waitTime)
+{
+	auto sprite = owner->get_components<SpriteComponent>()[0];
+	// Set the frame
+	sprite->getSprite().setTextureRect(_frames[_current_frame]);
+	// Set in which direction the sprite should be facing
+	auto direction = normalize(owner->scene->ents.find("Player")[0]->getPosition() - owner->getPosition());
+	if (direction.x > 0.1f && !owner->isFacingRight())
+	{
+		sprite->getSprite().scale(-1.0f, 1.0f);
+		owner->setFacingRight(true);
+	}
+	else if (direction.x < -0.1f && owner->isFacingRight())
+	{
+		sprite->getSprite().scale(-1.0f, 1.0f);
+		owner->setFacingRight(false);
+	}
+	// Change frame
+	if (_clock.getElapsedTime().asSeconds() > waitTime)
+	{
+		_current_frame++;
+		_clock.restart();
+	}
+	if (_current_frame >= _frames.size())
+	{
+		_current_frame = 0;
+	}
+}
+
 void SkeletonAttackAnimation::execute(Entity* owner, double dt) noexcept
 {
 	if (_current_frame == _soundFrame)
@@ -705,7 +730,7 @@ void SkeletonDeathAnimation::execute(Entity* owner, double dt) noexcept
 	// When the death animation finishes, stop updating the boss
 	if (_current_frame >= _frames.size())
 	{
-		owner->setAlive(false);
+		owner->setUpdatable(false);
 		owner->setDeath(false);
 	}
 }

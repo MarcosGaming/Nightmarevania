@@ -71,10 +71,10 @@ void SeekLimitsState::execute(Entity* owner, double dt) noexcept
 	physics->setCanMove(true);
 	physics->setSlow(true);
 	// The direction depends on wheter the next position is a valid one or not
-	auto nextPositionX = owner->getPosition().x + (50.0f * output.direction.x);
+	auto nextPositionX = owner->getPosition().x + (10.0f * output.direction.x);
 	if (nextPositionX < _positionA.x || nextPositionX > _positionB.x)
 	{
-		physics->setMoveDirection(Vector2f(0.0f,0.0f));
+		physics->setCanMove(false);
 	}
 	else
 	{

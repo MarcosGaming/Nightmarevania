@@ -48,7 +48,7 @@ protected:
 	sf::Vector2f _position;
 	float _rotation;
 	bool _death;		// death without stopping the updates
-	bool _alive;		// should be updated
+	bool _updatable;		// should be updated
 	bool _visible;		// should be rendered
 	bool _fordeletion;	// should be deleted
 	bool _facingRight;	// whether the entity is facing right or not
@@ -79,8 +79,8 @@ public:
 	float getRotation() const;
 	void setRotation(float _rotation);
 
-	bool isAlive() const;
-	void setAlive(bool _alive);
+	bool isUpdatable() const;
+	void setUpdatable(bool _alive);
 
 	bool isVisible() const;
 	void setVisible(bool _visible);

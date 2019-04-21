@@ -34,5 +34,7 @@ public:
   void setSlow(bool);
   bool isSlowMove() const;
 
-  void setMoveDirection(sf::Vector2f);
+  void setMoveDirection(const sf::Vector2f&);
+
+  void setMaxSlowVelocity(sf::Vector2f);
 };

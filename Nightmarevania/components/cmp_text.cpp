@@ -111,7 +111,7 @@ void DialogueBoxComponent::serahGetUpDialogueUpdate()
 	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
 	if (auto pl = player.lock())
 	{
-		pl->setAlive(false);
+		pl->setUpdatable(false);
 	}
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
@@ -133,13 +133,13 @@ void DialogueBoxComponent::serahGetUpDialogueUpdate()
 		{
 			if (auto pl = player.lock())
 			{
-				pl->setAlive(true);
+				pl->setUpdatable(true);
 			}
 			_parent->setVisible(false);
-			_parent->setAlive(false);
-			_parent->scene->ents.find("Intro")[0]->setAlive(true);
+			_parent->setUpdatable(false);
+			_parent->scene->ents.find("Intro")[0]->setUpdatable(true);
 			_parent->scene->ents.find("Portal")[0]->setVisible(true);
-			_parent->scene->ents.find("Portal")[0]->setAlive(true);
+			_parent->scene->ents.find("Portal")[0]->setUpdatable(true);
 		}
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
@@ -168,8 +168,8 @@ void DialogueBoxComponent::outsideLevelDialogueUpdate()
 		if (finalCountDown <= 0.0f)
 		{
 			_parent->setVisible(false);
-			_parent->setAlive(false);
-			_parent->scene->ents.find("ControlsDialogue")[0]->setAlive(true);
+			_parent->setUpdatable(false);
+			_parent->scene->ents.find("ControlsDialogue")[0]->setUpdatable(true);
 		}
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
@@ -197,7 +197,7 @@ void DialogueBoxComponent::moveWhileDialogueUpdate()
 		if (hideCountDown <= 0.0f)
 		{
 			_parent->setVisible(false);
-			_parent->setAlive(false);
+			_parent->setUpdatable(false);
 		}
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
@@ -241,8 +241,8 @@ void DialogueBoxComponent::swordDialogueUpdate()
 			// Begin battle text starts
 			if (finalCountDown <= 0.0f)
 			{
-				_parent->setAlive(false);
-				_parent->scene->ents.find("BeginBattleText")[0]->setAlive(true);
+				_parent->setUpdatable(false);
+				_parent->scene->ents.find("BeginBattleText")[0]->setUpdatable(true);
 				Audio::stopMusic("mystic_music");
 				Audio::playEffect("boss_roar_effect");
 			}
@@ -287,10 +287,10 @@ void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
 			{
 				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
 			}
-			_parent->setAlive(false);
+			_parent->setUpdatable(false);
 			_parent->setVisible(false);
 			// Fight begins
-			_parent->scene->ents.find("Boss")[0]->setAlive(true);
+			_parent->scene->ents.find("Boss")[0]->setUpdatable(true);
 			_parent->scene->ents.find("Boss")[0]->setDeath(false);
 			musicCountDown = 1.5f;
 		}
@@ -351,11 +351,11 @@ void DialogueBoxComponent::endingDialogueUpdate()
 		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
-			_parent->setAlive(false);
+			_parent->setUpdatable(false);
 			_parent->setVisible(false);
 			// Activate the end dialogue
 			auto theEnd = _parent->scene->ents.find("TheEnd")[0];
-			theEnd->setAlive(true);
+			theEnd->setUpdatable(true);
 		}
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f));
@@ -381,7 +381,7 @@ void DialogueBoxComponent::theEndDialogueUpdate()
 		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
-			_parent->setAlive(false);
+			_parent->setUpdatable(false);
 			_parent->setVisible(false);
 			// Change to main menu
 			Engine::ChangeScene(&main_menu);

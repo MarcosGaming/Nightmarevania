@@ -143,7 +143,7 @@ public:
 	void makeDecision(Entity *owner) override final
 	{
 		auto decisionTree = owner->get_components<DecisionTreeComponent>();
-		decisionTree[0]->setWaitTime(2.0f);
+		decisionTree[0]->setWaitTime(3.0f);
 		auto sm = owner->get_components<StateMachineComponent>();
 		sm[0]->changeState("Revive");
 	}

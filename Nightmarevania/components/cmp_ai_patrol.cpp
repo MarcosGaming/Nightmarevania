@@ -8,11 +8,11 @@ AIPatrolComponent::AIPatrolComponent(Entity* p, sf::Vector2f pointA, sf::Vector2
 
 void AIPatrolComponent::update(double dt)
 {
-	if (_parent->getPosition().x <= _positionA.x || ls::getTileAt(Vector2f(_parent->getPosition().x + 60.0f, _parent->getPosition().y)) == ls::WALL || ls::getTileAt(Vector2f(_parent->getPosition().x + 60.0f, _parent->getPosition().y)) == ls::FLOOR || ls::getTileAt(Vector2f(_parent->getPosition().x + 60.0f, _parent->getPosition().y - 60.0f)) == ls::EMPTY)
+	if (_parent->getPosition().x <= _positionA.x)
 	{
 		_patrol->setWasLastPositionA(true);
 	}
-	else if(_parent->getPosition().x >= _positionB.x || ls::getTileAt(Vector2f(_parent->getPosition().x - 60.0f, _parent->getPosition().y)) == ls::WALL || ls::getTileAt(Vector2f(_parent->getPosition().x - 60.0f, _parent->getPosition().y)) == ls::FLOOR || ls::getTileAt(Vector2f(_parent->getPosition().x - 60.0f, _parent->getPosition().y - 60.0f)) == ls::EMPTY)
+	else if(_parent->getPosition().x >= _positionB.x)
 	{
 		_patrol->setWasLastPositionA(false);
 	}

@@ -25,13 +25,15 @@ void EnemyPhysicsComponent::update(double dt)
 {
 	if (_canMove)
 	{
-		static float waitForImpulseUp = 0.2f;
-		waitForImpulseUp -= (float)dt;
 		if (_slow)
 		{
 			if (getVelocity().x < _maxSlowVelocity.x)
 			{
 				impulse(Vector2f(_moveDirection.x * (float)(dt*10.0f), 0));
+			}
+			else
+			{
+				impulse(Vector2f(_moveDirection.x, 0));
 			}
 			// Clamp velocity.
 			auto v = getVelocity();
@@ -50,12 +52,6 @@ void EnemyPhysicsComponent::update(double dt)
 			v.x = copysign(min(abs(v.x), _maxFastVelocity.x), v.x);
 			v.y = copysign(min(abs(v.y), _maxFastVelocity.y), v.y);
 			setVelocity(v);
-		}
-		// Impulse up so the enemy does not gets stuck on the ground
-		if (waitForImpulseUp <= 0.0f)
-		{
-			impulse(Vector2f(0.0f, -1.0f));
-			waitForImpulseUp = 0.2f;
 		}
 	}
 	else
@@ -110,4 +106,5 @@ bool EnemyPhysicsComponent::canMove() const { return _canMove; }
 void EnemyPhysicsComponent::setSlow(bool slow) { _slow = slow; }
 bool EnemyPhysicsComponent::isSlowMove() const { return _slow; }
 
-void EnemyPhysicsComponent::setMoveDirection(Vector2f direction) { _moveDirection = direction; }
+void EnemyPhysicsComponent::setMoveDirection(const Vector2f& direction) { _moveDirection = direction; }
+void EnemyPhysicsComponent::setMaxSlowVelocity(Vector2f vel) { _maxSlowVelocity = vel; }

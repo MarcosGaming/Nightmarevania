@@ -163,6 +163,8 @@ public:
 	SkeletonAttackAnimation() : _soundFrame(0) {};
 	void execute(Entity*, double) noexcept override;
 
+	void runFrames(Entity*, float) override;
+
 	void setSoundFrame(int frame) { _soundFrame = frame; }
 };
 

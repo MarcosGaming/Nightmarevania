@@ -4,11 +4,11 @@ using namespace std;
 
 // ENTITY
 
-Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _death(false), _alive(true), _visible(true), scene(s), _fordeletion(false), _facingRight(true) {}
+Entity::Entity(Scene* const s) : _position({0, 0}), _rotation(0), _death(false), _updatable(true), _visible(true), scene(s), _fordeletion(false), _facingRight(true) {}
 
 void Entity::update(double dt) 
 {
-	if (!_alive) 
+	if (!_updatable) 
 	{
 		return;
 	}
@@ -47,14 +47,14 @@ void Entity::setRotation(float _rotation) { Entity::_rotation = _rotation; }
 bool Entity::isDead() const { return _death; }
 void Entity::setDeath(bool _death) { Entity::_death = _death; }
 
-bool Entity::isAlive() const { return _alive; }
-void Entity::setAlive(bool _alive) { Entity::_alive = _alive; }
+bool Entity::isUpdatable() const { return _updatable; }
+void Entity::setUpdatable(bool _alive) { Entity::_updatable = _alive; }
 
 bool Entity::is_fordeletion() const { return _fordeletion; }
 void Entity::setForDelete() 
 {
 	_fordeletion = true;
-	_alive = false;
+	_updatable = false;
 	_visible = false;
 }
 
@@ -102,7 +102,7 @@ void EntityManager::update(double dt)
 			--i;
 			continue;
 		}
-		if (list[i]->_alive) 
+		if (list[i]->_updatable) 
 		{
 			list[i]->update(dt);
 		}

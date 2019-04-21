@@ -16,12 +16,12 @@
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../game.h"
-#include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
 #include <system_sound.h>
 #include <system_saving.h>
+#include <system_physics.h>
 
 using namespace std;
 using namespace sf;
@@ -42,10 +42,10 @@ static shared_ptr<Entity> skeleton_soldier;
 static shared_ptr<Texture> skeleton_soldier_tex;
 vector<shared_ptr<Entity>> skeletonSoldiers;
 
-sf::Vector2f curCentre; //debugging
-
 void LevelTwo::Load()
 {
+	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
+	Physics::initialise();
 	// Save this level as the last one played
 	Saving::saveLevel("2");
 	// Controller starts at button 0
@@ -74,9 +74,7 @@ void LevelTwo::Load()
 
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
-	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
-	spriteSheet = make_shared<Texture>();
-	spriteSheet->loadFromFile("res/img/adventurer.png");
+	playerAnimations->loadFromFile("res/img/adventurer.png");
 
 	// Player 
 	{
@@ -85,7 +83,7 @@ void LevelTwo::Load()
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -230,19 +228,19 @@ void LevelTwo::Load()
 			auto weightedDecisionSubtree1 = make_shared<WeightedBinaryDecision>(90, make_shared<ReviveDecision>(), make_shared<DeathDecision>());
 			// Decision subtree 2
 			auto distanceDecision1Subtree2 = make_shared<DistanceDecision>(player, 120, make_shared<AttackDecision>(), make_shared<SeekSlowDecision>());
-			auto weightedDecision1Subtree2 = make_shared<WeightedBinaryDecision>(70, make_shared<StationaryDecision>(), make_shared<DeathDecision>());
+			auto weightedDecision1Subtree2 = make_shared<WeightedBinaryDecision>(90, make_shared<StationaryDecision>(), make_shared<DeathDecision>());
 			auto weightedDecision2Subtree2 = make_shared<WeightedBinaryDecision>(90, make_shared<PatrolDecision>(), weightedDecision1Subtree2);
-			auto distanceDecision2Subtree2 = make_shared<DistanceDecision>(player, 300, distanceDecision1Subtree2, weightedDecision2Subtree2);
+			auto distanceDecision2Subtree2 = make_shared<DistanceDecision>(player, 350, distanceDecision1Subtree2, weightedDecision2Subtree2);
 			// Complete tree
 			auto fakeDeathDecision = make_shared<FakeDeathDecision>(skeleton_soldier, weightedDecisionSubtree1, distanceDecision2Subtree2);
 			// Decision tree component
 			skeleton_soldier->addComponent<DecisionTreeComponent>(fakeDeathDecision);
 			// Physics component
 			auto physics = skeleton_soldier->addComponent<EnemyPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width, sprite->getSprite().getTextureRect().height * 2.8f));
-			physics->setRestitution(0.0f);
+			physics->setMaxSlowVelocity(Vector2f(70, 100));
 			// Player kill component
 			skeleton_soldier->addComponent<PlayerKillComponent>();
-
+			// Add skeleton to vector
 			skeletonSoldiers.push_back(skeleton_soldier);
 			i++;
 		}
@@ -377,8 +375,6 @@ void LevelTwo::Load()
 
 
 	//MOVING CAMERA STUFF
-	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
-	curCentre = player->getPosition();
 	centrePoint = sf::Vector2f(rightBoundary, topBoundary);
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
@@ -398,6 +394,7 @@ void LevelTwo::Update(const double& dt)
 	
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
 		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
+		Audio::playEffect("pick_up_effect");
 	}
 
 	// Pause game
@@ -420,33 +417,35 @@ void LevelTwo::Update(const double& dt)
 		Engine::GetWindow().setMouseCursorVisible(true);
 	}
 
-	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) 
+	{
 		centrePoint.x = player->getPosition().x;
 	}
 
-	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) {
+	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) 
+	{
 		centrePoint.y = player->getPosition().y;
 	}
 
-	//debug:
-	if (player->getPosition() != curCentre) {
-		printf("(%f,%f)\n", player->getPosition().x, player->getPosition().y);
-		curCentre = player->getPosition();
-	}
-
-	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, screenSize.x, screenSize.y));
+	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, GAMEX, GAMEY));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
 
-	if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
-		Engine::ChangeScene((Scene*)&levelSword);
-	}
+	// Move pause menu
+	pause_background->setPosition(Vector2f(followPlayer.getCenter().x, followPlayer.getCenter().y));
+	resume_btn->setPosition(Vector2f((followPlayer.getCenter().x) - (resume_tex->getSize().x / 2.0f) - 90.0f, followPlayer.getCenter().y + 50.0f));
+	returnToMenu_btn->setPosition(Vector2f(((followPlayer.getCenter().x)) - (returnToMenu_tex->getSize().x / 2.0f) - 150.0f, followPlayer.getCenter().y + 150.0f));
 
 	// Player death
-	/*if (!player->isAlive() && player->isDead())
+	if (!player->isUpdatable() && player->isDead())
 	{
 		Engine::ChangeScene(&levelTwo);
-	}*/
+	}
+	// Change level if player reaches the door with the key
+	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
+	{
+		Engine::ChangeScene((Scene*)&levelSword);
+	}
 
 	Scene::Update(dt);
 }
@@ -470,10 +469,12 @@ void LevelTwo::Render()
 
 void LevelTwo::UnLoad()
 {
+	Engine::GetWindow().setView(sf::View(sf::FloatRect(0.0f, 0.0f, GAMEX, GAMEY)));
 	Audio::stopMusic("level_2_music");
 	buttonsForController.clear();
 	player.reset();
 	skeleton_soldier.reset();
+	skeletonSoldiers.clear();
 	ls::unload();
 	Scene::UnLoad();
 }

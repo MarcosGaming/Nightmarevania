@@ -56,9 +56,7 @@ void LevelOutside::Load()
 	ls::setOffset(Vector2f(0, ho));
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
-	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
-	spriteSheet = make_shared<Texture>();
-	spriteSheet->loadFromFile("res/img/adventurer.png");
+	playerAnimations->loadFromFile("res/img/adventurer.png");
 
 	// Background
 	background_tex = make_shared<Texture>();
@@ -108,7 +106,7 @@ void LevelOutside::Load()
 		anim->changeAnimation("Open");
 		// Portal is initially not going to be render or updated
 		portal->setVisible(false);
-		portal->setAlive(false);
+		portal->setUpdatable(false);
 	}
 
 	// Player
@@ -118,7 +116,7 @@ void LevelOutside::Load()
 		player->addTag("Player");
 		// Sprite component
 		auto sprite = player->addComponent<SpriteComponent>();
-		sprite->setTexure(spriteSheet);
+		sprite->setTexure(playerAnimations);
 		sprite->getSprite().setTextureRect(IntRect(0, 37 * 12, 50, 37));
 		sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
@@ -306,7 +304,7 @@ void LevelOutside::Load()
 	{
 		intro_dialogue = makeEntity();
 		intro_dialogue->addTag("Intro");
-		intro_dialogue->setAlive(false);
+		intro_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = intro_dialogue->addComponent<DialogueBoxComponent>();
 		text->setCompleteText("Mysterious voice: Serah... Erebus has transported you to the Netherworld during your nightmare.\nWe don't have much time left and he needs to be stopped. Cross the portal I have opened to get\nto his castle.");
@@ -316,7 +314,7 @@ void LevelOutside::Load()
 	{
 		controls_dialogue = makeEntity();
 		controls_dialogue->addTag("ControlsDialogue");
-		controls_dialogue->setAlive(false);
+		controls_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = controls_dialogue->addComponent<DialogueBoxComponent>();
 		// Some text changes based on what controller is connected
@@ -325,7 +323,7 @@ void LevelOutside::Load()
 		// Dialogue when the joystick is connected
 		if (sf::Joystick::isConnected(0))
 		{
-			string jumpButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(jumpButton));
+			string jumpButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(jump));
 			// Dialogue
 			dialogue = "Mysterious voice: Use the L.Stick to move," + jumpButton + " to perform a single jump\nand release it and press it again in the air to perform a double jump.";
 		}

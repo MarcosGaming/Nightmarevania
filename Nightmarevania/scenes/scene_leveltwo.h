@@ -20,8 +20,8 @@ private:
 	sf::Vector2f centrePoint;
 	shared_ptr<Entity> door;
 	float leftBoundary = 640.0f;
-	float rightBoundary = 3620.0f;
-	float topBoundary = -1440.0f;
+	float rightBoundary = 4800.0f;
+	float topBoundary = -1500.0f;
 	float bottomBoundary = 365.0f;
 };
 
