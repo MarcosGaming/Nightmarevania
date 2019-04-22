@@ -33,6 +33,8 @@ static shared_ptr<Entity> short_dialogue;
 //Texture background_tex;
 //Sprite background_image;
 
+vector<shared_ptr<Entity>> levelDoors;
+
 void LevelSword::Load()
 {
 	// Save this level as the last one played
@@ -68,14 +70,17 @@ void LevelSword::Load()
 	playerAnimations->loadFromFile("res/img/adventurer.png");
 
 	// Door
-	if (ls::doesTileExist(ls::DOOR))
+	auto doors = ls::findTiles(ls::DOOR);
+	//if (ls::doesTileExist(ls::DOOR))
+	for (auto d : doors)
 	{
 		door = makeEntity();
-		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(d));
 		auto doorSprite = door->addComponent<SpriteComponent>();
 		doorSprite->setTexure(doorCmp->getTexture());
 		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
 		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+		levelDoors.push_back(door);
 	}
 
 	// Player
@@ -129,15 +134,17 @@ void LevelSword::Load()
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 		physics->setRestitution(0.0f);
 
-		// Key component
+		// Sword component
 		if (ls::doesTileExist(ls::KEY)) 
 		{
-			auto key = player->addComponent<SwordKeyComponent>(false,ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			Vector2f tilePos = ls::getTilePosition(ls::findTiles(ls::KEY)[0]);
+			Vector2f swordPos = Vector2f(tilePos.x, tilePos.y-33.0f);
+			auto key = player->addComponent<SwordKeyComponent>(false,swordPos);
 		}
 		// Set the player for the door component of the door entity
 		if (ls::doesTileExist(ls::DOOR))
 		{
-			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+			levelDoors.back()->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
 	}
 

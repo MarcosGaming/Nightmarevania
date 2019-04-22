@@ -248,7 +248,7 @@ void DialogueBoxComponent::swordDialogueUpdate()
 			}
 		}
 	}
-	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 130.0f));
 }
 // Function for final boss begin battle
 void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
@@ -295,7 +295,7 @@ void DialogueBoxComponent::beginBattleDialogueUpdate(bool& activateMusicInLevel)
 			musicCountDown = 1.5f;
 		}
 	}
-	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 130.0f));
 }
 // Function for final boss end battle
 void DialogueBoxComponent::endBattleDialogueUpdate()

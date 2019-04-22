@@ -68,11 +68,9 @@ void LevelOne::Load()
 	ls::setOffset(Vector2f(0, ho));
 
 	//DOOR
-	//shared_ptr<Entity> door;
 	if (ls::doesTileExist(ls::DOOR)) {
 		door = makeEntity();
 		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
-		//false for L1, but starts as true for L2 and stays true in L3
 		auto doorSprite = door->addComponent<SpriteComponent>();
 		doorSprite->setTexure(doorCmp->getTexture());
 		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);

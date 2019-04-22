@@ -9,6 +9,7 @@
 #include "../components/cmp_state_machine.h"
 #include "../components/cmp_hurt.h"
 #include "../components/cmp_text.h"
+#include "../components/cmp_door.h"
 #include "../animation_states.h"
 #include "../enemy_states.h"
 #include "../enemy_decisions.h"
@@ -76,11 +77,22 @@ void LevelThree::Load()
 		background_image->setTexture(*background_tex);
 	}
 
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_three.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+
+	//door
+	if (ls::doesTileExist(ls::DOOR)) {
+		door = makeEntity();
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		auto doorSprite = door->addComponent<SpriteComponent>();
+		doorSprite->setTexure(doorCmp->getTexture());
+		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
+		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}
 
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
@@ -268,7 +280,8 @@ void LevelThree::Load()
 	// Boss
 	{
 		boss = makeEntity();
-		boss->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]));
+		Vector2f bossPos = Vector2f(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]).x, ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]).y-16.0f);
+		boss->setPosition(bossPos);
 		boss->addTag("Boss");
 		// Sprite component
 		auto sprite = boss->addComponent<SpriteComponent>();
@@ -542,9 +555,8 @@ void LevelThree::Load()
 			string attackButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(attack));
 			string defendButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(defend));
 			// Dialogue
-			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn, with it, you will be able to\nshed light on this darkness Serah. Press " 
-				+ defendButton + " to defend yourself, maintain press " + attackButton + " \nto attack and while "
-				"pressing it, use the L.Stick to perform special attacks.";
+			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn.\nWith it, you will be able to shed light on this darkness Serah.\nPress " 
+				+ defendButton + " to defend yourself, hold " + attackButton + "  to attack or combine it\nwith the L.Stick to perform special attacks.";
 		}
 		// Dialogue when the mouse/keyboard are connected
 		else
@@ -616,9 +628,9 @@ void LevelThree::Load()
 				upAttack = Conversor::MouseButtonToString(*Controller::getActionMouseButton(up));
 			}
 			// Dialogue
-			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn, with it, you will be able to\nshed light on this darkness Serah. Press " 
-				+ defendButton +" to defend yourself, maintain press " + attackButton + " \nto attack and while "
-				"pressing it, use " + rightAttack + ", " + leftAttack + ", " + upAttack + ", " + downAttack + " to perform special attacks.";
+			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn.\nWith it, you will be able to shed light on this darkness Serah.\nPress " 
+				+ defendButton +" to defend yourself, and hold " + attackButton + " to attack or combine it\n"
+				"with " + rightAttack + ", " + leftAttack + ", " + upAttack + ", " + downAttack + " to perform special attacks.";
 		}
 		text->setCompleteText(dialogue);
 		text->setFunction([&]() {text->swordDialogueUpdate();});
@@ -630,7 +642,7 @@ void LevelThree::Load()
 		begin_fight_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = begin_fight_dialogue->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Erebus: Hahahaha! The new guardian is just a young, little girl.\nYou won't be able to stop me as your ancestors did!\nI, Erebus, will obliterate you from existance\nand then your world will follow you!");
+		text->setCompleteText("Erebus: Hahahaha! The new guardian is just a pitiful, little girl.\nYou won't be able to stop me like your ancestors did!\nI, Erebus, will obliterate you from existance and then your world\nwill follow!");
 		text->setFunction([&]() {text->beginBattleDialogueUpdate(begin_fight_dialogue_musicOn); });
 	}
 	// End fight dialogue
@@ -639,7 +651,7 @@ void LevelThree::Load()
 		end_fight_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = end_fight_dialogue->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Erebus: How... How can this be? I have been defeated by you? Next time...\nNext time I will make sure to end with your lineage once and for all.");
+		text->setCompleteText("Erebus: How... How can this be? I have been defeated... by you?\nNext time...Next time I will make sure to end your lineage once and for all.");
 		text->setFunction([&]() {text->endBattleDialogueUpdate(); });
 	}
 
