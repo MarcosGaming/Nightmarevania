@@ -145,7 +145,10 @@ void LevelTwo::Load()
 
 		//if (keyExists) {
 		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			auto keys = ls::findTiles(ls::KEY);
+			for (auto k : keys) { //START OF MULTI KEY CODE
+				auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(k));
+			}
 		}
 
 	}
