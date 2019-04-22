@@ -39,3 +39,25 @@ public:
 	Vector2f getSize();
 	void setPlayer(std::shared_ptr<Entity> player);
 };
+
+class DoorOrbsComponent : public Component
+{
+private:
+	int _keysCollected;
+	int _totalKeys;
+	std::vector<sf::IntRect> _orbsIntRect;
+
+public:
+	DoorOrbsComponent() = delete;
+	explicit DoorOrbsComponent(Entity * p, int);
+
+	void update(double dt) override;
+	void render() override { }
+
+	void addOrbIntRect(const sf::IntRect);
+
+	void increaseKeysCollected();
+
+	bool allKeysCollected() const;
+
+};

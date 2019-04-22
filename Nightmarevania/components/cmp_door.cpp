@@ -1,7 +1,8 @@
 #include "cmp_door.h"
+#include "cmp_key.h"
+#include "cmp_sprite.h"
 #include "system_renderer.h"
 #include "engine.h"
-#include "cmp_key.h"
 
 using namespace std;
 using namespace sf;
@@ -27,9 +28,13 @@ void DoorComponent::update(double dt) {
 	if (auto pl = _player.lock())
 	{
 		if (pl != 0 && pl->GetCompatibleComponent<KeyComponent>().size() != 0) {
-			if (pl->GetCompatibleComponent<KeyComponent>()[0]->getHeld()) {
-				_locked = false;
+			for (int i = 0; i < pl->GetCompatibleComponent<KeyComponent>().size(); i++){
+				// If any of the keys that the player might have is not held return
+				if (!pl->GetCompatibleComponent<KeyComponent>()[i]->getHeld()) {
+					return;
+				}
 			}
+			_locked = false;
 		}
 	}
 }
@@ -72,4 +77,26 @@ Vector2f DoorComponent::getSize() {
 
 void DoorComponent::setPlayer(std::shared_ptr<Entity> player) {
 	_player = player;
+}
+
+// Door orbs
+
+DoorOrbsComponent::DoorOrbsComponent(Entity * p, int keysNumber) : _keysCollected(0), _totalKeys(keysNumber), Component(p) { }
+
+void DoorOrbsComponent::update(double dt){
+	_parent->get_components<SpriteComponent>()[0]->getSprite().setTextureRect(_orbsIntRect[_keysCollected]);
+}
+
+void DoorOrbsComponent::addOrbIntRect(sf::IntRect rect){
+	_orbsIntRect.push_back(rect);
+}
+
+void DoorOrbsComponent::increaseKeysCollected() { _keysCollected++; }
+
+bool DoorOrbsComponent::allKeysCollected() const {
+	if (_keysCollected == _totalKeys)
+	{
+		return true;
+	}
+	return false;
 }
