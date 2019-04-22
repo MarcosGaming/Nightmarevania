@@ -38,6 +38,8 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
+Texture background_tex;
+Sprite background_image;
 
 void TestingScene::Load()
 {
@@ -49,11 +51,22 @@ void TestingScene::Load()
 	_paused = false;
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
+
+	// Background
+	{
+		background_tex.loadFromFile("res/img/test_level.png");
+		float scaleX = (float)GAMEX / (background_tex.getSize().x);
+		float scaleY = (float)GAMEY / (background_tex.getSize().y);
+		background_image.scale(scaleX, scaleY);
+		background_image.setTexture(background_tex);
+	}
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_test.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+	
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	combatIcons = make_shared<Texture>();
@@ -204,14 +217,74 @@ void TestingScene::Load()
 
 	// Add physics colliders to level tiles.
 	{
+		vector<Vector2f> checkedTiles;
+
 		auto walls = ls::findTiles(ls::WALL);
 		for (auto w : walls)
 		{
 			auto pos = ls::getTilePosition(w);
-			pos += Vector2f(30.0f, 30.0f); //offset to center
-			auto e = makeEntity();
-			e->setPosition(pos);
-			auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(60.0f, 60.0f));
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::WALL || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
+			}
+		}
+
+		auto floor = ls::findTiles(ls::FLOOR);
+		for (auto f : floor)
+		{
+			auto pos = ls::getTilePosition(f);
+			int nextTile = 1;
+			float width = 60.0f;
+			float height = 60.0f;
+
+			if (find(checkedTiles.begin(), checkedTiles.end(), pos) == checkedTiles.end()) {
+				//not found so collider not added yet
+				checkedTiles.push_back(pos);
+				bool end = false;
+				while (!end) {
+					Vector2f nextPos = Vector2f(pos.x + (60 * nextTile), pos.y);
+					size_t mapWidth = ls::getWidth(); //for debugging
+					if (nextPos.x > (ls::getWidth()*60.0f) || ls::getTileAt(nextPos) != ls::FLOOR || find(checkedTiles.begin(), checkedTiles.end(), nextPos) != checkedTiles.end()) {
+						end = true;
+					}
+					else {
+						//then the next tile is the same so
+						nextTile++;
+						width += 60.0f;
+						checkedTiles.push_back(nextPos);
+					}
+
+				}
+				pos += Vector2f(width / 2, height / 2); //offset to center
+				auto e = makeEntity();
+				e->setPosition(pos);
+				auto physics = e->addComponent<PhysicsComponent>(false, Vector2f(width, height));
+				physics->setRestitution(0.0f);
+			}
 		}
 	}
 
@@ -301,6 +374,8 @@ void TestingScene::Update(const double& dt)
 
 void TestingScene::Render()
 {
+	Engine::GetWindow().draw(background_image);
+
 	ls::render(Engine::GetWindow());
 	Scene::Render();
 }

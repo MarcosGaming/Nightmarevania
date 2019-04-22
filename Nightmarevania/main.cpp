@@ -16,6 +16,7 @@ LevelOutside levelOutside;
 // Game starts at main menu
 int main() 
 {
-	Engine::Start(GAMEX, GAMEY, "Nightmarevania", &main_menu);
+	//Engine::Start(GAMEX, GAMEY, "Nightmarevania", &main_menu);
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania", &testing);
 	return 0;
 }

@@ -42,6 +42,8 @@ static shared_ptr<Entity> skeleton_soldier;
 static shared_ptr<Texture> skeleton_soldier_tex;
 vector<shared_ptr<Entity>> skeletonSoldiers;
 
+int keyCount = 0;
+
 void LevelTwo::Load()
 {
 	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
@@ -397,6 +399,7 @@ void LevelTwo::Update(const double& dt)
 	
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
 		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
+		keyCount++;
 		Audio::playEffect("pick_up_effect");
 	}
 
@@ -445,7 +448,7 @@ void LevelTwo::Update(const double& dt)
 		Engine::ChangeScene(&levelTwo);
 	}
 	// Change level if player reaches the door with the key
-	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
+	else if (ls::getTileAt(player->getPosition()) == ls::END && keyCount > 0)
 	{
 		Engine::ChangeScene((Scene*)&levelSword);
 	}

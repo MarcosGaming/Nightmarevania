@@ -17,22 +17,26 @@ public:
 
 	typedef unsigned char Tile;
 
+	/*enum BACKGROUND
+	{
+		WINDOWa = 'w', //top
+		WINDOWb = 's', //middle
+		WINDOWc = 'x', //bottom
+
+		STATUEa = 'e', //top left
+		STATUEb = 'd', //middle left
+		STATUEc = 'c', //bottom left
+		STATUEd = 'r', //top right
+		STATUEe = 'f', //middle right
+		STATUEf = 'v', //bottom right
+
+		COLUMNa = 'q', //top
+		COLUMNb = 'a', //middle
+		COLUMNc = 'z', //bottom
+	};*/
+
 	enum TILES
 	{
-		/*WALL1 = '1',
-		WALL2 = '2',
-		WALL3 = '3',
-		WALL4 = '4',
-		WALL5 = '5',
-		WALL6 = '6',
-		WALL7 = '7',
-		WALL8 = '8',
-		CORNER1 = '9',
-		CORNER2 = '0',
-		CORNER3 = '-',
-		CORNER4 = '=',
-		PLATFORM = 'p',*/
-
 		WAYPOINTA = 'a',
 		WAYPOINTB = 'b',
 
@@ -44,18 +48,6 @@ public:
 		DOOR = 'd',
 		KEY = 'k',
 		ENEMY = 'e',
-
-		/*TORCHa = 'z', //top
-		TORCHb = 'x', //middle
-		TORCHc = 'c', //bottom
-
-		COLUMN1a = '<', //top
-		COLUMN1b = '>', //middle
-		COLUMN1c = '?', //bottom
-
-		COLUMN2a = ',', //top
-		COLUMN2b = '.', //middle
-		COLUMN2c = '/', //bottom*/
 
 		END = '+',
 		START = 's',
@@ -80,10 +72,7 @@ public:
 
 	static bool doesTileExist(LevelSystem::Tile type);
 
-	//static sf::Color getColor(Tile t);
 	static sf::IntRect getSprite(Tile t);
-
-	//static void setColor(Tile t, sf::Color c);
 	static void setSprite(Tile t, sf::IntRect s);
 
 	static void setOffset(const sf::Vector2f& _offset);
@@ -102,7 +91,7 @@ protected:
 
 	static std::map<Tile, sf::IntRect> _images;
 
-	static void buildSprites(bool optimise = true);
+	static void buildSprites();
 
 	static float _tileSize; // for rendering
 	static std::map<Tile, sf::Color> _colours;

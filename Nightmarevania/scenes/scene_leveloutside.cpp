@@ -80,7 +80,7 @@ void LevelOutside::Load()
 	{
 		portal = makeEntity();
 		portal->setPosition(ls::getTilePosition(ls::findTiles(ls::END)[0]));
-		portal->setPosition(Vector2f(portal->getPosition().x, portal->getPosition().y - 80.0f));
+		portal->setPosition(Vector2f(portal->getPosition().x + 30.0f, portal->getPosition().y - 80.0f));
 		portal->addTag("Portal");
 		// Sprite component
 		auto sprite = portal->addComponent<SpriteComponent>();

@@ -19,68 +19,37 @@ int spriteSize = 32;
 
 sf::Texture foreground;
 
-std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{ 
+/*std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_background{
 
-		/*{WALL1, sf::IntRect((0 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-		{WALL2, sf::IntRect((1 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-		{WALL3, sf::IntRect((2 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-		{WALL4, sf::IntRect((0 * spriteSize), (4 * spriteSize), spriteSize, spriteSize)},
-		{WALL5, sf::IntRect((2 * spriteSize), (4 * spriteSize), spriteSize, spriteSize)},
-		{WALL6, sf::IntRect((0 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-		{WALL7, sf::IntRect((1 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
-		{WALL8, sf::IntRect((2 * spriteSize), (5 * spriteSize), spriteSize, spriteSize)},
+	{WINDOWa, sf::IntRect((5 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{WINDOWb, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{WINDOWc, sf::IntRect((5 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
 
-		{CORNER1, sf::IntRect((3 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-		{CORNER2, sf::IntRect((4 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-		{CORNER3, sf::IntRect((3 * spriteSize), (4 * spriteSize), spriteSize, spriteSize)},
-		{CORNER4, sf::IntRect((4 * spriteSize), (4 * spriteSize), spriteSize, spriteSize)},
+	{STATUEa, sf::IntRect((7 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{STATUEb, sf::IntRect((7 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{STATUEc, sf::IntRect((7 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+	{STATUEd, sf::IntRect((8 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{STATUEe, sf::IntRect((8 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{STATUEf, sf::IntRect((8 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
 
-		{PLATFORM, sf::IntRect((2 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},*/
+	{COLUMNa, sf::IntRect((13 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
+	{COLUMNb, sf::IntRect((13 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{COLUMNc, sf::IntRect((13 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
+};*/
 
-		{SPIKES1, sf::IntRect((2 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-		{SPIKES2, sf::IntRect((3 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-		{SPIKES3, sf::IntRect((4 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-		{SPIKES4, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-		{SPIKES5, sf::IntRect((6 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 
-	/*{BG1, sf::IntRect((4 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG2, sf::IntRect((4 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG3, sf::IntRect((4 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-	{BG4, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG5, sf::IntRect((5 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG6, sf::IntRect((5 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-	{BG7, sf::IntRect((6 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG8, sf::IntRect((6 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG9, sf::IntRect((6 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-	{BG10, sf::IntRect((7 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG11, sf::IntRect((7 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG12, sf::IntRect((7 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-	{BG13, sf::IntRect((8 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG14, sf::IntRect((8 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG15, sf::IntRect((8 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},
-	{BG16, sf::IntRect((9 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{BG17, sf::IntRect((9 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{BG18, sf::IntRect((9 * spriteSize), (3 * spriteSize), spriteSize, spriteSize)},*/
+	{SPIKES1, sf::IntRect((2 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES2, sf::IntRect((3 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES3, sf::IntRect((4 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES4, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
+	{SPIKES5, sf::IntRect((6 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
 
 	{WAYPOINTA, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 	{WAYPOINTB, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-
 	{DOOR, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 	{KEY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-
 	{ENEMY, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-
-	/*{TORCHa, sf::IntRect((8 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{TORCHb, sf::IntRect((8 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{TORCHc, sf::IntRect((8 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-
-	{COLUMN1a, sf::IntRect((6 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN1b, sf::IntRect((6 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN1c, sf::IntRect((6 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},
-
-	{COLUMN2a, sf::IntRect((7 * spriteSize), (7 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN2b, sf::IntRect((7 * spriteSize), (8 * spriteSize), spriteSize, spriteSize)},
-	{COLUMN2c, sf::IntRect((7 * spriteSize), (9 * spriteSize), spriteSize, spriteSize)},*/
 
 	{END, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
 	{START, sf::IntRect((0 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
@@ -166,7 +135,7 @@ void LevelSystem::loadLevelFile(const std::string& path, float tileSize)
 	buildSprites();
 }
 
-void LevelSystem::buildSprites(bool optimise)
+void LevelSystem::buildSprites()
 {
 	if (!(foreground.loadFromFile("res/img/foreground_tiles.png"))) {
 		cerr << "Failed to load spritesheet!" << std::endl;
@@ -178,7 +147,6 @@ void LevelSystem::buildSprites(bool optimise)
 	{
 		sf::Vector2f p;
 		sf::Vector2f s;
-		//sf::Color c;
 		sf::IntRect i;
 	};
 
@@ -199,71 +167,6 @@ void LevelSystem::buildSprites(bool optimise)
 	}
 
 	const auto nonempty = tps.size();
-
-	// If tile of the same type are next to each other, we can use one large sprite instead of two.
-	  /*if (optimise && nonempty)
-	  {
-		  vector<tp> tpo;
-		  tp last = tps[0];
-		  size_t samecount = 0;
-
-		  for (size_t i = 1; i < nonempty; ++i)
-		  {
-			  // Is this tile compressible with the last?
-			  bool same = ((tps[i].p.y == last.p.y) && (tps[i].p.x == last.p.x + (tls.x * (1 + samecount))) && (tps[i].c == last.c));
-			  if (same)
-			  {
-				  ++samecount; // Yes, keep going
-			  //	tps[i].c = Color::Green;
-			  }
-			  else
-			  {
-				  if (samecount)
-				  {
-					  last.s.x = (1 + samecount) * tls.x; // Expand tile
-				  }
-				  // write tile to list
-				  tpo.push_back(last);
-				  samecount = 0;
-				  last = tps[i];
-			  }
-		  }
-		  // catch the last tile
-		  if (samecount)
-		  {
-			  last.s.x = (1 + samecount) * tls.x;
-			  tpo.push_back(last);
-		  }
-
-		  // No scan down Y, using different algo now that compressible blocks may
-		  // not be contiguous
-		  const auto xsave = tpo.size();
-		  samecount = 0;
-		  vector<tp> tpox;
-		  for (size_t i = 0; i < tpo.size(); ++i)
-		  {
-			  last = tpo[i];
-			  for (size_t j = i + 1; j < tpo.size(); ++j)
-			  {
-				  bool same = ((tpo[j].p.x == last.p.x) && (tpo[j].s == last.s) && (tpo[j].p.y == last.p.y + (tls.y * (1 + samecount))) && (tpo[j].c == last.c));
-				  if (same)
-				  {
-					  ++samecount;
-					  tpo.erase(tpo.begin() + j);
-					  --j;
-				  }
-			  }
-			  if (samecount)
-			  {
-				  last.s.y = (1 + samecount) * tls.y; // Expand tile
-			  }
-			  // write tile to list
-			  tpox.push_back(last);
-			  samecount = 0;
-		  }
-
-		  tps.swap(tpox);
-	  }*/
 
 	for (auto& t : tps)
 	{
@@ -367,7 +270,6 @@ void LevelSystem::unload()
 	_width = 0;
 	_height = 0;
 	_offset = { 0, 0 };
-	//TODO unload tex?
 }
 
 const Vector2f& LevelSystem::getOffset() { return _offset; }
