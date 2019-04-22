@@ -36,6 +36,7 @@ static shared_ptr<Entity> down_attack_btn;
 static shared_ptr<Entity> pause_btn;
 // Return button
 static shared_ptr<Entity> goBack_btn;
+
 // Background texture
 static shared_ptr<Texture> background_tex;
 // Sound buttons textures

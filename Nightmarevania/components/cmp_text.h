@@ -68,6 +68,8 @@ public:
 
 	void outsideLevelDialogueUpdate();
 
+	void level1DialogueUpdate();
+
 	void moveWhileDialogueUpdate();
 
 	void swordDialogueUpdate();

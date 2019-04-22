@@ -144,11 +144,14 @@ void DialogueBoxComponent::serahGetUpDialogueUpdate()
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
 }
-
 void DialogueBoxComponent::outsideLevelDialogueUpdate()
 {
 	// While the dialogue box is active do not allow the player to move
 	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(false);
+	}
 	// The letters are placed in the text one by one
 	static float stringCountDown = 0.1f;
 	stringCountDown -= (float)_dt;
@@ -167,6 +170,10 @@ void DialogueBoxComponent::outsideLevelDialogueUpdate()
 		finalCountDown -= (float)_dt;
 		if (finalCountDown <= 0.0f)
 		{
+			if (auto pl = player.lock())
+			{
+				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
+			}
 			_parent->setVisible(false);
 			_parent->setUpdatable(false);
 			_parent->scene->ents.find("ControlsDialogue")[0]->setUpdatable(true);
@@ -174,7 +181,47 @@ void DialogueBoxComponent::outsideLevelDialogueUpdate()
 	}
 	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f), GAMEY*0.5f - 100.0f));
 }
-
+// Mysterious voice warning serah of the danger
+void DialogueBoxComponent::level1DialogueUpdate()
+{
+	Audio::playMusic("mystic_music");
+	// While the dialogue box is active do not update the player
+	std::weak_ptr<Entity> player = _parent->scene->ents.find("Player")[0];
+	if (auto pl = player.lock())
+	{
+		pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(false);
+	}
+	// The letters are placed in the text one by one
+	static float stringCountDown = 0.1f;
+	stringCountDown -= (float)_dt;
+	// Render the dialogue letter by letter.
+	if (stringCountDown <= 0.0f && !_finished)
+	{
+		this->SetText(_completeText.substr(0, _currentChar));
+		_currentChar++;
+		stringCountDown = 0.1f;
+	}
+	// Once the text is fully rendered wait a bit before removing it
+	static float finalCountDown = 0.8f;
+	if (_currentChar > _completeText.size())
+	{
+		_finished = true;
+		finalCountDown -= (float)_dt;
+		if (finalCountDown <= 0.0f)
+		{
+			if (auto pl = player.lock())
+			{
+				pl->get_components<PlayerPhysicsComponent>()[0]->setCanMove(true);
+			}
+			_parent->setVisible(false);
+			_parent->setUpdatable(false);
+			_parent->scene->ents.find("Ghost")[0]->setUpdatable(true);
+			_parent->scene->ents.find("Ghost")[0]->setVisible(true);
+			Audio::stopMusic("mystic_music");
+		}
+	}
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f) + 200.0f, GAMEY*0.5f - 100.0f));
+}
 // Function for the dialogue in the sword alone level
 void DialogueBoxComponent::moveWhileDialogueUpdate()
 {

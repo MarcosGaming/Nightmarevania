@@ -4,11 +4,12 @@
 #include "../components/cmp_button.h"
 #include "../components/cmp_player_combat.h"
 #include "../animation_states.h"
-#include "../game.h"
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_ai_steering.h"
+#include "../components/cmp_text.h"
+#include "../game.h"
 #include <iostream>
 #include <LevelSystem.h>
 #include <system_controller.h>
@@ -32,8 +33,7 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-//Texture background_tex;
-//Sprite background_image;
+static shared_ptr<Entity> run_dialogue;
 
 void LevelOne::Load()
 {
@@ -67,7 +67,7 @@ void LevelOne::Load()
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 
-	//DOOR
+	// Door
 	if (ls::doesTileExist(ls::DOOR)) {
 		door = makeEntity();
 		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
@@ -79,7 +79,7 @@ void LevelOne::Load()
 
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
-	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
+	playerAnimations->loadFromFile("res/img/adventurer.png");
 
 	// Player
 	{
@@ -139,27 +139,29 @@ void LevelOne::Load()
 		anim->addAnimation("DeathFall", deathFall);
 		anim->addAnimation("DeathGround", deathGround);
 		anim->changeAnimation("Idle");
-
+		// Physics component
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 		physics->setRestitution(0.0f);
 
-		//KEY - level 2 only
+		// Door
 		if (ls::doesTileExist(ls::DOOR)) {
 			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
 
-		//if (keyExists) {
+		// Key
 		if (ls::doesTileExist(ls::KEY)) {
 			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
 		}
 	}
 
-	//GHOST
+	// Ghost
 	{
-		//shared_ptr<Entity> ghost;
 		ghost = makeEntity();
-		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0])); //TODO add enemy to tile map
+		ghost->addTag("Ghost");
+		ghost->setPosition(ls::getTilePosition(ls::findTiles(ls::ENEMY)[0]));
+		// AI component
 		auto AIcmp = ghost->addComponent<GhostAIComponent>();
+		// Sprite component
 		auto sprite = ghost->addComponent<SpriteComponent>();
 		shared_ptr<Texture> ghostSprites = make_shared<Texture>();
 		ghostSprites->loadFromFile("res/img/ghost.png");
@@ -167,29 +169,29 @@ void LevelOne::Load()
 		sprite->getSprite().setTextureRect(IntRect(0, 0, 71, 58));
 		sprite->getSprite().scale(sf::Vector2f(5.0f, 5.0f));
 		sprite->getSprite().setOrigin((float)sprite->getSprite().getTextureRect().width * 0.5f, (float)sprite->getSprite().getTextureRect().height);
+		// Steering component
 		auto steering = ghost->addComponent<AISteeringComponent>(player.get(), 190.0f, 1000.0f);
-		
+		// Animations
 		shared_ptr<GhostTakeOffAnimation> ghostTakeOff = make_shared<GhostTakeOffAnimation>();
 		for (int i = 1; i < 7; i++)
 		{
 			ghostTakeOff->addFrame(IntRect(71 * i, 0, 71, 58));
 		}
-		
-
 		shared_ptr<GhostFlyingAnimation> ghostFly = make_shared<GhostFlyingAnimation>();
 		ghostFly->addFrame(IntRect(71 * 5, 0, 71, 58));
 		ghostFly->addFrame(IntRect(71 * 6, 0, 71, 58));
-		
-
 		shared_ptr<GhostIdleAnimation> ghostIdle = make_shared<GhostIdleAnimation>();
 		ghostIdle->addFrame(IntRect(71 * 0, 0, 71, 58));
 		ghostIdle->addFrame(IntRect(71 * 1, 0, 71, 58));
-
+		// Animation machine component
 		auto animations = ghost->addComponent<AnimationMachineComponent>();
 		animations->addAnimation("GhostIdle", ghostIdle);
 		animations->addAnimation("GhostTakeOff", ghostTakeOff);
 		animations->addAnimation("GhostFly", ghostFly);
-		animations->changeAnimation("GhostIdle"); //why is this breaking?
+		animations->changeAnimation("GhostIdle");
+		// Ghost is initially not visible and updatable
+		ghost->setUpdatable(false);
+		ghost->setVisible(false);
 	}
 
 	// Add physics colliders to level tiles.
@@ -317,31 +319,37 @@ void LevelOne::Load()
 		buttonsForController.push_back(button);
 	}
 
+	// Mysterius voice dialogue
+	{
+		run_dialogue = makeEntity();
+		// Dialogue text component
+		auto text = run_dialogue->addComponent<DialogueBoxComponent>();
+		text->setCompleteText("Mysterious Voice: Serah, you need to find the Sword of Dawn to defeat Erebus, with out it you are just defendless.\nWait, something is coming... RUN!");
+		text->setFunction([&]() {text->level1DialogueUpdate(); });
+	}
 
-
-	//MOVING CAMERA STUFF
+	//Set moving camera
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	//curCentre = player->getPosition();
-	centrePoint = sf::Vector2f(leftBoundary, (screenSize.y / 2)-60.0f);
+	//centrePoint = sf::Vector2f(leftBoundary, (screenSize.y / 2)-60.0f);
+	centrePoint = sf::Vector2f(leftBoundary, (GAMEY / 2)-60.0f);
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
 		centrePoint.x = player->getPosition().x;
 	}
 
 	player->GetCompatibleComponent<PlayerPhysicsComponent>()[0]->setRestitution(0.0f);
 
+
 	setLoaded(true);
 }
 
 void LevelOne::Update(const double& dt)
 {
-	if (ghost->GetCompatibleComponent<AISteeringComponent>()[0]->getPlayerDeath()) {
-		//player->setDeath(true); //TODO turn this back on once map is complete!!
-	}
-
 
 	if (ls::getTileAt(player->getPosition()) == ls::KEY) {
 		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
 	}
+
 
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
@@ -359,15 +367,30 @@ void LevelOne::Update(const double& dt)
 	}
 	else
 	{
-		Audio::playMusic("level_1_music");
 		// Disable cursor
 		Engine::GetWindow().setMouseCursorVisible(false);
+		if (!run_dialogue->isUpdatable())
+		{
+			Audio::playMusic("level_1_music");
+		}
 	}
 
+	// Player caught by ghost
+	if (ghost->GetCompatibleComponent<AISteeringComponent>()[0]->getPlayerDeath() && !player->isDead())
+	{
+		player->setDeath(true);
+	}
+
+	// Pick up key
+	if (ls::getTileAt(player->getPosition()) == ls::KEY) 
+	{
+		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
+	}
+
+	// Camera
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
 		centrePoint.x = player->getPosition().x;
 	}
-
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, GAMEX, GAMEY));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
@@ -393,10 +416,9 @@ void LevelOne::Update(const double& dt)
 void LevelOne::Render()
 {
 	Engine::GetWindow().draw(*background_image);
-
 	Engine::GetWindow().setView(followPlayer);
-	ls::render(Engine::GetWindow()); //render the enviro tiles
-	
+	ls::render(Engine::GetWindow()); 
+
 	Scene::Render();
 }
 

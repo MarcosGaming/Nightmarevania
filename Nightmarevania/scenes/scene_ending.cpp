@@ -3,7 +3,6 @@
 #include "../components/cmp_text.h"
 #include <system_renderer.h>
 #include <system_sound.h>
-#include <system_resolution.h>
 
 using namespace std;
 using namespace sf;
@@ -36,8 +35,9 @@ void EndingScene::Load()
 
 void EndingScene::Update(const double& dt)
 {
-	Scene::Update(dt);
 	Audio::playMusic("main_menu_music");
+
+	Scene::Update(dt);
 }
 
 void EndingScene::Render()

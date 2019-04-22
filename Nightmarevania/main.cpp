@@ -2,7 +2,6 @@
 #include "game.h"
 
 // Scenes
-TestingScene testing;
 MainMenuScene main_menu;
 SettingsScene settings;
 CreditsScene credits;

@@ -146,8 +146,9 @@ void PlayerPhysicsComponent::update(double dt)
 		_secondJump = false;
 	}
 
-	// Death 
-	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2 || ls::getTileAt(pos) == ls::SPIKES3 || ls::getTileAt(pos) == ls::SPIKES4 || ls::getTileAt(pos) == ls::SPIKES5) {
+	// Death with spikes
+	if (ls::getTileAt(pos) == ls::SPIKES1 || ls::getTileAt(pos) == ls::SPIKES2 || ls::getTileAt(pos) == ls::SPIKES3 || ls::getTileAt(pos) == ls::SPIKES4 || ls::getTileAt(pos) == ls::SPIKES5) 
+	{
 		_parent->setDeath(true);
 	}
 	// If the player is dead velocity is 0 on x and 0 on y if not in the air

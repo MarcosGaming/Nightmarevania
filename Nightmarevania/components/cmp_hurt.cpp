@@ -66,7 +66,6 @@ void PlayerKillComponent::update(double dt)
 			{
 				if (length(player->getPosition() - _parent->getPosition()) < 110.0f && !player->isDead())
 				{
-					Audio::playEffect("player_death_effect");
 					player->setDeath(true);
 				}
 				_attackDelay = 1.6f;

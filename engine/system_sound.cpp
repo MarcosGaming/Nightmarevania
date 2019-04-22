@@ -67,6 +67,12 @@ void Audio::initialise(std::string& musicSetting, std::string& effectsSetting)
 	level_2_music.openFromFile("res/sounds/level2_music.wav");
 	level_3_music.openFromFile("res/sounds/boss_music.wav");
 	mystic_music.openFromFile("res/sounds/mystic_music.wav");
+	// Set music as loops
+	main_menu_music.setLoop(true);
+	level_1_music.setLoop(true);
+	level_2_music.setLoop(true);
+	level_3_music.setLoop(true);
+	mystic_music.setLoop(true);
 	// Store the music in the map
 	music["main_menu_music"] = &main_menu_music;
 	level_3_music.setVolume(50.0f);

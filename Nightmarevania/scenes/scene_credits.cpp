@@ -4,7 +4,6 @@
 #include "../game.h"
 #include <system_renderer.h>
 #include <system_sound.h>
-#include <system_resolution.h>
 
 using namespace std;
 using namespace sf;
@@ -61,17 +60,11 @@ void CreditsScene::Load()
 
 void CreditsScene::Update(const double& dt)
 {
-	Scene::Update(dt);
 	ButtonComponent::ButtonNavigation(buttonsForController, buttonsCurrentIndex, dt);
 	// Cretids music
-	if (Audio::isMusicOn())
-	{
-		Audio::playMusic("main_menu_music");
-	}
-	else
-	{
-		Audio::stopMusic("main_menu_music");
-	}
+	Audio::playMusic("main_menu_music");
+
+	Scene::Update(dt);
 }
 
 void CreditsScene::Render()

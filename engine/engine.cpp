@@ -118,6 +118,8 @@ std::shared_ptr<Entity> Scene::makePausedEntity()
 
 void Scene::setPause(bool pause) { _paused = pause; }
 
+bool Scene::isPaused() const { return _paused; }
+
 void Scene::setLoaded(bool b) 
 {
 	std::lock_guard<std::mutex> lck(_loaded_mtx);
@@ -197,7 +199,10 @@ void Engine::Update()
 	}
 	else if (_activeScene != nullptr)
 	{
-		Physics::update(dt);
+		if (!_activeScene->isPaused())
+		{
+			Physics::update(dt);
+		}
 		_activeScene->Update(dt);
 	}
 }

@@ -27,6 +27,7 @@ public:
 	bool isLoaded() const;
 	std::shared_ptr<Entity> makeEntity();
 	std::shared_ptr<Entity> makePausedEntity();
+	bool isPaused() const;
 	void setPause(bool);
 
 	EntityManager ents;
