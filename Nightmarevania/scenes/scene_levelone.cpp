@@ -57,7 +57,7 @@ void LevelOne::Load()
 		background_tex->loadFromFile("res/img/level_one.png");
 		float scaleX = (float)GAMEX / (background_tex->getSize().x);
 		float scaleY = (float)GAMEY / (background_tex->getSize().y);
-		background_image->scale(scaleX, scaleY);
+		background_image->scale(scaleX*17.0f, scaleY);
 		background_image->setTexture(*background_tex);
 	}
 
@@ -323,6 +323,9 @@ void LevelOne::Load()
 	screenSize = static_cast<sf::Vector2f>(Engine::GetWindow().getSize());
 	//curCentre = player->getPosition();
 	centrePoint = sf::Vector2f(leftBoundary, (screenSize.y / 2)-60.0f);
+	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
+		centrePoint.x = player->getPosition().x;
+	}
 
 	player->GetCompatibleComponent<PlayerPhysicsComponent>()[0]->setRestitution(0.0f);
 
@@ -332,7 +335,7 @@ void LevelOne::Load()
 void LevelOne::Update(const double& dt)
 {
 	if (ghost->GetCompatibleComponent<AISteeringComponent>()[0]->getPlayerDeath()) {
-		player->setDeath(true);
+		//player->setDeath(true); //TODO turn this back on once map is complete!!
 	}
 
 

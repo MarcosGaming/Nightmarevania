@@ -25,7 +25,7 @@ private:
 	shared_ptr<Entity> door;
 	shared_ptr<Entity> ghost;
 	float leftBoundary = 640.0f;
-	float rightBoundary = 21795.0f;
+	float rightBoundary = 21380.0f;
 	shared_ptr<Texture> background_tex;
 	shared_ptr<Sprite> background_image;
 };
