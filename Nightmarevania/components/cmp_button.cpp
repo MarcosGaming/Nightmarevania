@@ -69,6 +69,11 @@ void ButtonComponent::ButtonNavigation(const std::vector<std::shared_ptr<ButtonC
 		{
 			index = 0;
 		}
+		// Skip buttons that are active when going down
+		while (index < buttons.size() - 1 && buttons[index]->isActive() && !buttons[index]->_canHoverActive)
+		{
+			index++;
+		}
 		buttons[index]->_controllerHovered = true;
 	}
 	// If the controller gets disconnected removed the hovered status from the current button

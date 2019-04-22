@@ -2,7 +2,6 @@
 #include "game.h"
 
 // Scenes
-TestingScene testing;
 MainMenuScene main_menu;
 SettingsScene settings;
 CreditsScene credits;
@@ -16,6 +15,6 @@ LevelOutside levelOutside;
 // Game starts at main menu
 int main() 
 {
-	Engine::Start(GAMEX, GAMEY, "Nightmarevania", &levelTwo);
+	Engine::Start(GAMEX, GAMEY, "Nightmarevania", &main_menu);
 	return 0;
 }
