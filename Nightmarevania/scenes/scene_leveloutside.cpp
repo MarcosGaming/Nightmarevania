@@ -397,7 +397,7 @@ void LevelOutside::Update(const double& dt)
 	// Change scene to next level whenthe player reaches the end tile
 	if (ls::getTileAt(player->getPosition()) == ls::END)
 	{
-		Engine::ChangeScene(&levelOne);
+		Engine::ChangeScene(&levelTwo);
 	}
 
 	Scene::Update(dt);

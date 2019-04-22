@@ -16,6 +16,7 @@
 #include "../components/cmp_door.h"
 #include "../components/cmp_key.h"
 #include "../game.h"
+#include <math.h>
 #include <LevelSystem.h>
 #include <system_controller.h>
 #include <system_resolution.h>
@@ -42,6 +43,9 @@ static shared_ptr<Entity> skeleton_soldier;
 static shared_ptr<Texture> skeleton_soldier_tex;
 vector<shared_ptr<Entity>> skeletonSoldiers;
 
+static shared_ptr<Entity> door_orbs;
+static shared_ptr<Texture> orbs_texture;
+
 void LevelTwo::Load()
 {
 	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
@@ -60,7 +64,7 @@ void LevelTwo::Load()
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
 
-	//DOOR
+	// Door
 	shared_ptr<Entity> door;
 	if (ls::doesTileExist(ls::DOOR)) {
 		door = makeEntity();
@@ -70,6 +74,26 @@ void LevelTwo::Load()
 		doorSprite->setTexure(doorCmp->getTexture());
 		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
 		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+	}
+
+	// Orbs textures
+	orbs_texture = make_shared<Texture>();
+	orbs_texture->loadFromFile("res/img/door_orbs.png");
+	// Door orbs
+	{
+		door_orbs = makeEntity();
+		door_orbs->setPosition(ls::getTilePosition(ls::findTiles(ls::DOOR)[0]) + Vector2f(20.0f, -20.0f));
+		// Sprite component
+		auto sprite = door_orbs->addComponent<SpriteComponent>();
+		sprite->setTexure(orbs_texture);
+		sprite->getSprite().setTextureRect(IntRect(0, 0, 50, 120));
+		sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
+		// Orbs component
+		auto orbs = door_orbs->addComponent<DoorOrbsComponent>(3);
+		for (int i = 0; i < 4; i++)
+		{
+			orbs->addOrbIntRect(IntRect(50 * i, 0, 50, 120));
+		}
 	}
 
 	// Adventurer textures
@@ -138,14 +162,16 @@ void LevelTwo::Load()
 		auto physics = player->addComponent<PlayerPhysicsComponent>(Vector2f(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 2.8f));
 		physics->setRestitution(0.0f);
 
-		//KEY - level 2 only
+		//Door
 		if (ls::doesTileExist(ls::DOOR)) {
 			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
 
-		//if (keyExists) {
+		// Keys
 		if (ls::doesTileExist(ls::KEY)) {
-			auto key = player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[0]));
+			player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[1]));
+			player->addComponent<NormalKeyComponent>(false, ls::getTilePosition(ls::findTiles(ls::KEY)[2]));
 		}
 
 	}
@@ -187,20 +213,19 @@ void LevelTwo::Load()
 		int i = 0;
 		for (auto s : skeletons)
 		{
+			// Points to patrol
 			auto waypointsA = ls::findTiles(ls::WAYPOINTA);
 			auto waypointsB = ls::findTiles(ls::WAYPOINTB);
-
+			// Entity
 			skeleton_soldier = makeEntity();
 			auto position = ls::getTilePosition(s);
 			skeleton_soldier->setPosition(position);
-
 			// Sprite component
 			auto sprite = skeleton_soldier->addComponent<SpriteComponent>();
 			sprite->setTexure(skeleton_soldier_tex);
 			sprite->getSprite().setTextureRect(IntRect(0, 0, 24, 37));
 			sprite->getSprite().scale(sf::Vector2f(3.0f, 3.0f));
 			sprite->getSprite().setOrigin(sprite->getSprite().getTextureRect().width * 0.5f, sprite->getSprite().getTextureRect().height * 0.5f);
-
 			// Component that manages player animations
 			auto anim = skeleton_soldier->addComponent<AnimationMachineComponent>();
 			anim->addAnimation("Idle", idle);
@@ -374,7 +399,7 @@ void LevelTwo::Load()
 	}
 
 
-	//MOVING CAMERA STUFF
+	// Moving camera
 	centrePoint = sf::Vector2f(rightBoundary, topBoundary);
 
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) {
@@ -391,10 +416,17 @@ void LevelTwo::Load()
 
 void LevelTwo::Update(const double& dt)
 {
-	
-	if (ls::getTileAt(player->getPosition()) == ls::KEY) { // && keyExists
-		player->GetCompatibleComponent<NormalKeyComponent>()[0]->setHeld(true);
-		Audio::playEffect("pick_up_effect");
+	if (ls::getTileAt(player->getPosition()) == ls::KEY)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (length(ls::getTilePosition(ls::findTiles(ls::KEY)[i]) - player->getPosition()) <= 50.0 && !player->GetCompatibleComponent<NormalKeyComponent>()[i]->getHeld())
+			{
+				player->GetCompatibleComponent<NormalKeyComponent>()[i]->setHeld(true);
+				Audio::playEffect("pick_up_effect");
+				door_orbs->get_components<DoorOrbsComponent>()[0]->increaseKeysCollected();
+			}
+		}
 	}
 
 	// Pause game
@@ -413,20 +445,18 @@ void LevelTwo::Update(const double& dt)
 	else
 	{
 		Audio::playMusic("level_2_music");
-		// Disable cursor
 		Engine::GetWindow().setMouseCursorVisible(true);
 	}
 
+	// Moving camera
 	if (player->getPosition().x > leftBoundary && player->getPosition().x < rightBoundary) 
 	{
 		centrePoint.x = player->getPosition().x;
 	}
-
 	if (player->getPosition().y > topBoundary && player->getPosition().y < bottomBoundary) 
 	{
 		centrePoint.y = player->getPosition().y;
 	}
-
 	followPlayer = sf::View(sf::FloatRect(0.f, 0.f, GAMEX, GAMEY));
 	followPlayer.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	followPlayer.setCenter(centrePoint);
@@ -441,10 +471,10 @@ void LevelTwo::Update(const double& dt)
 	{
 		Engine::ChangeScene(&levelTwo);
 	}
-	// Change level if player reaches the door with the key
-	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
+	// Change level if player reaches the door with all the keys
+	else if (ls::getTileAt(player->getPosition()) == ls::END && door_orbs->get_components<DoorOrbsComponent>()[0]->allKeysCollected())
 	{
-		Engine::ChangeScene((Scene*)&levelSword);
+		Engine::ChangeScene(&levelSword);
 	}
 
 	Scene::Update(dt);
