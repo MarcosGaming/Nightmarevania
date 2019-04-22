@@ -293,7 +293,7 @@ void LevelSword::Update(const double& dt)
 	}
 	else if (ls::getTileAt(player->getPosition()) == ls::END && player->GetCompatibleComponent<KeyComponent>()[0]->getHeld())
 	{
-		Engine::ChangeScene((Scene*)&levelThree);
+		Engine::ChangeScene(&levelThree);
 	}
 	Scene::Update(dt);
 }

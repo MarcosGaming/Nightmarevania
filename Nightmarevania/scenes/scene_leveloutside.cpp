@@ -307,7 +307,7 @@ void LevelOutside::Load()
 		intro_dialogue->setUpdatable(false);
 		// Dialogue text component
 		auto text = intro_dialogue->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Mysterious voice: Serah... Erebus has transported you to the Netherworld during your nightmare.\nWe don't have much time left and he needs to be stopped. Cross the portal I have opened to get\nto his castle.");
+		text->setCompleteText("Mysterious voice: Serah... Erebus has transported you during your nightmare to Limbo,\nthe space between your world and the Netherworld. We don't have much time left\nand he needs to be stopped. Cross the portal I have opened to get to his castle.");
 		text->setFunction([&]() {text->outsideLevelDialogueUpdate(); });
 	}
 	// End fight dialogue
@@ -389,10 +389,9 @@ void LevelOutside::Update(const double& dt)
 	}
 	else
 	{
-		// Music for this level
-		Audio::playMusic("mystic_music");
 		// Disable cursor
 		Engine::GetWindow().setMouseCursorVisible(false);
+		Audio::playMusic("mystic_music");
 	}
 	// Change scene to next level whenthe player reaches the end tile
 	if (ls::getTileAt(player->getPosition()) == ls::END)

@@ -52,6 +52,8 @@ void LevelTwo::Load()
 	Physics::initialise();
 	// Save this level as the last one played
 	Saving::saveLevel("2");
+	// Stop music from main menu
+	Audio::stopMusic("main_menu_music");
 	// Controller starts at button 0
 	buttonsCurrentIndex = 0;
 	// The scene is not paused at the beginning
@@ -416,19 +418,6 @@ void LevelTwo::Load()
 
 void LevelTwo::Update(const double& dt)
 {
-	if (ls::getTileAt(player->getPosition()) == ls::KEY)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			if (length(ls::getTilePosition(ls::findTiles(ls::KEY)[i]) - player->getPosition()) <= 50.0 && !player->GetCompatibleComponent<NormalKeyComponent>()[i]->getHeld())
-			{
-				player->GetCompatibleComponent<NormalKeyComponent>()[i]->setHeld(true);
-				Audio::playEffect("pick_up_effect");
-				door_orbs->get_components<DoorOrbsComponent>()[0]->increaseKeysCollected();
-			}
-		}
-	}
-
 	// Pause game
 	if (Controller::isPressed(Controller::PauseButton))
 	{
@@ -444,8 +433,22 @@ void LevelTwo::Update(const double& dt)
 	}
 	else
 	{
-		Audio::playMusic("level_2_music");
 		Engine::GetWindow().setMouseCursorVisible(true);
+		Audio::playMusic("level_2_music");
+	}
+
+	// Pick up key
+	if (ls::getTileAt(player->getPosition()) == ls::KEY)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (length(ls::getTilePosition(ls::findTiles(ls::KEY)[i]) - player->getPosition()) <= 50.0 && !player->GetCompatibleComponent<NormalKeyComponent>()[i]->getHeld())
+			{
+				player->GetCompatibleComponent<NormalKeyComponent>()[i]->setHeld(true);
+				Audio::playEffect("pick_up_effect");
+				door_orbs->get_components<DoorOrbsComponent>()[0]->increaseKeysCollected();
+			}
+		}
 	}
 
 	// Moving camera
@@ -483,16 +486,7 @@ void LevelTwo::Update(const double& dt)
 void LevelTwo::Render()
 {
 	Engine::GetWindow().setView(followPlayer);
-	ls::render(Engine::GetWindow()); //render the enviro tiles
-	//TODO - render bg and fg seperately (in diff views)
-	/* Something like:
-	* sf::View background;
-	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
-	* Engine::GetWindow().setView(background);
-	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
-	* Engine::GetWindow().setView(followPlayer);
-	* ls::render(Engine::GetWindow());
-	*/
+	ls::render(Engine::GetWindow());
 
 	Scene::Render();
 }
@@ -506,5 +500,6 @@ void LevelTwo::UnLoad()
 	skeleton_soldier.reset();
 	skeletonSoldiers.clear();
 	ls::unload();
+
 	Scene::UnLoad();
 }

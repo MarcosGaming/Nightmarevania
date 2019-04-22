@@ -505,6 +505,10 @@ void DeathAnimation::runFrames(Entity* owner, float waitTime)
 }
 void DeathAnimationFall::execute(Entity* owner, double dt) noexcept
 {
+	if (_current_frame == 0)
+	{
+		Audio::playEffect("player_death_effect");
+	}
 	runFrames(owner, 0.2f);
 	auto movement = owner->get_components<PlayerPhysicsComponent>()[0];
 	auto animation = owner->get_components<AnimationMachineComponent>()[0];

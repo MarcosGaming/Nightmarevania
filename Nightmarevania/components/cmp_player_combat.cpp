@@ -130,7 +130,6 @@ void PlayerCombatComponent::update(double dt)
 	// Player death
 	if (_healthTaken >= _maxHealth)
 	{
-		Audio::playEffect("player_death_effect");
 		_hurt = false;
 		_parent->setDeath(true);
 	}
