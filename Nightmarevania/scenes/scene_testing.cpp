@@ -38,8 +38,8 @@ static shared_ptr<Texture> resume_tex;
 static vector<shared_ptr<ButtonComponent>> buttonsForController;
 static int buttonsCurrentIndex;
 
-Texture background_tex;
-Sprite background_image;
+//Texture background_tex;
+//Sprite background_image;
 
 void TestingScene::Load()
 {
@@ -54,11 +54,13 @@ void TestingScene::Load()
 
 	// Background
 	{
-		background_tex.loadFromFile("res/img/test_level.png");
-		float scaleX = (float)GAMEX / (background_tex.getSize().x);
-		float scaleY = (float)GAMEY / (background_tex.getSize().y);
-		background_image.scale(scaleX, scaleY);
-		background_image.setTexture(background_tex);
+		background_tex = make_shared<Texture>();
+		background_image = make_shared<Sprite>();
+		background_tex->loadFromFile("res/img/test_level.png");
+		float scaleX = (float)GAMEX / (background_tex->getSize().x);
+		float scaleY = (float)GAMEY / (background_tex->getSize().y);
+		background_image->scale(scaleX, scaleY);
+		background_image->setTexture(*background_tex);
 	}
 
 	// Level file
@@ -374,7 +376,7 @@ void TestingScene::Update(const double& dt)
 
 void TestingScene::Render()
 {
-	Engine::GetWindow().draw(background_image);
+	Engine::GetWindow().draw(*background_image);
 
 	ls::render(Engine::GetWindow());
 	Scene::Render();

@@ -44,6 +44,9 @@ vector<shared_ptr<Entity>> skeletonSoldiers;
 
 int keyCount = 0;
 
+//Texture background_tex;
+//Sprite background_image;
+
 void LevelTwo::Load()
 {
 	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
@@ -56,6 +59,18 @@ void LevelTwo::Load()
 	_paused = false;
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
+
+	// Background
+	{
+		background_tex = make_shared<Texture>();
+		background_image = make_shared<Sprite>();
+		background_tex->loadFromFile("res/img/level_two.png");
+		float scaleX = (float)GAMEX / (background_tex->getSize().x);
+		float scaleY = (float)GAMEY / (background_tex->getSize().y);
+		background_image->scale(scaleX, scaleY);
+		background_image->setTexture(*background_tex);
+	}
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_two.txt", 60.0f);
 	// Tiles offset
@@ -458,17 +473,10 @@ void LevelTwo::Update(const double& dt)
 
 void LevelTwo::Render()
 {
+	Engine::GetWindow().draw(*background_image);
+
 	Engine::GetWindow().setView(followPlayer);
-	ls::render(Engine::GetWindow()); //render the enviro tiles
-	//TODO - render bg and fg seperately (in diff views)
-	/* Something like:
-	* sf::View background;
-	* background = sf::View(sf::FloatRect(0.f, 0.f, size.x, size.y)); //how to do parallax?
-	* Engine::GetWindow().setView(background);
-	* ls::render(Engine::GetWindow()); //prob not ls unless I can find a way to change tile input and spritesheet depending on fg or bg
-	* Engine::GetWindow().setView(followPlayer);
-	* ls::render(Engine::GetWindow());
-	*/
+	ls::render(Engine::GetWindow());
 
 	Scene::Render();
 }

@@ -1,6 +1,10 @@
 #pragma once
 
 #include "engine.h"
+#include "SFML/Graphics.hpp"
+
+using namespace std;
+using namespace sf;
 
 class LevelTwo : public Scene
 {
@@ -23,5 +27,7 @@ private:
 	float rightBoundary = 4800.0f;
 	float topBoundary = -1500.0f;
 	float bottomBoundary = 365.0f;
+	shared_ptr<Texture> background_tex;
+	shared_ptr<Sprite> background_image;
 };
 

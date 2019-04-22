@@ -47,6 +47,9 @@ static shared_ptr<Entity> end_fight_dialogue;
 
 static bool begin_fight_dialogue_musicOn;
 
+//Texture background_tex;
+//Sprite background_image;
+
 void LevelThree::Load()
 {
 	// Need to initialise phyiscs to reset the world otherwise the player dead body will block the path
@@ -61,16 +64,30 @@ void LevelThree::Load()
 	_paused = false;
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
+
+	// Background
+	{
+		background_tex = make_shared<Texture>();
+		background_image = make_shared<Sprite>();
+		background_tex->loadFromFile("res/img/level_three.png");
+		float scaleX = (float)GAMEX / (background_tex->getSize().x);
+		float scaleY = (float)GAMEY / (background_tex->getSize().y);
+		background_image->scale(scaleX, scaleY);
+		background_image->setTexture(*background_tex);
+	}
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_three.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	combatIcons = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer_sword.png");
 	combatIcons->loadFromFile("res/img/combat_icons.png");
+
 	// Boss textures
 	boss_spritesheet = make_shared<Texture>();
 	boss_spritesheet->loadFromFile("res/img/skeleton_boss.png");
@@ -666,6 +683,8 @@ void LevelThree::Update(const double& dt)
 
 void LevelThree::Render()
 {
+	Engine::GetWindow().draw(*background_image);
+
 	ls::render(Engine::GetWindow());
 	Scene::Render();
 }

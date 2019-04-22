@@ -30,6 +30,9 @@ static int buttonsCurrentIndex;
 
 static shared_ptr<Entity> short_dialogue;
 
+//Texture background_tex;
+//Sprite background_image;
+
 void LevelSword::Load()
 {
 	// Save this level as the last one played
@@ -42,11 +45,24 @@ void LevelSword::Load()
 	_paused = false;
 	// Disable cursor
 	Engine::GetWindow().setMouseCursorVisible(false);
+
+	// Background
+	{
+		background_tex = make_shared<Texture>();
+		background_image = make_shared<Sprite>();
+		background_tex->loadFromFile("res/img/level_sword.png");
+		float scaleX = (float)GAMEX / (background_tex->getSize().x);
+		float scaleY = (float)GAMEY / (background_tex->getSize().y);
+		background_image->scale(scaleX, scaleY);
+		background_image->setTexture(*background_tex);
+	}
+
 	// Level file
 	ls::loadLevelFile("res/levels/level_sword.txt", 60.0f);
 	// Tiles offset
 	auto ho = GAMEY - (ls::getHeight() * 60.0f);
 	ls::setOffset(Vector2f(0, ho));
+
 	// Adventurer textures
 	playerAnimations = make_shared<Texture>();
 	playerAnimations->loadFromFile("res/img/adventurer.png");
@@ -300,6 +316,8 @@ void LevelSword::Update(const double& dt)
 
 void LevelSword::Render()
 {
+	Engine::GetWindow().draw(*background_image);
+
 	ls::render(Engine::GetWindow());
 	Scene::Render();
 }
