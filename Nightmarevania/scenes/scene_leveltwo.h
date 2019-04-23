@@ -23,10 +23,11 @@ private:
 	sf::View followPlayer;
 	sf::Vector2f centrePoint;
 	shared_ptr<Entity> door;
+	vector<shared_ptr<Entity>> levelDoors;
 	float leftBoundary = 640.0f;
-	float rightBoundary = 4800.0f;
+	float rightBoundary = 4820.0f;
 	float topBoundary = -1500.0f;
-	float bottomBoundary = 365.0f;
+	float bottomBoundary = 355.0f;
 	shared_ptr<Texture> background_tex;
 	shared_ptr<Sprite> background_image;
 };

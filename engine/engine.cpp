@@ -12,6 +12,9 @@
 #include <stdexcept>
 #include <memory>
 
+#include "../Nightmarevania/components/cmp_sprite.h"
+#include "../Nightmarevania/animation_states.h"
+
 using namespace sf;
 using namespace std;
 
@@ -35,22 +38,18 @@ void Loading_update(float dt, const Scene* const scn)
 		loading = false;
 	} else 
 	{
-		loadingspinner += 220.0f * dt;
 		loadingTime += dt;
 	}
 }
 void Loading_render() 
 {
-	static CircleShape octagon(80, 8);
-	octagon.setOrigin(80, 80);
-	octagon.setRotation(loadingspinner);
-	octagon.setPosition(Vcast<float>(Engine::getWindowSize()) * .5f);
-	octagon.setFillColor(Color(255,255,255,(Uint8)min(255.f,40.f*loadingTime)));
-	static Text t("Loading", *Resources::get<sf::Font>("Gothic.ttf"));
+	static Text t("Loading...", *Resources::get<sf::Font>("Gothic.ttf"));
 	t.setFillColor(Color(255,255,255,(Uint8)min(255.f,40.f*loadingTime)));
-	t.setPosition(Vcast<float>(Engine::getWindowSize()) * Vector2f(0.4f,0.3f));
+	t.setPosition(Vector2f((GAMEX*0.40f), GAMEY*0.5f));
+	t.setCharacterSize(60.0f);
+	t.setOutlineColor(Color::White);
+
 	Renderer::queue(&t);
-	Renderer::queue(&octagon);
 }
 
 

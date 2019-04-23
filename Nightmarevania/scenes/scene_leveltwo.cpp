@@ -65,12 +65,14 @@ void LevelTwo::Load()
 	// Background
 	{
 		background_tex = make_shared<Texture>();
-		background_image = make_shared<Sprite>();
 		background_tex->loadFromFile("res/img/level_two.png");
+		background_image = make_shared<Sprite>();
 		float scaleX = (float)GAMEX / (background_tex->getSize().x);
 		float scaleY = (float)GAMEY / (background_tex->getSize().y);
-		background_image->scale(scaleX, scaleY);
+		background_image->scale(scaleX*4.0f, scaleY*4.0f);
 		background_image->setTexture(*background_tex);
+		//background_image->setOrigin(ls::getWidth()/2.0f, ls::getHeight()/2.0f);
+		background_image->setPosition(ls::getWidth(), -1900.0f);
 	}
 
 	// Level file
@@ -80,14 +82,16 @@ void LevelTwo::Load()
 	ls::setOffset(Vector2f(0, ho));
 
 	// Door
-	shared_ptr<Entity> door;
-	if (ls::doesTileExist(ls::DOOR)) {
+	auto doors = ls::findTiles(ls::DOOR);
+	for (auto d : doors)
+	{
 		door = makeEntity();
-		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(d));
 		auto doorSprite = door->addComponent<SpriteComponent>();
 		doorSprite->setTexure(doorCmp->getTexture());
 		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
 		doorSprite->getSprite().setTextureRect(doorCmp->getRect());
+		levelDoors.push_back(door);
 	}
 
 	// Orbs textures
@@ -178,7 +182,8 @@ void LevelTwo::Load()
 
 		//Door
 		if (ls::doesTileExist(ls::DOOR)) {
-			door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+			levelDoors.front()->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
+			//door->GetCompatibleComponent<DoorComponent>()[0]->setPlayer(player);
 		}
 
 		// Keys
@@ -285,8 +290,6 @@ void LevelTwo::Load()
 		}
 	}
 	
-	
-
 	// Add physics colliders to level tiles.
 	{
 		vector<Vector2f> checkedTiles;

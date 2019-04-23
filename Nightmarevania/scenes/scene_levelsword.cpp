@@ -33,7 +33,7 @@ static shared_ptr<Entity> short_dialogue;
 //Texture background_tex;
 //Sprite background_image;
 
-vector<shared_ptr<Entity>> levelDoors;
+//vector<shared_ptr<Entity>> levelDoors;
 
 void LevelSword::Load()
 {
