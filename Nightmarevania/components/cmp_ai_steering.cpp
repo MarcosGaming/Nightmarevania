@@ -6,10 +6,6 @@
 using namespace std;
 using namespace sf;
 
-//debugging
-/*float playerPosX = -1000.0f;
-float ghostPosX = -1000.0f;
-float dist = -1000.0f;*/
 
 void AISteeringComponent::update(double dt) {
 	

@@ -324,7 +324,7 @@ void LevelOne::Load()
 		run_dialogue = makeEntity();
 		// Dialogue text component
 		auto text = run_dialogue->addComponent<DialogueBoxComponent>();
-		text->setCompleteText("Mysterious Voice: Serah, you need to find the Sword of Dawn to defeat Erebus, with out it you are just defendless.\nWait, something is coming... RUN!");
+		text->setCompleteText("Mysterious Voice: Serah, you need to find the Sword of Dawn to defeat Erebus, with out it\nyou are just defendless. Wait, something is coming... RUN!!!!");
 		text->setFunction([&]() {text->level1DialogueUpdate(); });
 	}
 

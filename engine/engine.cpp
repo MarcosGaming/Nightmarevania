@@ -12,9 +12,6 @@
 #include <stdexcept>
 #include <memory>
 
-#include "../Nightmarevania/components/cmp_sprite.h"
-#include "../Nightmarevania/animation_states.h"
-
 using namespace sf;
 using namespace std;
 
@@ -36,7 +33,8 @@ void Loading_update(float dt, const Scene* const scn)
 	if (scn->isLoaded()) 
 	{
 		loading = false;
-	} else 
+	} 
+	else 
 	{
 		loadingTime += dt;
 	}

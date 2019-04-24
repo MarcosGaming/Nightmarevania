@@ -21,7 +21,7 @@ www>   <www     ww ae         b www ae           b wwwwwwwwwwwwwwwwwwwwwwwwwwwww
 wwww>   <wv     wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww               w                        
 wwww>   <w     ww                                                 wwwww                    
 wwww>   <w     vv                                                     w                    
-www>   <www                     ds             ae                   b w                    
+www>   <www                      s             ae                   b w                    
 www>   <ww    wwwwwwww     wwwwwwwwwwwwwww   <wwwwwwwwwwwwwwwwwwwwwwwww                    
 www>   <ww    w           w              w                  w                              
 ww>   <www    w         w v              ww                 w                              
@@ -32,8 +32,8 @@ w>   <wwww    w   wwwwwwwwwwwwwwwwwww   ww       www^^      wvvvv     w
 ww> k <www    w                          w          www     w         w                    
 ww>   <www    w                        www                  w         w                    
 www>   <ww    w      w           w     vvw                 ww   w     w                    
-www>   <ww    w      v           v   w   w        wwwwwwwwwww   ww>   w                    
-wwww>   <w    w    w ae           b ww   w    wwww            k wv    w                    
+www>   <ww    w      v           v   w   w        wwwwwwwwwww k ww>   w                    
+wwww>   <w    w    w ae           b ww   w    wwww              wv    w                    
 wwww>   <w    w    wwwwwwwwwwwwwwwwwww   w   w                  w    ww                    
 wwww>   <w    ww          vvvvv          w   v             ae  bw    vw                    
 www>   <ww    www                        ww    ^^ ^^^ ^^^^wwwwwwww    w                    

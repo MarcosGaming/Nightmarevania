@@ -220,7 +220,7 @@ void DialogueBoxComponent::level1DialogueUpdate()
 			Audio::stopMusic("mystic_music");
 		}
 	}
-	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f) + 200.0f, GAMEY*0.5f - 100.0f));
+	_text.setPosition(sf::Vector2f(GAMEX*0.5f - (_text.getLocalBounds().width * 0.5f) + 250.0f, GAMEY*0.5f - 100.0f));
 }
 // Function for the dialogue in the sword alone level
 void DialogueBoxComponent::moveWhileDialogueUpdate()

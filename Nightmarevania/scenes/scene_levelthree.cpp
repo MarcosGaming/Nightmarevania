@@ -556,7 +556,7 @@ void LevelThree::Load()
 			string defendButton = Conversor::ControllerButtonToString(*Controller::getActionControllerButton(defend));
 			// Dialogue
 			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn.\nWith it, you will be able to shed light on this darkness Serah.\nPress " 
-				+ defendButton + " to defend yourself, hold " + attackButton + "  to attack or combine it\nwith the L.Stick to perform special attacks.";
+				+ defendButton + " to defend yourself, hold " + attackButton + "  to attack and combine it\nwith the L.Stick to perform special attacks.";
 		}
 		// Dialogue when the mouse/keyboard are connected
 		else
@@ -629,7 +629,7 @@ void LevelThree::Load()
 			}
 			// Dialogue
 			dialogue = "Mysterious voice: What you picked up in the previous room was the Sword of Dawn.\nWith it, you will be able to shed light on this darkness Serah.\nPress " 
-				+ defendButton +" to defend yourself, and hold " + attackButton + " to attack or combine it\n"
+				+ defendButton +" to defend yourself, and hold " + attackButton + " to attack and combine it\n"
 				"with " + rightAttack + ", " + leftAttack + ", " + upAttack + ", " + downAttack + " to perform special attacks.";
 		}
 		text->setCompleteText(dialogue);

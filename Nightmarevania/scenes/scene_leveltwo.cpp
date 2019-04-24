@@ -82,11 +82,9 @@ void LevelTwo::Load()
 	ls::setOffset(Vector2f(0, ho));
 
 	// Door
-	auto doors = ls::findTiles(ls::DOOR);
-	for (auto d : doors)
 	{
 		door = makeEntity();
-		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(d));
+		auto doorCmp = door->addComponent<DoorComponent>(true, ls::getTilePosition(ls::findTiles(ls::DOOR)[0]));
 		auto doorSprite = door->addComponent<SpriteComponent>();
 		doorSprite->setTexure(doorCmp->getTexture());
 		doorSprite->getSprite().setOrigin(doorSprite->getSprite().getTextureRect().width * 0.5f, 0.0f);
