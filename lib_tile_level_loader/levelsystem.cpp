@@ -19,24 +19,6 @@ int spriteSize = 32;
 
 sf::Texture foreground;
 
-/*std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_background{
-
-	{WINDOWa, sf::IntRect((5 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{WINDOWb, sf::IntRect((5 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{WINDOWc, sf::IntRect((5 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-
-	{STATUEa, sf::IntRect((7 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{STATUEb, sf::IntRect((7 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{STATUEc, sf::IntRect((7 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-	{STATUEd, sf::IntRect((8 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{STATUEe, sf::IntRect((8 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{STATUEf, sf::IntRect((8 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-
-	{COLUMNa, sf::IntRect((13 * spriteSize), (0 * spriteSize), spriteSize, spriteSize)},
-	{COLUMNb, sf::IntRect((13 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},
-	{COLUMNc, sf::IntRect((13 * spriteSize), (2 * spriteSize), spriteSize, spriteSize)},
-};*/
-
 std::map<LevelSystem::Tile, sf::IntRect> LevelSystem::_images{
 
 	{SPIKES1, sf::IntRect((2 * spriteSize), (1 * spriteSize), spriteSize, spriteSize)},

@@ -36,18 +36,22 @@ void Loading_update(float dt, const Scene* const scn)
 	} 
 	else 
 	{
+		loadingspinner += 220.0f * dt;
 		loadingTime += dt;
 	}
 }
 void Loading_render() 
 {
-	static Text t("Loading...", *Resources::get<sf::Font>("Gothic.ttf"));
-	t.setFillColor(Color(255,255,255,(Uint8)min(255.f,40.f*loadingTime)));
-	t.setPosition(Vector2f((GAMEX*0.40f), GAMEY*0.5f));
-	t.setCharacterSize(60.0f);
-	t.setOutlineColor(Color::White);
-
+	static CircleShape octagon(80, 8);
+	octagon.setOrigin(80, 80);
+	octagon.setRotation(loadingspinner);
+	octagon.setPosition(Vcast<float>(Engine::getWindowSize()) * .5f);
+	octagon.setFillColor(Color(255, 255, 255, (Uint8)min(255.f, 40.f*loadingTime)));
+	static Text t("Loading", *Resources::get<sf::Font>("Gothic.ttf"));
+	t.setFillColor(Color(255, 255, 255, (Uint8)min(255.f, 40.f*loadingTime)));
+	t.setPosition(Vcast<float>(Engine::getWindowSize()) * Vector2f(0.4f, 0.3f));
 	Renderer::queue(&t);
+	Renderer::queue(&octagon);
 }
 
 
@@ -129,7 +133,7 @@ void Scene::setLoaded(bool b)
 
 void Engine::Start(unsigned int width, unsigned int height, const std::string& gameName, Scene* scn)
 {
-	RenderWindow window(VideoMode(width, height), gameName, sf::Style::Close);
+	RenderWindow window;
 	_gameName = gameName;
 	_window = &window;
 	Renderer::initialise(window);
@@ -214,7 +218,6 @@ void Engine::Render(RenderWindow& window)
 	{
 		_activeScene->Render();
 	}
-
 	Renderer::render();
 }
 
