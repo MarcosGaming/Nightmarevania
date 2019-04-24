@@ -11,13 +11,9 @@ static bool resolution1024x576;
 // Functions to change screen resolution
 static void SetWindowView(int width, int height);
 static void ChangeResolution(int, int, bool);
-// Icon for the window
-static sf::Image Icon;
 
 void Resolution::initialise(std::string& resolutionSetting, std::string& fullScreenSetting, std::string& borderlessSetting)
 {
-	// Load Icon
-	Icon.loadFromFile("res/img/Icon.png");
 	// Turn fullscreen on or not based on setting saved
 	if (!fullScreenSetting.empty() && fullScreenSetting == "On")
 	{
@@ -218,7 +214,6 @@ static void SetWindowView(int width, int height)
 	}
 	v.setViewport(viewport);
 	Engine::GetWindow().setView(v);
-	Engine::GetWindow().setIcon(Icon.getSize().x, Icon.getSize().y, Icon.getPixelsPtr());
 }
 // Creates new window with the new settings
 static void ChangeResolution(int width, int height, bool borderless)
